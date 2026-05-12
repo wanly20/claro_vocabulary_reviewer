@@ -180,6 +180,23 @@
     }
     .fc-nav .btn { flex: 1; }
     .fc-counter { color: #666; font-size: 0.9rem; white-space: nowrap; }
+
+    /* Type Answer */
+    .type-input {
+      width: 100%; padding: 14px 16px; font-size: 1.1rem;
+      border: 2px solid #d8ece4; border-radius: 10px; outline: none;
+      transition: border-color 0.15s; background: #fff; color: #1a1a2e;
+      margin-bottom: 14px;
+    }
+    .type-input:focus { border-color: #52b788; }
+    .type-input.correct  { border-color: #40916c; background: #d8f3dc; }
+    .type-input.nearly   { border-color: #f4a261; background: #fff3e8; }
+    .type-input.incorrect{ border-color: #e63946; background: #ffe0e3; }
+    .feedback.nearly { color: #d4732a; }
+    .submit-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .submit-row .btn { flex: 1; padding: 13px; font-size: 1rem; }
+    .correct-answer { text-align: center; color: #555; font-size: 0.95rem; min-height: 22px; margin-bottom: 16px; }
+    .correct-answer strong { color: #2d6a4f; }
   </style>
 </head>
 <body>
@@ -213,7 +230,7 @@
         <div class="activity-grid">
           <button class="activity-btn" onclick="startActivity('mc')">📋 Multiple Choice</button>
           <button class="activity-btn" onclick="startFlashcards()">🃏 Flashcards</button>
-          <button class="activity-btn" disabled>✍️ Type Answer<span class="soon-badge">soon</span></button>
+          <button class="activity-btn" onclick="startActivity('type')">✍️ Type Answer</button>
           <button class="activity-btn" disabled>🔊 Dictation<span class="soon-badge">soon</span></button>
         </div>
 
@@ -251,6 +268,31 @@
       <button class="btn btn-ghost" id="fc-prev-btn" onclick="fcNav(-1)">← Prev</button>
       <span class="fc-counter" id="fc-counter"></span>
       <button class="btn btn-primary" id="fc-next-btn" onclick="fcNav(1)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── TYPE ANSWER SCREEN ───────────────────────────────────────── -->
+  <div id="type-screen" hidden>
+    <div class="quiz-header">
+      <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <span class="progress-text" id="type-progress"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="type-progress-fill"></div></div>
+
+    <p class="prompt-label" id="type-label"></p>
+    <p class="prompt-word"  id="type-word"></p>
+
+    <input id="type-input" class="type-input" type="text" placeholder="Type your answer…"
+           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+           onkeydown="if(event.key==='Enter') submitTypeAnswer()">
+    <div class="submit-row">
+      <button class="btn btn-ghost"   onclick="skipTypeAnswer()">Skip</button>
+      <button class="btn btn-primary" onclick="submitTypeAnswer()">Check →</button>
+    </div>
+    <p class="feedback"      id="type-feedback"></p>
+    <p class="correct-answer" id="type-correct"></p>
+    <div class="next-row">
+      <button class="btn btn-primary" id="type-next-btn" onclick="nextTypeQuestion()" hidden>Next →</button>
     </div>
   </div>
 
@@ -357,7 +399,7 @@
   }
 
   function showScreen(id) {
-    ['home-screen', 'flashcard-screen', 'quiz-screen', 'score-screen'].forEach(s =>
+    ['home-screen', 'flashcard-screen', 'type-screen', 'quiz-screen', 'score-screen'].forEach(s =>
       document.getElementById(s).hidden = (s !== id)
     );
   }
@@ -376,6 +418,7 @@
 
   // ── Start activity ────────────────────────────────────────────────────
   function startActivity(type, wordPool, dir) {
+    if (type === 'type') { startTypeAnswer(wordPool, dir); return; }
     const words = wordPool ?? getSelectedWords();
     if (!words.length) { alert('Please select at least one topic.'); return; }
     quiz = {
@@ -474,36 +517,20 @@
   }
 
   function redoWrong() {
-    startActivity(quiz.type, quiz.wrong.map(w => w.word), quiz.direction);
+    const words = quiz.wrong.map(w => w.word);
+    const dir   = quiz.direction;
+    const type  = quiz.type;
+    if (type === 'type') startTypeAnswer(words, dir);
+    else startActivity(type, words, dir);
   }
 
   // ── Speech synthesis ──────────────────────────────────────────────────
-  function initSpeech() {
-    if (!('speechSynthesis' in window)) {
-      console.warn('Speech synthesis NOT supported in this browser.');
-      return;
-    }
-    console.log('Speech synthesis supported.');
-    const logVoices = () => {
-      const voices = speechSynthesis.getVoices();
-      const spanish = voices.filter(v => v.lang.startsWith('es'));
-      console.log(`Total voices: ${voices.length}. Spanish voices:`, spanish.map(v => `${v.name} (${v.lang})`));
-    };
-    speechSynthesis.addEventListener('voiceschanged', logVoices);
-    logVoices();
-  }
-
   function speak(text, lang = 'es-ES') {
-    console.log(`speak() called — text: "${text}", lang: ${lang}`);
-    if (!('speechSynthesis' in window)) { console.warn('speechSynthesis not available'); return; }
+    if (!('speechSynthesis' in window)) return;
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
-    u.onerror = e => console.error('SpeechSynthesisUtterance error:', e);
-    u.onstart = () => console.log('Speech started.');
-    u.onend   = () => console.log('Speech ended.');
     speechSynthesis.speak(u);
-    console.log('speechSynthesis.speak() called. pending:', speechSynthesis.pending, 'speaking:', speechSynthesis.speaking);
   }
 
   // ── Flashcards ────────────────────────────────────────────────────────
@@ -556,12 +583,144 @@
     renderCard();
   }
 
+  // ── Grading engine (shared by Type Answer + Dictation) ───────────────
+  const ACCENT_MAP = { 'á':'a','é':'e','í':'i','ó':'o','ú':'u','ü':'u','ñ':'n',
+                       'Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U','Ü':'U','Ñ':'N' };
+
+  function stripAccents(s) {
+    return s.split('').map(c => ACCENT_MAP[c] ?? c).join('');
+  }
+
+  function normalise(s) {
+    return stripAccents(s.toLowerCase().trim().replace(/[()]/g, '').replace(/\s+/g, ' '));
+  }
+
+  function contentWords(s) {
+    return normalise(s).split(' ').filter(w => w.length >= 4);
+  }
+
+  // Returns 'correct' | 'nearly' | 'incorrect'
+  function grade(typed, correct) {
+    const t = typed.trim();
+    const normT = normalise(t);
+    const normC = normalise(correct);
+
+    // Exact match
+    if (t.toLowerCase() === correct.toLowerCase()) return 'correct';
+
+    // Correct letters, wrong accents only
+    if (normT === normC) return 'nearly';
+
+    // Partial word overlap (both sides must have ≥1 content word of length ≥4 in common)
+    const wordsT = contentWords(t);
+    const wordsC = contentWords(correct);
+    if (wordsT.length > 0 && wordsC.length > 0) {
+      const shared = wordsT.filter(w => wordsC.includes(w));
+      if (shared.length > 0) return 'nearly';
+    }
+
+    return 'incorrect';
+  }
+
+  // ── Type Answer ────────────────────────────────────────────────────────
+  function startTypeAnswer(wordPool, dir) {
+    const words = wordPool ?? getSelectedWords();
+    if (!words.length) { alert('Please select at least one topic.'); return; }
+    quiz = {
+      type: 'type',
+      words: shuffle(words),
+      direction: dir ?? direction,
+      index: 0,
+      score: 0,
+      wrong: [],
+      total: Math.min(10, words.length)
+    };
+    showScreen('type-screen');
+    renderTypeQuestion();
+  }
+
+  function renderTypeQuestion() {
+    const word  = quiz.words[quiz.index];
+    const isES  = quiz.direction === 'es-en';
+
+    document.getElementById('type-progress').textContent      = `${quiz.index + 1} / ${quiz.total}`;
+    document.getElementById('type-progress-fill').style.width = `${((quiz.index + 1) / quiz.total) * 100}%`;
+    document.getElementById('type-label').textContent         = isES ? 'What does this mean in English?' : 'How do you say this in Spanish?';
+    document.getElementById('type-word').textContent          = isES ? word.spanish : word.english;
+    document.getElementById('type-feedback').textContent      = '';
+    document.getElementById('type-feedback').className        = 'feedback';
+    document.getElementById('type-correct').textContent       = '';
+    document.getElementById('type-next-btn').hidden           = true;
+
+    const input = document.getElementById('type-input');
+    input.value     = '';
+    input.disabled  = false;
+    input.className = 'type-input';
+    input.focus();
+  }
+
+  function submitTypeAnswer() {
+    const input   = document.getElementById('type-input');
+    const typed   = input.value.trim();
+    if (!typed) return;
+
+    const word    = quiz.words[quiz.index];
+    const isES    = quiz.direction === 'es-en';
+    const correct = isES ? word.english : word.spanish;
+    const result  = grade(typed, correct);
+
+    input.disabled  = true;
+    input.classList.add(result);
+
+    const fb = document.getElementById('type-feedback');
+    const ca = document.getElementById('type-correct');
+
+    if (result === 'correct') {
+      fb.textContent = '¡Correcto! ✓';
+      fb.className   = 'feedback correct';
+      quiz.score++;
+    } else if (result === 'nearly') {
+      fb.textContent = 'Nearly! ½ point';
+      fb.className   = 'feedback nearly';
+      ca.innerHTML   = `Correct answer: <strong>${correct}</strong>`;
+      quiz.score += 0.5;
+      quiz.wrong.push({ word, chosen: typed, result: 'nearly' });
+    } else {
+      fb.textContent = 'Incorrect ✗';
+      fb.className   = 'feedback incorrect';
+      ca.innerHTML   = `Correct answer: <strong>${correct}</strong>`;
+      quiz.wrong.push({ word, chosen: typed, result: 'incorrect' });
+    }
+
+    document.getElementById('type-next-btn').hidden = false;
+  }
+
+  function skipTypeAnswer() {
+    const word    = quiz.words[quiz.index];
+    const isES    = quiz.direction === 'es-en';
+    const correct = isES ? word.english : word.spanish;
+
+    const input = document.getElementById('type-input');
+    input.disabled = true;
+
+    document.getElementById('type-feedback').textContent = 'Skipped';
+    document.getElementById('type-feedback').className   = 'feedback incorrect';
+    document.getElementById('type-correct').innerHTML    = `Correct answer: <strong>${correct}</strong>`;
+    document.getElementById('type-next-btn').hidden      = false;
+    quiz.wrong.push({ word, chosen: '—', result: 'incorrect' });
+  }
+
+  function nextTypeQuestion() {
+    quiz.index++;
+    if (quiz.index >= quiz.total) renderScore();
+    else renderTypeQuestion();
+  }
+
   // ── Omakase (stub) ────────────────────────────────────────────────────
   function startOmakase() {
     alert('Omakase mode coming soon! Try Multiple Choice for now.');
   }
 
-  initSpeech();
   init();
 </script>
 </body>
