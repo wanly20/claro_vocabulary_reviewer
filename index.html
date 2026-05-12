@@ -242,7 +242,9 @@
           <button class="activity-btn" onclick="startActivity('mc')">📋 Multiple Choice</button>
           <button class="activity-btn" onclick="startFlashcards()">🃏 Flashcards</button>
           <button class="activity-btn" onclick="startActivity('type')">✍️ Type Answer</button>
-          <button class="activity-btn" onclick="startActivity('dict')">🔊 Dictation</button>
+          <button class="activity-btn" onclick="startActivity('dict')">🔊 Dictation — Spell</button>
+          <button class="activity-btn" onclick="startActivity('dict-choice')">🔊 Dictation + Choose</button>
+          <button class="activity-btn" onclick="startActivity('dict-type')">🔊 Dictation + Type</button>
         </div>
 
         <div class="divider">or</div>
@@ -327,6 +329,21 @@
     </div>
     <p class="feedback"       id="dict-feedback"></p>
     <p class="correct-answer" id="dict-correct"></p>
+
+    <!-- Translation phase — shown for dict-choice and dict-type after spelling -->
+    <div id="dict-trans-phase" hidden>
+      <p class="prompt-label" style="margin-top:20px">Now: what does it mean in English?</p>
+      <div class="options" id="dict-trans-options"></div>
+      <input id="dict-trans-input" class="type-input" type="text" placeholder="Type the English meaning…"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+             onkeydown="if(event.key==='Enter') submitDictTranslation()" hidden>
+      <div class="submit-row" id="dict-trans-btn-row" hidden>
+        <button class="btn btn-primary btn-full" onclick="submitDictTranslation()">Check →</button>
+      </div>
+      <p class="feedback"       id="dict-trans-feedback"></p>
+      <p class="correct-answer" id="dict-trans-correct"></p>
+    </div>
+
     <div class="next-row">
       <button class="btn btn-primary" id="dict-next-btn" onclick="nextDictQuestion()" hidden>Next →</button>
     </div>
@@ -459,7 +476,7 @@
   // ── Start activity ────────────────────────────────────────────────────
   function startActivity(type, wordPool, dir) {
     if (type === 'type') { startTypeAnswer(wordPool, dir); return; }
-    if (type === 'dict') { startDictation(wordPool, dir); return; }
+    if (type === 'dict' || type === 'dict-choice' || type === 'dict-type') { startDictation(wordPool, type); return; }
     const words = wordPool ?? getSelectedWords();
     if (!words.length) { alert('Please select at least one topic.'); return; }
     quiz = {
@@ -600,7 +617,8 @@
     const score = quiz.results.reduce((acc, r) => acc + (r ? r.score : 0), 0);
     const wrong = quiz.results.filter(r => r && !r.ok);
 
-    document.getElementById('score-number').textContent = `${score}/${total}`;
+    const scoreDisplay = Number.isInteger(score) ? score : score.toFixed(1);
+    document.getElementById('score-number').textContent = `${scoreDisplay}/${total}`;
     document.getElementById('score-label').textContent  =
       score === total          ? '¡Perfecto! 🎉' :
       score >= total * 0.8     ? '¡Muy bien! Nearly there.' :
@@ -620,7 +638,11 @@
       div.innerHTML = `
         <span class="es">${word.spanish}</span>
         <span class="en"> = ${word.english}</span>
-        <span class="yours">You answered: ${r.chosen}</span>`;
+        <span class="yours">${
+          r.spellChosen !== undefined
+            ? `Spelling: ${r.spellChosen}${r.transChosen ? ` · Meaning: ${r.transChosen}` : ''}`
+            : `You answered: ${r.chosen}`
+        }</span>`;
       list.appendChild(div);
     }
   }
@@ -840,11 +862,11 @@
     speechSynthesis.speak(u);
   }
 
-  function startDictation(wordPool) {
+  function startDictation(wordPool, mode = 'dict') {
     const words = wordPool ?? getSelectedWords();
     if (!words.length) { alert('Please select at least one topic.'); return; }
     quiz = {
-      type: 'dict', words: shuffle(words), direction: 'es-en',
+      type: mode, words: shuffle(words), direction: 'es-en',
       index: 0, results: [], total: Math.min(10, words.length)
     };
     showScreen('dict-screen');
@@ -852,8 +874,9 @@
   }
 
   function renderDictQuestion() {
-    const word = quiz.words[quiz.index];
-    const res  = quiz.results[quiz.index];
+    const word   = quiz.words[quiz.index];
+    const res    = quiz.results[quiz.index];
+    const isComb = quiz.type === 'dict-choice' || quiz.type === 'dict-type';
 
     document.getElementById('dict-progress').textContent      = `${quiz.index + 1} / ${quiz.total}`;
     document.getElementById('dict-progress-fill').style.width = `${((quiz.index + 1) / quiz.total) * 100}%`;
@@ -862,32 +885,124 @@
     const ca    = document.getElementById('dict-correct');
     const input = document.getElementById('dict-input');
     const nxt   = document.getElementById('dict-next-btn');
+    const trans = document.getElementById('dict-trans-phase');
 
-    fb.textContent = ''; fb.className = 'feedback';
-    ca.innerHTML   = '';
-    input.value    = res ? res.chosen : '';
-    input.disabled = !!res;
-    input.className = 'type-input' + (res ? ' ' + res.result : '');
-    nxt.hidden = !res;
+    // Reset translation phase
+    trans.hidden = true;
+    document.getElementById('dict-trans-feedback').textContent = '';
+    document.getElementById('dict-trans-feedback').className   = 'feedback';
+    document.getElementById('dict-trans-correct').innerHTML    = '';
+    document.getElementById('dict-trans-options').innerHTML    = '';
+
+    fb.textContent = ''; fb.className = 'feedback'; ca.innerHTML = '';
+    input.className = 'type-input';
+    nxt.hidden = true;
     nxt.textContent = quiz.index >= quiz.total - 1 ? 'Finish ✓' : 'Next →';
 
-    if (res) {
-      if (res.ok) {
-        fb.textContent = '¡Correcto! ✓'; fb.className = 'feedback correct';
-      } else if (res.result === 'nearly') {
-        fb.textContent = 'Nearly! ½ point'; fb.className = 'feedback nearly';
-        ca.innerHTML = `Correct spelling: <strong>${res.correct}</strong>`;
-      } else {
-        fb.textContent = res.chosen === '—' ? 'Skipped' : 'Incorrect ✗';
-        fb.className = 'feedback incorrect';
-        ca.innerHTML = `Correct spelling: <strong>${res.correct}</strong>`;
-      }
-    } else {
+    if (!res) {
+      // Fresh question — spell phase
+      input.value = ''; input.disabled = false;
       dictVoice = pickDictVoice();
-      const label = dictVoice ? (VOICE_LABELS[dictVoice.lang] || dictVoice.lang) : 'español';
-      document.getElementById('dict-voice-label').textContent = `voz: ${label}`;
+      document.getElementById('dict-voice-label').textContent =
+        dictVoice ? `voz: ${VOICE_LABELS[dictVoice.lang] || dictVoice.lang}` : 'voz: español';
       speakWithVoice(word.spanish, dictVoice);
       input.focus();
+      return;
+    }
+
+    // Spell phase already done — show spelling result
+    input.value = res.spellChosen; input.disabled = true;
+    input.classList.add(res.spellResult);
+    if (res.spellResult === 'correct') {
+      fb.textContent = 'Spelling ✓'; fb.className = 'feedback correct';
+    } else if (res.spellResult === 'nearly') {
+      fb.textContent = 'Spelling nearly ½'; fb.className = 'feedback nearly';
+      ca.innerHTML = `Correct spelling: <strong>${res.spellCorrect}</strong>`;
+    } else {
+      fb.textContent = res.spellChosen === '—' ? 'Skipped' : 'Spelling ✗';
+      fb.className = 'feedback incorrect';
+      if (res.spellChosen !== '—') ca.innerHTML = `Correct spelling: <strong>${res.spellCorrect}</strong>`;
+    }
+
+    if (!isComb) { nxt.hidden = false; return; }
+
+    // Combined mode — show translation phase
+    trans.hidden = false;
+    if (!res.transResult) {
+      // Translation not answered yet
+      if (quiz.type === 'dict-choice') {
+        renderDictTransOptions(word);
+      } else {
+        const ti = document.getElementById('dict-trans-input');
+        ti.hidden = false; ti.value = ''; ti.disabled = false;
+        document.getElementById('dict-trans-btn-row').hidden = false;
+        ti.focus();
+      }
+    } else {
+      // Translation already answered
+      renderDictTransResult(res);
+      nxt.hidden = false;
+      // Hide input controls
+      document.getElementById('dict-trans-input').hidden = true;
+      document.getElementById('dict-trans-btn-row').hidden = true;
+    }
+  }
+
+  function renderDictTransOptions(word) {
+    const correct = word.english;
+    const pool    = shuffle(db.allWords.filter(w => w.english !== correct));
+    const options = shuffle([correct, ...pool.slice(0, 4).map(w => w.english)]);
+    const container = document.getElementById('dict-trans-options');
+    for (const opt of options) {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn'; btn.textContent = opt;
+      btn.onclick = () => checkDictTransMC(opt, correct, word);
+      container.appendChild(btn);
+    }
+  }
+
+  function checkDictTransMC(chosen, correct, word) {
+    document.querySelectorAll('#dict-trans-options .option-btn').forEach(b => b.disabled = true);
+    const ok = chosen === correct;
+    document.querySelectorAll('#dict-trans-options .option-btn').forEach(b => {
+      if (b.textContent === correct) b.classList.add('correct');
+      if (b.textContent === chosen && !ok) b.classList.add('incorrect');
+    });
+    saveDictTransResult(ok ? 'correct' : 'incorrect', chosen, correct, word);
+  }
+
+  function submitDictTranslation() {
+    const input   = document.getElementById('dict-trans-input');
+    const typed   = input.value.trim();
+    if (!typed) return;
+    const word    = quiz.words[quiz.index];
+    const correct = word.english;
+    const result  = grade(typed, correct, word.capitals);
+    saveDictTransResult(result, typed, correct, word);
+  }
+
+  function saveDictTransResult(transResult, transChosen, transCorrect, word) {
+    const res = quiz.results[quiz.index];
+    const transScore = transResult === 'correct' ? 0.5 : transResult === 'nearly' ? 0.25 : 0;
+    res.transResult  = transResult;
+    res.transChosen  = transChosen;
+    res.transCorrect = transCorrect;
+    res.score        = (res.spellScore ?? 0) + transScore;
+    res.ok           = res.score === 1;
+    renderDictQuestion();
+  }
+
+  function renderDictTransResult(res) {
+    const fb = document.getElementById('dict-trans-feedback');
+    const ca = document.getElementById('dict-trans-correct');
+    if (res.transResult === 'correct') {
+      fb.textContent = '¡Correcto! ✓'; fb.className = 'feedback correct';
+    } else if (res.transResult === 'nearly') {
+      fb.textContent = 'Nearly! ¼ point'; fb.className = 'feedback nearly';
+      ca.innerHTML = `Correct meaning: <strong>${res.transCorrect}</strong>`;
+    } else {
+      fb.textContent = 'Incorrect ✗'; fb.className = 'feedback incorrect';
+      ca.innerHTML = `Correct meaning: <strong>${res.transCorrect}</strong>`;
     }
   }
 
@@ -897,17 +1012,27 @@
     const input = document.getElementById('dict-input');
     const typed = input.value.trim();
     if (!typed) return;
-    const word    = quiz.words[quiz.index];
-    const correct = word.spanish;
-    const resType = grade(typed, correct, false);
-    const ok = resType === 'correct';
-    quiz.results[quiz.index] = { ok, score: ok ? 1 : resType === 'nearly' ? 0.5 : 0, chosen: typed, correct, result: resType };
+    const word       = quiz.words[quiz.index];
+    const correct    = word.spanish;
+    const spellResult = grade(typed, correct, false);
+    const spellScore  = spellResult === 'correct' ? 0.5 : spellResult === 'nearly' ? 0.25 : 0;
+    const isComb      = quiz.type === 'dict-choice' || quiz.type === 'dict-type';
+    quiz.results[quiz.index] = {
+      spellResult, spellChosen: typed, spellCorrect: correct, spellScore,
+      ok: !isComb && spellResult === 'correct',
+      score: isComb ? spellScore : (spellResult === 'correct' ? 1 : spellResult === 'nearly' ? 0.5 : 0)
+    };
     renderDictQuestion();
   }
 
   function skipDictAnswer() {
-    const word = quiz.words[quiz.index];
-    quiz.results[quiz.index] = { ok: false, score: 0, chosen: '—', correct: word.spanish, result: 'incorrect' };
+    const word   = quiz.words[quiz.index];
+    const isComb = quiz.type === 'dict-choice' || quiz.type === 'dict-type';
+    quiz.results[quiz.index] = {
+      spellResult: 'incorrect', spellChosen: '—', spellCorrect: word.spanish,
+      spellScore: 0, ok: false, score: 0,
+      ...(isComb ? { transResult: 'incorrect', transChosen: '—', transCorrect: word.english } : {})
+    };
     renderDictQuestion();
   }
 
