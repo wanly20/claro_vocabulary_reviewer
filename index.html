@@ -659,7 +659,12 @@
   }
 
   function normalise(s) {
-    return stripAccents(s.toLowerCase().trim().replace(/[()]/g, '').replace(/\s+/g, ' '));
+    return stripAccents(
+      s.toLowerCase().trim()
+       .replace(/[‘’‚‛ʼ]/g, "'")
+       .replace(/[()]/g, '')
+       .replace(/\s+/g, ' ')
+    );
   }
 
   function contentWords(s) {
