@@ -5,70 +5,402 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spanish Vocabulary</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; background: #f9f9f6; }
-    h1 { color: #2d6a4f; margin-bottom: 4px; }
-    p.subtitle { color: #666; margin-top: 0; }
-    #sections { margin-top: 24px; }
-    .section { background: #fff; border: 1px solid #d8ece4; border-radius: 8px; padding: 12px 16px; margin: 8px 0; }
-    .section strong { color: #2d6a4f; }
-    .count { color: #999; font-size: 0.9em; margin-left: 8px; }
-    #error { color: #c0392b; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f7f4;
+      min-height: 100vh;
+      color: #1a1a2e;
+    }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 24px 16px 48px; }
+
+    h1 { color: #2d6a4f; font-size: 2rem; margin-bottom: 4px; }
+    h2 { color: #2d6a4f; font-size: 1.05rem; font-weight: 600; margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .subtitle { color: #666; margin-bottom: 8px; }
+
+    /* Sections */
+    .select-btns { display: flex; gap: 8px; margin-bottom: 10px; }
+    .section-list { display: flex; flex-direction: column; gap: 6px; }
+    .section-item {
+      display: flex; align-items: center;
+      background: #fff; border: 1px solid #d8ece4; border-radius: 8px;
+      padding: 10px 14px; cursor: pointer; transition: border-color 0.15s;
+    }
+    .section-item:hover { border-color: #52b788; }
+    .section-item input[type=checkbox] {
+      width: 18px; height: 18px; margin-right: 12px;
+      accent-color: #2d6a4f; cursor: pointer; flex-shrink: 0;
+    }
+    .section-name { flex: 1; font-weight: 500; }
+    .section-count { color: #999; font-size: 0.85em; }
+
+    /* Direction toggle */
+    .direction-toggle {
+      display: flex; background: #e0f0e8; border-radius: 8px; padding: 4px; gap: 4px;
+    }
+    .direction-toggle button {
+      flex: 1; padding: 9px 8px; border: none; border-radius: 6px;
+      background: transparent; cursor: pointer; font-size: 0.9rem; color: #555;
+      transition: all 0.15s;
+    }
+    .direction-toggle button.active { background: #2d6a4f; color: #fff; font-weight: 600; }
+
+    /* Activity grid */
+    .activity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .activity-btn {
+      padding: 16px 12px; border: 2px solid #d8ece4; border-radius: 10px;
+      background: #fff; cursor: pointer; font-size: 0.95rem; font-weight: 500;
+      color: #2d6a4f; transition: all 0.15s; position: relative; text-align: center;
+    }
+    .activity-btn:hover:not(:disabled) { border-color: #2d6a4f; background: #f0f7f4; }
+    .activity-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .soon-badge {
+      position: absolute; top: 6px; right: 6px; font-size: 0.62rem;
+      background: #f4a261; color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: 700;
+    }
+
+    /* Omakase */
+    .divider {
+      text-align: center; color: #aaa; font-size: 0.85rem; margin: 16px 0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #cde8d8; }
+    .omakase-btn {
+      width: 100%; padding: 20px; background: linear-gradient(135deg, #1b4332, #2d6a4f);
+      color: #fff; border: none; border-radius: 12px; font-size: 1.1rem;
+      font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+    }
+    .omakase-btn:hover { opacity: 0.88; }
+
+    /* Generic buttons */
+    .btn {
+      padding: 10px 20px; border: none; border-radius: 8px;
+      cursor: pointer; font-size: 0.95rem; font-weight: 500; transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.82; }
+    .btn-ghost { background: transparent; border: 1px solid #bbb; color: #555; }
+    .btn-primary { background: #2d6a4f; color: #fff; }
+    .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+    .btn-full { width: 100%; }
+
+    /* Quiz header */
+    .quiz-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+    }
+    .progress-text { color: #666; font-size: 0.9rem; }
+    .progress-bar { height: 6px; background: #cde8d8; border-radius: 3px; margin-bottom: 28px; }
+    .progress-fill { height: 100%; background: #52b788; border-radius: 3px; transition: width 0.3s; }
+
+    /* Question */
+    .prompt-label { color: #888; font-size: 0.85rem; margin-bottom: 8px; text-align: center; }
+    .prompt-word {
+      font-size: 2.2rem; font-weight: 700; color: #1a1a2e;
+      margin-bottom: 32px; text-align: center; line-height: 1.2;
+    }
+
+    /* Options */
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .option-btn {
+      padding: 14px 18px; border: 2px solid #d8ece4; border-radius: 10px;
+      background: #fff; cursor: pointer; font-size: 1rem;
+      text-align: left; transition: all 0.15s; color: #1a1a2e; width: 100%;
+    }
+    .option-btn:hover:not(:disabled) { border-color: #52b788; background: #f0f7f4; }
+    .option-btn.correct  { border-color: #40916c; background: #d8f3dc; color: #1b4332; font-weight: 600; }
+    .option-btn.incorrect{ border-color: #e63946; background: #ffe0e3; color: #7b1c24; }
+    .option-btn:disabled { cursor: default; }
+
+    .feedback {
+      text-align: center; font-weight: 600; font-size: 1rem;
+      margin-bottom: 20px; min-height: 26px;
+    }
+    .feedback.correct   { color: #40916c; }
+    .feedback.incorrect { color: #e63946; }
+
+    .next-row { text-align: center; }
+
+    /* Score screen */
+    .score-display { text-align: center; padding: 32px 0 20px; }
+    .score-number { font-size: 4.5rem; font-weight: 800; color: #2d6a4f; line-height: 1; }
+    .score-label { color: #555; font-size: 1.05rem; margin-top: 8px; }
+
+    .review-heading { color: #2d6a4f; font-size: 1rem; font-weight: 600; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .wrong-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+    .wrong-item {
+      background: #fff; border: 1px solid #ffd6d6; border-radius: 8px;
+      padding: 10px 14px; font-size: 0.92rem;
+    }
+    .wrong-item .es { font-weight: 700; color: #c0392b; }
+    .wrong-item .en { color: #444; }
+    .wrong-item .yours { color: #999; font-style: italic; font-size: 0.83em; margin-top: 2px; display: block; }
+
+    .score-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
   </style>
 </head>
 <body>
-  <h1>¡Bienvenidos!</h1>
-  <p class="subtitle">Select a topic below to start practising.</p>
-  <div id="sections"></div>
-  <p id="error"></p>
+<div class="container">
 
-  <script>
-    function parseCSV(text) {
-      const rows = [];
-      const lines = text.trim().split('\n').slice(1);
-      for (const line of lines) {
-        const cols = [];
-        let cur = '', inQuotes = false;
-        for (let i = 0; i < line.length; i++) {
-          const ch = line[i];
-          if (ch === '"') { inQuotes = !inQuotes; }
-          else if (ch === ',' && !inQuotes) { cols.push(cur.trim()); cur = ''; }
-          else { cur += ch; }
-        }
-        cols.push(cur.trim());
-        if (cols.length >= 3) rows.push(cols);
+  <!-- ── HOME SCREEN ─────────────────────────────────────────────── -->
+  <div id="home-screen">
+    <h1>¡Bienvenidos!</h1>
+    <p class="subtitle">Practise your Spanish vocabulary.</p>
+
+    <h2>Topics</h2>
+    <div class="select-btns">
+      <button class="btn btn-ghost btn-sm" onclick="selectAll(true)">Select all</button>
+      <button class="btn btn-ghost btn-sm" onclick="selectAll(false)">Deselect all</button>
+    </div>
+    <div class="section-list" id="section-list"></div>
+
+    <h2>Direction</h2>
+    <div class="direction-toggle">
+      <button id="dir-es-en" class="active" onclick="setDirection('es-en')">Spanish → English</button>
+      <button id="dir-en-es"               onclick="setDirection('en-es')">English → Spanish</button>
+    </div>
+
+    <h2>Activity</h2>
+    <div class="activity-grid">
+      <button class="activity-btn" onclick="startActivity('mc')">📋 Multiple Choice</button>
+      <button class="activity-btn" disabled>🃏 Flashcards<span class="soon-badge">soon</span></button>
+      <button class="activity-btn" disabled>✍️ Type Answer<span class="soon-badge">soon</span></button>
+      <button class="activity-btn" disabled>🔊 Dictation<span class="soon-badge">soon</span></button>
+    </div>
+
+    <div class="divider">or skip the choices</div>
+    <button class="omakase-btn" onclick="startOmakase()">🎲 Omakase — just start!</button>
+  </div>
+
+  <!-- ── QUIZ SCREEN ─────────────────────────────────────────────── -->
+  <div id="quiz-screen" hidden>
+    <div class="quiz-header">
+      <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <span class="progress-text" id="progress-text"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <p class="prompt-label" id="prompt-label"></p>
+    <p class="prompt-word"  id="prompt-word"></p>
+
+    <div class="options"  id="options"></div>
+    <p  class="feedback"  id="feedback"></p>
+    <div class="next-row">
+      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" hidden>Next →</button>
+    </div>
+  </div>
+
+  <!-- ── SCORE SCREEN ────────────────────────────────────────────── -->
+  <div id="score-screen" hidden>
+    <div class="score-display">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-label"  id="score-label"></div>
+    </div>
+    <p class="review-heading" id="review-heading" hidden>Review these:</p>
+    <div class="wrong-list" id="wrong-list"></div>
+    <div class="score-actions">
+      <button class="btn btn-primary btn-full" id="redo-btn" onclick="redoWrong()" hidden>↩ Redo wrong answers</button>
+      <button class="btn btn-ghost   btn-full" onclick="goHome()">← Back to home</button>
+    </div>
+  </div>
+
+</div>
+<script>
+  // ── State ────────────────────────────────────────────────────────────
+  const db = { allWords: [], sections: {} };
+  let direction = 'es-en';
+  let quiz = null;
+
+  // ── CSV parser (handles quoted fields with commas) ───────────────────
+  function parseCSV(text) {
+    const rows = [];
+    for (const line of text.trim().split('\n').slice(1)) {
+      const cols = [];
+      let cur = '', inQ = false;
+      for (const ch of line) {
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
       }
-      return rows;
+      cols.push(cur.trim());
+      if (cols.length >= 3) rows.push(cols);
     }
+    return rows;
+  }
 
-    async function loadCSV() {
-      const res = await fetch('vocabulary_database.csv');
-      const text = await res.text();
-      const rows = parseCSV(text);
+  // ── Init ─────────────────────────────────────────────────────────────
+  async function init() {
+    const text = await fetch('vocabulary_database.csv').then(r => r.text());
+    db.allWords = parseCSV(text)
+      .map(([s, e, sec]) => ({ spanish: s?.trim(), english: e?.trim(), section: sec?.trim() }))
+      .filter(w => w.spanish && w.english && w.section);
 
-      const words = rows.map(([spanish, english, section]) => ({
-        spanish: spanish?.trim(),
-        english: english?.trim(),
-        section: section?.trim()
-      })).filter(w => w.spanish && w.english && w.section);
-
-      const sections = {};
-      for (const w of words) {
-        if (!sections[w.section]) sections[w.section] = [];
-        sections[w.section].push(w);
-      }
-
-      const container = document.getElementById('sections');
-      for (const [name, list] of Object.entries(sections)) {
-        const div = document.createElement('div');
-        div.className = 'section';
-        div.innerHTML = `<strong>${name}</strong><span class="count">${list.length} words</span>`;
-        container.appendChild(div);
-      }
+    for (const w of db.allWords) {
+      if (!db.sections[w.section]) db.sections[w.section] = [];
+      db.sections[w.section].push(w);
     }
+    renderSectionList();
+  }
 
-    loadCSV().catch(err => {
-      document.getElementById('error').textContent = 'Could not load vocabulary: ' + err.message;
-    });
-  </script>
+  // ── Home helpers ─────────────────────────────────────────────────────
+  function renderSectionList() {
+    const el = document.getElementById('section-list');
+    el.innerHTML = '';
+    for (const [name, words] of Object.entries(db.sections)) {
+      const label = document.createElement('label');
+      label.className = 'section-item';
+      label.innerHTML = `
+        <input type="checkbox" name="section" value="${name}" checked>
+        <span class="section-name">${name}</span>
+        <span class="section-count">${words.length} words</span>`;
+      el.appendChild(label);
+    }
+  }
+
+  function selectAll(on) {
+    document.querySelectorAll('input[name=section]').forEach(cb => cb.checked = on);
+  }
+
+  function setDirection(d) {
+    direction = d;
+    document.getElementById('dir-es-en').classList.toggle('active', d === 'es-en');
+    document.getElementById('dir-en-es').classList.toggle('active', d === 'en-es');
+  }
+
+  function getSelectedWords() {
+    const checked = new Set(
+      [...document.querySelectorAll('input[name=section]:checked')].map(cb => cb.value)
+    );
+    return db.allWords.filter(w => checked.has(w.section));
+  }
+
+  function showScreen(id) {
+    ['home-screen', 'quiz-screen', 'score-screen'].forEach(s =>
+      document.getElementById(s).hidden = (s !== id)
+    );
+  }
+
+  function goHome() { quiz = null; showScreen('home-screen'); }
+
+  // ── Shuffle ───────────────────────────────────────────────────────────
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ── Start activity ────────────────────────────────────────────────────
+  function startActivity(type, wordPool, dir) {
+    const words = wordPool ?? getSelectedWords();
+    if (!words.length) { alert('Please select at least one topic.'); return; }
+    quiz = {
+      type,
+      words: shuffle(words),
+      direction: dir ?? direction,
+      index: 0,
+      score: 0,
+      wrong: [],
+      total: Math.min(10, words.length)
+    };
+    showScreen('quiz-screen');
+    renderQuestion();
+  }
+
+  // ── Multiple choice question ──────────────────────────────────────────
+  function renderQuestion() {
+    const word = quiz.words[quiz.index];
+    const isES = quiz.direction === 'es-en';
+    const prompt  = isES ? word.spanish  : word.english;
+    const correct = isES ? word.english  : word.spanish;
+
+    document.getElementById('progress-text').textContent = `${quiz.index + 1} / ${quiz.total}`;
+    document.getElementById('progress-fill').style.width = `${((quiz.index + 1) / quiz.total) * 100}%`;
+    document.getElementById('prompt-label').textContent  = isES ? 'What does this mean in English?' : 'How do you say this in Spanish?';
+    document.getElementById('prompt-word').textContent   = prompt;
+    document.getElementById('feedback').textContent      = '';
+    document.getElementById('feedback').className        = 'feedback';
+    document.getElementById('next-btn').hidden           = true;
+
+    // Distractors from the full db so they're always plausible
+    const pool = shuffle(db.allWords.filter(w => (isES ? w.english : w.spanish) !== correct));
+    const numDistractors = Math.min(4, pool.length);
+    const options = shuffle([correct, ...pool.slice(0, numDistractors).map(w => isES ? w.english : w.spanish)]);
+
+    const container = document.getElementById('options');
+    container.innerHTML = '';
+    for (const opt of options) {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => checkAnswer(btn, opt, correct, word);
+      container.appendChild(btn);
+    }
+  }
+
+  function checkAnswer(btn, chosen, correct, word) {
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    const ok = chosen === correct;
+    btn.classList.add(ok ? 'correct' : 'incorrect');
+    if (!ok) {
+      document.querySelectorAll('.option-btn').forEach(b => {
+        if (b.textContent === correct) b.classList.add('correct');
+      });
+      quiz.wrong.push({ word, chosen });
+    } else {
+      quiz.score++;
+    }
+    const fb = document.getElementById('feedback');
+    fb.textContent  = ok ? '¡Correcto! ✓' : `Incorrect — the answer was: ${correct}`;
+    fb.className    = 'feedback ' + (ok ? 'correct' : 'incorrect');
+    document.getElementById('next-btn').hidden = false;
+  }
+
+  function nextQuestion() {
+    quiz.index++;
+    if (quiz.index >= quiz.total) renderScore();
+    else renderQuestion();
+  }
+
+  // ── Score screen ──────────────────────────────────────────────────────
+  function renderScore() {
+    showScreen('score-screen');
+    document.getElementById('score-number').textContent = `${quiz.score}/${quiz.total}`;
+    document.getElementById('score-label').textContent  =
+      quiz.score === quiz.total          ? '¡Perfecto! 🎉' :
+      quiz.score >= quiz.total * 0.8     ? '¡Muy bien! Nearly there.' :
+      quiz.score >= quiz.total * 0.5     ? 'Good effort — keep practising!' :
+                                           'Don\'t worry, practice makes perfect!';
+
+    const list = document.getElementById('wrong-list');
+    list.innerHTML = '';
+    const hasWrong = quiz.wrong.length > 0;
+    document.getElementById('review-heading').hidden = !hasWrong;
+    document.getElementById('redo-btn').hidden       = !hasWrong;
+
+    for (const { word, chosen } of quiz.wrong) {
+      const div = document.createElement('div');
+      div.className = 'wrong-item';
+      div.innerHTML = `
+        <span class="es">${word.spanish}</span>
+        <span class="en"> = ${word.english}</span>
+        <span class="yours">You answered: ${chosen}</span>`;
+      list.appendChild(div);
+    }
+  }
+
+  function redoWrong() {
+    startActivity(quiz.type, quiz.wrong.map(w => w.word), quiz.direction);
+  }
+
+  // ── Omakase (stub) ────────────────────────────────────────────────────
+  function startOmakase() {
+    alert('Omakase mode coming soon! Try Multiple Choice for now.');
+  }
+
+  init();
+</script>
 </body>
 </html>
