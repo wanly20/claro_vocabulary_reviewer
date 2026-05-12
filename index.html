@@ -195,6 +195,19 @@
     .submit-row .btn { flex: 1; padding: 13px; font-size: 1rem; }
     .correct-answer { text-align: center; color: #555; font-size: 0.95rem; min-height: 22px; margin-bottom: 16px; }
     .correct-answer strong { color: #2d6a4f; }
+
+    /* Dictation */
+    .dict-speaker-area { text-align: center; margin: 24px 0 28px; }
+    .dict-speak-btn {
+      width: 84px; height: 84px; border-radius: 50%; border: none;
+      background: #2d6a4f; color: #fff; font-size: 2.2rem; cursor: pointer;
+      transition: all 0.15s; display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(45,106,79,0.35);
+    }
+    .dict-speak-btn:hover  { background: #1b4332; transform: scale(1.06); }
+    .dict-speak-btn:active { transform: scale(0.94); }
+    .dict-voice-label { color: #888; font-size: 0.8rem; margin-top: 10px; font-style: italic; min-height: 18px; }
+    .dict-hint { color: #bbb; font-size: 0.78rem; margin-top: 3px; }
   </style>
 </head>
 <body>
@@ -229,7 +242,7 @@
           <button class="activity-btn" onclick="startActivity('mc')">📋 Multiple Choice</button>
           <button class="activity-btn" onclick="startFlashcards()">🃏 Flashcards</button>
           <button class="activity-btn" onclick="startActivity('type')">✍️ Type Answer</button>
-          <button class="activity-btn" disabled>🔊 Dictation<span class="soon-badge">soon</span></button>
+          <button class="activity-btn" onclick="startActivity('dict')">🔊 Dictation</button>
         </div>
 
         <div class="divider">or</div>
@@ -288,6 +301,35 @@
     </div>
     <p class="feedback"      id="type-feedback"></p>
     <p class="correct-answer" id="type-correct"></p>
+  </div>
+
+  <!-- ── DICTATION SCREEN ─────────────────────────────────────── -->
+  <div id="dict-screen" hidden>
+    <div class="quiz-header">
+      <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <span class="progress-text" id="dict-progress"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="dict-progress-fill"></div></div>
+
+    <div class="dict-speaker-area">
+      <button class="dict-speak-btn" onclick="replayDictation()">🔊</button>
+      <p class="dict-voice-label" id="dict-voice-label"></p>
+      <p class="dict-hint">Tap to hear again</p>
+    </div>
+
+    <p class="prompt-label">Type the Spanish word you heard</p>
+    <input id="dict-input" class="type-input" type="text" placeholder="Escribe aquí…"
+           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+           onkeydown="if(event.key==='Enter') submitDictAnswer()">
+    <div class="submit-row">
+      <button class="btn btn-ghost"   onclick="skipDictAnswer()">Skip</button>
+      <button class="btn btn-primary" onclick="submitDictAnswer()">Check →</button>
+    </div>
+    <p class="feedback"       id="dict-feedback"></p>
+    <p class="correct-answer" id="dict-correct"></p>
+    <div class="next-row">
+      <button class="btn btn-primary" id="dict-next-btn" onclick="nextDictQuestion()" hidden>Next →</button>
+    </div>
   </div>
 
   <!-- ── QUIZ SCREEN ─────────────────────────────────────────────── -->
@@ -397,7 +439,7 @@
   }
 
   function showScreen(id) {
-    ['home-screen', 'flashcard-screen', 'type-screen', 'quiz-screen', 'score-screen'].forEach(s =>
+    ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen'].forEach(s =>
       document.getElementById(s).hidden = (s !== id)
     );
   }
@@ -417,6 +459,7 @@
   // ── Start activity ────────────────────────────────────────────────────
   function startActivity(type, wordPool, dir) {
     if (type === 'type') { startTypeAnswer(wordPool, dir); return; }
+    if (type === 'dict') { startDictation(wordPool, dir); return; }
     const words = wordPool ?? getSelectedWords();
     if (!words.length) { alert('Please select at least one topic.'); return; }
     quiz = {
@@ -587,8 +630,7 @@
     const words = wrong.map(r => quiz.words[quiz.results.indexOf(r)]);
     const dir   = quiz.direction;
     const type  = quiz.type;
-    if (type === 'type') startTypeAnswer(words, dir);
-    else startActivity(type, words, dir);
+    startActivity(type, words, dir);
   }
 
   // ── Speech synthesis ──────────────────────────────────────────────────
@@ -779,6 +821,102 @@
     renderTypeQuestion();
   }
 
+  // ── Dictation ────────────────────────────────────────────────────────
+  const VOICE_LABELS = {
+    'es-ES':'España','es-MX':'México','es-US':'Estados Unidos',
+    'es-AR':'Argentina','es-CO':'Colombia','es-CL':'Chile','es-PE':'Perú'
+  };
+  let dictVoice = null;
+
+  function pickDictVoice() {
+    const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('es'));
+    return voices.length ? voices[Math.floor(Math.random() * voices.length)] : null;
+  }
+
+  function speakWithVoice(text, voice) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'es-ES'; }
+    speechSynthesis.speak(u);
+  }
+
+  function startDictation(wordPool) {
+    const words = wordPool ?? getSelectedWords();
+    if (!words.length) { alert('Please select at least one topic.'); return; }
+    quiz = {
+      type: 'dict', words: shuffle(words), direction: 'es-en',
+      index: 0, results: [], total: Math.min(10, words.length)
+    };
+    showScreen('dict-screen');
+    renderDictQuestion();
+  }
+
+  function renderDictQuestion() {
+    const word = quiz.words[quiz.index];
+    const res  = quiz.results[quiz.index];
+
+    document.getElementById('dict-progress').textContent      = `${quiz.index + 1} / ${quiz.total}`;
+    document.getElementById('dict-progress-fill').style.width = `${((quiz.index + 1) / quiz.total) * 100}%`;
+
+    const fb    = document.getElementById('dict-feedback');
+    const ca    = document.getElementById('dict-correct');
+    const input = document.getElementById('dict-input');
+    const nxt   = document.getElementById('dict-next-btn');
+
+    fb.textContent = ''; fb.className = 'feedback';
+    ca.innerHTML   = '';
+    input.value    = res ? res.chosen : '';
+    input.disabled = !!res;
+    input.className = 'type-input' + (res ? ' ' + res.result : '');
+    nxt.hidden = !res;
+    nxt.textContent = quiz.index >= quiz.total - 1 ? 'Finish ✓' : 'Next →';
+
+    if (res) {
+      if (res.ok) {
+        fb.textContent = '¡Correcto! ✓'; fb.className = 'feedback correct';
+      } else if (res.result === 'nearly') {
+        fb.textContent = 'Nearly! ½ point'; fb.className = 'feedback nearly';
+        ca.innerHTML = `Correct spelling: <strong>${res.correct}</strong>`;
+      } else {
+        fb.textContent = res.chosen === '—' ? 'Skipped' : 'Incorrect ✗';
+        fb.className = 'feedback incorrect';
+        ca.innerHTML = `Correct spelling: <strong>${res.correct}</strong>`;
+      }
+    } else {
+      dictVoice = pickDictVoice();
+      const label = dictVoice ? (VOICE_LABELS[dictVoice.lang] || dictVoice.lang) : 'español';
+      document.getElementById('dict-voice-label').textContent = `voz: ${label}`;
+      speakWithVoice(word.spanish, dictVoice);
+      input.focus();
+    }
+  }
+
+  function replayDictation() { speakWithVoice(quiz.words[quiz.index].spanish, dictVoice); }
+
+  function submitDictAnswer() {
+    const input = document.getElementById('dict-input');
+    const typed = input.value.trim();
+    if (!typed) return;
+    const word    = quiz.words[quiz.index];
+    const correct = word.spanish;
+    const resType = grade(typed, correct, false);
+    const ok = resType === 'correct';
+    quiz.results[quiz.index] = { ok, score: ok ? 1 : resType === 'nearly' ? 0.5 : 0, chosen: typed, correct, result: resType };
+    renderDictQuestion();
+  }
+
+  function skipDictAnswer() {
+    const word = quiz.words[quiz.index];
+    quiz.results[quiz.index] = { ok: false, score: 0, chosen: '—', correct: word.spanish, result: 'incorrect' };
+    renderDictQuestion();
+  }
+
+  function nextDictQuestion() {
+    quiz.index++;
+    if (quiz.index >= quiz.total) renderScore();
+    else renderDictQuestion();
+  }
+
   // ── Omakase (stub) ────────────────────────────────────────────────────
   function startOmakase() {
     alert('Omakase mode coming soon! Try Multiple Choice for now.');
@@ -788,7 +926,8 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       // If quiz is active and we're on a quiz screen, advance
-      if (quiz && (!document.getElementById('quiz-screen').hidden || !document.getElementById('type-screen').hidden)) {
+      const onQuizScreen = ['quiz-screen','type-screen','dict-screen'].some(id => !document.getElementById(id).hidden);
+      if (quiz && onQuizScreen) {
         handleCheckNext();
       }
     } else if (e.key === 'Escape') {
