@@ -119,8 +119,6 @@
     .feedback.correct   { color: #40916c; }
     .feedback.incorrect { color: #e63946; }
 
-    .next-row { text-align: center; }
-
     /* Score screen */
     .score-display { text-align: center; padding: 32px 0 20px; }
     .score-number { font-size: 4.5rem; font-weight: 800; color: #2d6a4f; line-height: 1; }
@@ -284,16 +282,13 @@
 
     <input id="type-input" class="type-input" type="text" placeholder="Type your answer…"
            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-           onkeydown="if(event.key==='Enter') submitTypeAnswer()">
+           onkeydown="if(event.key==='Enter') handleCheckNext()">
     <div class="submit-row">
-      <button class="btn btn-ghost"   onclick="skipTypeAnswer()">Skip</button>
-      <button class="btn btn-primary" onclick="submitTypeAnswer()">Check →</button>
+      <button id="type-skip-back-btn" class="btn btn-ghost"   onclick="handleSkipBack()">Skip</button>
+      <button id="type-check-next-btn" class="btn btn-primary" onclick="handleCheckNext()">Check →</button>
     </div>
     <p class="feedback"      id="type-feedback"></p>
     <p class="correct-answer" id="type-correct"></p>
-    <div class="next-row">
-      <button class="btn btn-primary" id="type-next-btn" onclick="nextTypeQuestion()" hidden>Next →</button>
-    </div>
   </div>
 
   <!-- ── QUIZ SCREEN ─────────────────────────────────────────────── -->
@@ -309,8 +304,9 @@
 
     <div class="options"  id="options"></div>
     <p  class="feedback"  id="feedback"></p>
-    <div class="next-row">
-      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" hidden>Next →</button>
+    <div class="submit-row">
+      <button id="quiz-skip-back-btn" class="btn btn-ghost"   onclick="handleSkipBack()">Skip</button>
+      <button id="quiz-check-next-btn" class="btn btn-primary" onclick="handleCheckNext()" hidden>Next →</button>
     </div>
   </div>
 
@@ -429,12 +425,84 @@
       words: shuffle(words),
       direction: dir ?? direction,
       index: 0,
-      score: 0,
-      wrong: [],
+      results: [],
       total: Math.min(10, words.length)
     };
     showScreen('quiz-screen');
     renderQuestion();
+  }
+
+  // ── Navigation & Controls ───────────────────────────────────────────
+  function updateControls() {
+    const isAnswered = !!quiz.results[quiz.index];
+    const isFirst = quiz.index === 0;
+    const isLast = quiz.index >= quiz.total - 1;
+
+    const screenPrefix = quiz.type === 'type' ? 'type-' : 'quiz-';
+    const skipBackBtn = document.getElementById(screenPrefix + 'skip-back-btn');
+    const checkNextBtn = document.getElementById(screenPrefix + 'check-next-btn');
+
+    if (isAnswered) {
+      skipBackBtn.textContent = '← Back';
+      skipBackBtn.disabled = isFirst;
+      checkNextBtn.textContent = isLast ? 'Finish ✓' : 'Next →';
+      checkNextBtn.hidden = false;
+      checkNextBtn.disabled = false;
+    } else {
+      skipBackBtn.textContent = 'Skip';
+      skipBackBtn.disabled = false;
+      if (quiz.type === 'type') {
+        checkNextBtn.textContent = 'Check →';
+        checkNextBtn.hidden = false;
+      } else {
+        checkNextBtn.hidden = true;
+      }
+    }
+  }
+
+  function handleCheckNext() {
+    const isAnswered = !!quiz.results[quiz.index];
+    if (!isAnswered) {
+      if (quiz.type === 'type') submitTypeAnswer();
+    } else {
+      nextQuestion();
+    }
+  }
+
+  function handleSkipBack() {
+    const isAnswered = !!quiz.results[quiz.index];
+    if (!isAnswered) {
+      if (quiz.type === 'type') skipTypeAnswer();
+      else skipQuestion();
+    } else {
+      prevQuestion();
+    }
+  }
+
+  function nextQuestion() {
+    quiz.index++;
+    if (quiz.index >= quiz.total) renderScore();
+    else {
+      if (quiz.type === 'mc') renderQuestion();
+      else renderTypeQuestion();
+    }
+  }
+
+  function prevQuestion() {
+    if (quiz.index > 0) {
+      quiz.index--;
+      if (quiz.type === 'mc') renderQuestion();
+      else renderTypeQuestion();
+    }
+  }
+
+  function skipQuestion() {
+    const word = quiz.words[quiz.index];
+    const isES = quiz.direction === 'es-en';
+    const correct = isES ? word.english : word.spanish;
+    quiz.results[quiz.index] = { ok: false, score: 0, chosen: '—', correct };
+    if (quiz.type === 'mc') renderQuestion();
+    else renderTypeQuestion();
   }
 
   // ── Multiple choice question ──────────────────────────────────────────
@@ -448,79 +516,76 @@
     document.getElementById('progress-fill').style.width = `${((quiz.index + 1) / quiz.total) * 100}%`;
     document.getElementById('prompt-label').textContent  = isES ? 'What does this mean in English?' : 'How do you say this in Spanish?';
     document.getElementById('prompt-word').textContent   = prompt;
-    document.getElementById('feedback').textContent      = '';
-    document.getElementById('feedback').className        = 'feedback';
-    document.getElementById('next-btn').hidden           = true;
 
-    // Distractors from the full db so they're always plausible
-    const pool = shuffle(db.allWords.filter(w => (isES ? w.english : w.spanish) !== correct));
-    const numDistractors = Math.min(4, pool.length);
-    const options = shuffle([correct, ...pool.slice(0, numDistractors).map(w => isES ? w.english : w.spanish)]);
+    const res = quiz.results[quiz.index];
+    const fb = document.getElementById('feedback');
+    fb.textContent = res ? (res.ok ? '¡Correcto! ✓' : `Incorrect — the answer was: ${res.correct}`) : '';
+    fb.className = 'feedback' + (res ? (res.ok ? ' correct' : ' incorrect') : '');
+
+    if (!word.options) {
+      const pool = shuffle(db.allWords.filter(w => (isES ? w.english : w.spanish) !== correct));
+      const numDistractors = Math.min(4, pool.length);
+      word.options = shuffle([correct, ...pool.slice(0, numDistractors).map(w => isES ? w.english : w.spanish)]);
+    }
 
     const container = document.getElementById('options');
     container.innerHTML = '';
-    for (const opt of options) {
+    for (const opt of word.options) {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
+      if (res) {
+        btn.disabled = true;
+        if (opt === correct) btn.classList.add('correct');
+        if (opt === res.chosen && !res.ok) btn.classList.add('incorrect');
+      }
       btn.textContent = opt;
       btn.onclick = () => checkAnswer(btn, opt, correct, word);
       container.appendChild(btn);
     }
+    updateControls();
   }
 
   function checkAnswer(btn, chosen, correct, word) {
-    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
     const ok = chosen === correct;
-    btn.classList.add(ok ? 'correct' : 'incorrect');
-    if (!ok) {
-      document.querySelectorAll('.option-btn').forEach(b => {
-        if (b.textContent === correct) b.classList.add('correct');
-      });
-      quiz.wrong.push({ word, chosen });
-    } else {
-      quiz.score++;
-    }
-    const fb = document.getElementById('feedback');
-    fb.textContent  = ok ? '¡Correcto! ✓' : `Incorrect — the answer was: ${correct}`;
-    fb.className    = 'feedback ' + (ok ? 'correct' : 'incorrect');
-    document.getElementById('next-btn').hidden = false;
-  }
-
-  function nextQuestion() {
-    quiz.index++;
-    if (quiz.index >= quiz.total) renderScore();
-    else renderQuestion();
+    quiz.results[quiz.index] = { ok, score: ok ? 1 : 0, chosen, correct };
+    renderQuestion();
   }
 
   // ── Score screen ──────────────────────────────────────────────────────
   function renderScore() {
     showScreen('score-screen');
-    document.getElementById('score-number').textContent = `${quiz.score}/${quiz.total}`;
+    const total = quiz.total;
+    const score = quiz.results.reduce((acc, r) => acc + (r ? r.score : 0), 0);
+    const wrong = quiz.results.filter(r => r && !r.ok);
+
+    document.getElementById('score-number').textContent = `${score}/${total}`;
     document.getElementById('score-label').textContent  =
-      quiz.score === quiz.total          ? '¡Perfecto! 🎉' :
-      quiz.score >= quiz.total * 0.8     ? '¡Muy bien! Nearly there.' :
-      quiz.score >= quiz.total * 0.5     ? 'Good effort — keep practising!' :
-                                           'Don\'t worry, practice makes perfect!';
+      score === total          ? '¡Perfecto! 🎉' :
+      score >= total * 0.8     ? '¡Muy bien! Nearly there.' :
+      score >= total * 0.5     ? 'Good effort — keep practising!' :
+                                 'Don\'t worry, practice makes perfect!';
 
     const list = document.getElementById('wrong-list');
     list.innerHTML = '';
-    const hasWrong = quiz.wrong.length > 0;
+    const hasWrong = wrong.length > 0;
     document.getElementById('review-heading').hidden = !hasWrong;
     document.getElementById('redo-btn').hidden       = !hasWrong;
 
-    for (const { word, chosen } of quiz.wrong) {
+    for (const r of wrong) {
+      const word = quiz.words[quiz.results.indexOf(r)];
       const div = document.createElement('div');
       div.className = 'wrong-item';
       div.innerHTML = `
         <span class="es">${word.spanish}</span>
         <span class="en"> = ${word.english}</span>
-        <span class="yours">You answered: ${chosen}</span>`;
+        <span class="yours">You answered: ${r.chosen}</span>`;
       list.appendChild(div);
     }
   }
 
   function redoWrong() {
-    const words = quiz.wrong.map(w => w.word);
+    const wrong = quiz.results.filter(r => r && !r.ok);
+    const words = wrong.map(r => quiz.words[quiz.results.indexOf(r)]);
     const dir   = quiz.direction;
     const type  = quiz.type;
     if (type === 'type') startTypeAnswer(words, dir);
@@ -637,8 +702,7 @@
       words: shuffle(words),
       direction: dir ?? direction,
       index: 0,
-      score: 0,
-      wrong: [],
+      results: [],
       total: Math.min(10, words.length)
     };
     showScreen('type-screen');
@@ -648,21 +712,42 @@
   function renderTypeQuestion() {
     const word  = quiz.words[quiz.index];
     const isES  = quiz.direction === 'es-en';
+    const correct = isES ? word.english : word.spanish;
 
     document.getElementById('type-progress').textContent      = `${quiz.index + 1} / ${quiz.total}`;
     document.getElementById('type-progress-fill').style.width = `${((quiz.index + 1) / quiz.total) * 100}%`;
     document.getElementById('type-label').textContent         = isES ? 'What does this mean in English?' : 'How do you say this in Spanish?';
     document.getElementById('type-word').textContent          = isES ? word.spanish : word.english;
-    document.getElementById('type-feedback').textContent      = '';
-    document.getElementById('type-feedback').className        = 'feedback';
-    document.getElementById('type-correct').textContent       = '';
-    document.getElementById('type-next-btn').hidden           = true;
 
+    const res = quiz.results[quiz.index];
+    const fb = document.getElementById('type-feedback');
+    const ca = document.getElementById('type-correct');
     const input = document.getElementById('type-input');
-    input.value     = '';
-    input.disabled  = false;
-    input.className = 'type-input';
-    input.focus();
+
+    fb.textContent = '';
+    fb.className = 'feedback';
+    ca.innerHTML = '';
+    input.value = res ? res.chosen : '';
+    input.disabled = !!res;
+    input.className = 'type-input' + (res ? ' ' + res.result : '');
+
+    if (res) {
+      if (res.ok) {
+        fb.textContent = '¡Correcto! ✓';
+        fb.className = 'feedback correct';
+      } else if (res.result === 'nearly') {
+        fb.textContent = 'Nearly! ½ point';
+        fb.className = 'feedback nearly';
+        ca.innerHTML = `Correct answer: <strong>${res.correct}</strong>`;
+      } else {
+        fb.textContent = res.chosen === '—' ? 'Skipped' : 'Incorrect ✗';
+        fb.className = 'feedback incorrect';
+        ca.innerHTML = `Correct answer: <strong>${res.correct}</strong>`;
+      }
+    } else {
+      input.focus();
+    }
+    updateControls();
   }
 
   function submitTypeAnswer() {
@@ -673,53 +758,21 @@
     const word    = quiz.words[quiz.index];
     const isES    = quiz.direction === 'es-en';
     const correct = isES ? word.english : word.spanish;
-    const result  = grade(typed, correct, isES && word.capitals);
+    const resType = grade(typed, correct, !isES && word.capitals);
 
-    input.disabled  = true;
-    input.classList.add(result);
+    const ok = resType === 'correct';
+    const score = ok ? 1 : (resType === 'nearly' ? 0.5 : 0);
+    quiz.results[quiz.index] = { ok, score, chosen: typed, correct, result: resType };
 
-    const fb = document.getElementById('type-feedback');
-    const ca = document.getElementById('type-correct');
-
-    if (result === 'correct') {
-      fb.textContent = '¡Correcto! ✓';
-      fb.className   = 'feedback correct';
-      quiz.score++;
-    } else if (result === 'nearly') {
-      fb.textContent = 'Nearly! ½ point';
-      fb.className   = 'feedback nearly';
-      ca.innerHTML   = `Correct answer: <strong>${correct}</strong>`;
-      quiz.score += 0.5;
-      quiz.wrong.push({ word, chosen: typed, result: 'nearly' });
-    } else {
-      fb.textContent = 'Incorrect ✗';
-      fb.className   = 'feedback incorrect';
-      ca.innerHTML   = `Correct answer: <strong>${correct}</strong>`;
-      quiz.wrong.push({ word, chosen: typed, result: 'incorrect' });
-    }
-
-    document.getElementById('type-next-btn').hidden = false;
+    renderTypeQuestion();
   }
 
   function skipTypeAnswer() {
     const word    = quiz.words[quiz.index];
     const isES    = quiz.direction === 'es-en';
     const correct = isES ? word.english : word.spanish;
-
-    const input = document.getElementById('type-input');
-    input.disabled = true;
-
-    document.getElementById('type-feedback').textContent = 'Skipped';
-    document.getElementById('type-feedback').className   = 'feedback incorrect';
-    document.getElementById('type-correct').innerHTML    = `Correct answer: <strong>${correct}</strong>`;
-    document.getElementById('type-next-btn').hidden      = false;
-    quiz.wrong.push({ word, chosen: '—', result: 'incorrect' });
-  }
-
-  function nextTypeQuestion() {
-    quiz.index++;
-    if (quiz.index >= quiz.total) renderScore();
-    else renderTypeQuestion();
+    quiz.results[quiz.index] = { ok: false, score: 0, chosen: '—', correct, result: 'incorrect' };
+    renderTypeQuestion();
   }
 
   // ── Omakase (stub) ────────────────────────────────────────────────────
