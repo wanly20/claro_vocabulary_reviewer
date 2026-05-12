@@ -322,11 +322,8 @@
     <p class="prompt-label">Type the Spanish word you heard</p>
     <input id="dict-input" class="type-input" type="text" placeholder="Escribe aquí…"
            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-           onkeydown="if(event.key==='Enter') submitDictAnswer()">
-    <div class="submit-row">
-      <button class="btn btn-ghost"   onclick="skipDictAnswer()">Skip</button>
-      <button class="btn btn-primary" onclick="submitDictAnswer()">Check →</button>
-    </div>
+           onkeydown="if(event.key==='Enter') handleCheckNext()">
+
     <p class="feedback"       id="dict-feedback"></p>
     <p class="correct-answer" id="dict-correct"></p>
 
@@ -336,16 +333,14 @@
       <div class="options" id="dict-trans-options"></div>
       <input id="dict-trans-input" class="type-input" type="text" placeholder="Type the English meaning…"
              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             onkeydown="if(event.key==='Enter') submitDictTranslation()" hidden>
-      <div class="submit-row" id="dict-trans-btn-row" hidden>
-        <button class="btn btn-primary btn-full" onclick="submitDictTranslation()">Check →</button>
-      </div>
+             onkeydown="if(event.key==='Enter') handleCheckNext()" hidden>
       <p class="feedback"       id="dict-trans-feedback"></p>
       <p class="correct-answer" id="dict-trans-correct"></p>
     </div>
 
-    <div class="next-row">
-      <button class="btn btn-primary" id="dict-next-btn" onclick="nextDictQuestion()" hidden>Next →</button>
+    <div class="submit-row">
+      <button id="dict-skip-back-btn" class="btn btn-ghost"   onclick="handleSkipBack()">Skip</button>
+      <button id="dict-check-next-btn" class="btn btn-primary" onclick="handleCheckNext()">Check →</button>
     </div>
   </div>
 
@@ -493,15 +488,23 @@
 
   // ── Navigation & Controls ───────────────────────────────────────────
   function updateControls() {
-    const isAnswered = !!quiz.results[quiz.index];
+    const res = quiz.results[quiz.index];
+    const isAnswered = !!res;
     const isFirst = quiz.index === 0;
     const isLast = quiz.index >= quiz.total - 1;
 
-    const screenPrefix = quiz.type === 'type' ? 'type-' : 'quiz-';
+    let screenPrefix = 'quiz-';
+    if (quiz.type === 'type') screenPrefix = 'type-';
+    else if (quiz.type.startsWith('dict')) screenPrefix = 'dict-';
+
     const skipBackBtn = document.getElementById(screenPrefix + 'skip-back-btn');
     const checkNextBtn = document.getElementById(screenPrefix + 'check-next-btn');
 
-    if (isAnswered) {
+    // For combined dictation, it's only "fully finished" if transResult is present
+    const isComb = quiz.type === 'dict-choice' || quiz.type === 'dict-type';
+    const isFinished = isComb ? (res && !!res.transResult) : isAnswered;
+
+    if (isFinished) {
       skipBackBtn.textContent = '← Back';
       skipBackBtn.disabled = isFirst;
       checkNextBtn.textContent = isLast ? 'Finish ✓' : 'Next →';
@@ -510,9 +513,13 @@
     } else {
       skipBackBtn.textContent = 'Skip';
       skipBackBtn.disabled = false;
-      if (quiz.type === 'type') {
+      if (quiz.type === 'type' || quiz.type.startsWith('dict')) {
         checkNextBtn.textContent = 'Check →';
         checkNextBtn.hidden = false;
+        // In dict-choice, the second phase has no check button (user clicks options)
+        if (isComb && isAnswered && quiz.type === 'dict-choice') {
+          checkNextBtn.hidden = true;
+        }
       } else {
         checkNextBtn.hidden = true;
       }
@@ -520,18 +527,29 @@
   }
 
   function handleCheckNext() {
-    const isAnswered = !!quiz.results[quiz.index];
-    if (!isAnswered) {
+    const res = quiz.results[quiz.index];
+    const isComb = quiz.type === 'dict-choice' || quiz.type === 'dict-type';
+    const isFinished = isComb ? (res && !!res.transResult) : !!res;
+
+    if (!isFinished) {
       if (quiz.type === 'type') submitTypeAnswer();
+      else if (quiz.type.startsWith('dict')) {
+        if (!res) submitDictAnswer();
+        else if (quiz.type === 'dict-type') submitDictTranslation();
+      }
     } else {
       nextQuestion();
     }
   }
 
   function handleSkipBack() {
-    const isAnswered = !!quiz.results[quiz.index];
-    if (!isAnswered) {
+    const res = quiz.results[quiz.index];
+    const isComb = quiz.type === 'dict-choice' || quiz.type === 'dict-type';
+    const isFinished = isComb ? (res && !!res.transResult) : !!res;
+
+    if (!isFinished) {
       if (quiz.type === 'type') skipTypeAnswer();
+      else if (quiz.type.startsWith('dict')) skipDictAnswer();
       else skipQuestion();
     } else {
       prevQuestion();
@@ -543,7 +561,8 @@
     if (quiz.index >= quiz.total) renderScore();
     else {
       if (quiz.type === 'mc') renderQuestion();
-      else renderTypeQuestion();
+      else if (quiz.type === 'type') renderTypeQuestion();
+      else if (quiz.type.startsWith('dict')) renderDictQuestion();
     }
   }
 
@@ -551,11 +570,16 @@
     if (quiz.index > 0) {
       quiz.index--;
       if (quiz.type === 'mc') renderQuestion();
-      else renderTypeQuestion();
+      else if (quiz.type === 'type') renderTypeQuestion();
+      else if (quiz.type.startsWith('dict')) renderDictQuestion();
     }
   }
 
   function skipQuestion() {
+    if (quiz.type.startsWith('dict')) {
+      skipDictAnswer();
+      return;
+    }
     const word = quiz.words[quiz.index];
     const isES = quiz.direction === 'es-en';
     const correct = isES ? word.english : word.spanish;
@@ -884,7 +908,6 @@
     const fb    = document.getElementById('dict-feedback');
     const ca    = document.getElementById('dict-correct');
     const input = document.getElementById('dict-input');
-    const nxt   = document.getElementById('dict-next-btn');
     const trans = document.getElementById('dict-trans-phase');
 
     // Reset translation phase
@@ -896,8 +919,6 @@
 
     fb.textContent = ''; fb.className = 'feedback'; ca.innerHTML = '';
     input.className = 'type-input';
-    nxt.hidden = true;
-    nxt.textContent = quiz.index >= quiz.total - 1 ? 'Finish ✓' : 'Next →';
 
     if (!res) {
       // Fresh question — spell phase
@@ -907,6 +928,7 @@
         dictVoice ? `voz: ${VOICE_LABELS[dictVoice.lang] || dictVoice.lang}` : 'voz: español';
       speakWithVoice(word.spanish, dictVoice);
       input.focus();
+      updateControls();
       return;
     }
 
@@ -924,28 +946,31 @@
       if (res.spellChosen !== '—') ca.innerHTML = `Correct spelling: <strong>${res.spellCorrect}</strong>`;
     }
 
-    if (!isComb) { nxt.hidden = false; return; }
+    if (!isComb) { updateControls(); return; }
 
     // Combined mode — show translation phase
     trans.hidden = false;
+    const ti = document.getElementById('dict-trans-input');
     if (!res.transResult) {
       // Translation not answered yet
       if (quiz.type === 'dict-choice') {
         renderDictTransOptions(word);
+        ti.hidden = true;
       } else {
-        const ti = document.getElementById('dict-trans-input');
-        ti.hidden = false; ti.value = ''; ti.disabled = false;
-        document.getElementById('dict-trans-btn-row').hidden = false;
+        ti.hidden = false; ti.value = ''; ti.disabled = false; ti.className = 'type-input';
         ti.focus();
       }
     } else {
       // Translation already answered
+      if (quiz.type === 'dict-type') {
+        ti.hidden = false; ti.value = res.transChosen; ti.disabled = true;
+        ti.className = 'type-input ' + res.transResult;
+      } else {
+        ti.hidden = true;
+      }
       renderDictTransResult(res);
-      nxt.hidden = false;
-      // Hide input controls
-      document.getElementById('dict-trans-input').hidden = true;
-      document.getElementById('dict-trans-btn-row').hidden = true;
     }
+    updateControls();
   }
 
   function renderDictTransOptions(word) {
@@ -1036,15 +1061,9 @@
     renderDictQuestion();
   }
 
-  function nextDictQuestion() {
-    quiz.index++;
-    if (quiz.index >= quiz.total) renderScore();
-    else renderDictQuestion();
-  }
-
   // ── Omakase (stub) ────────────────────────────────────────────────────
   function startOmakase() {
-    alert('Omakase mode coming soon! Try Multiple Choice for now.');
+    alert('Omakase mode coming soon! Try other activites for now.');
   }
 
   // ── Global Listeners ────────────────────────────────────────────────
