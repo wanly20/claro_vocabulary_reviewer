@@ -5,32 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spanish Vocabulary</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
-    h1 { color: #2d6a4f; }
-    #status { color: #888; font-style: italic; }
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; background: #f9f9f6; }
+    h1 { color: #2d6a4f; margin-bottom: 4px; }
+    p.subtitle { color: #666; margin-top: 0; }
     #sections { margin-top: 24px; }
-    .section { background: #f0f7f4; border-radius: 8px; padding: 12px 16px; margin: 8px 0; }
+    .section { background: #fff; border: 1px solid #d8ece4; border-radius: 8px; padding: 12px 16px; margin: 8px 0; }
     .section strong { color: #2d6a4f; }
-    .count { color: #666; font-size: 0.9em; }
+    .count { color: #999; font-size: 0.9em; margin-left: 8px; }
+    #error { color: #c0392b; }
   </style>
 </head>
 <body>
-  <h1>Spanish Vocabulary</h1>
-  <p id="status">Loading vocabulary...</p>
+  <h1>¡Bienvenidos!</h1>
+  <p class="subtitle">Select a topic below to start practising.</p>
   <div id="sections"></div>
+  <p id="error"></p>
 
   <script>
+    function parseCSV(text) {
+      const rows = [];
+      const lines = text.trim().split('\n').slice(1);
+      for (const line of lines) {
+        const cols = [];
+        let cur = '', inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') { inQuotes = !inQuotes; }
+          else if (ch === ',' && !inQuotes) { cols.push(cur.trim()); cur = ''; }
+          else { cur += ch; }
+        }
+        cols.push(cur.trim());
+        if (cols.length >= 3) rows.push(cols);
+      }
+      return rows;
+    }
+
     async function loadCSV() {
       const res = await fetch('vocabulary_database.csv');
       const text = await res.text();
-      const lines = text.trim().split('\n').slice(1); // skip header
+      const rows = parseCSV(text);
 
-      const words = lines
-        .map(line => {
-          const [spanish, english, section] = line.split(',');
-          return { spanish: spanish?.trim(), english: english?.trim(), section: section?.trim() };
-        })
-        .filter(w => w.spanish && w.english && w.section);
+      const words = rows.map(([spanish, english, section]) => ({
+        spanish: spanish?.trim(),
+        english: english?.trim(),
+        section: section?.trim()
+      })).filter(w => w.spanish && w.english && w.section);
 
       const sections = {};
       for (const w of words) {
@@ -38,20 +57,17 @@
         sections[w.section].push(w);
       }
 
-      document.getElementById('status').textContent =
-        `Loaded ${words.length} words across ${Object.keys(sections).length} sections.`;
-
       const container = document.getElementById('sections');
       for (const [name, list] of Object.entries(sections)) {
         const div = document.createElement('div');
         div.className = 'section';
-        div.innerHTML = `<strong>${name}</strong> <span class="count">(${list.length} words)</span>`;
+        div.innerHTML = `<strong>${name}</strong><span class="count">${list.length} words</span>`;
         container.appendChild(div);
       }
     }
 
     loadCSV().catch(err => {
-      document.getElementById('status').textContent = 'Error loading CSV: ' + err.message;
+      document.getElementById('error').textContent = 'Could not load vocabulary: ' + err.message;
     });
   </script>
 </body>
