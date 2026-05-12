@@ -757,7 +757,7 @@
     const word    = quiz.words[quiz.index];
     const isES    = quiz.direction === 'es-en';
     const correct = isES ? word.english : word.spanish;
-    const resType = grade(typed, correct, !isES && word.capitals);
+    const resType = grade(typed, correct, isES && word.capitals);
 
     const ok = resType === 'correct';
     const score = ok ? 1 : (resType === 'nearly' ? 0.5 : 0);
