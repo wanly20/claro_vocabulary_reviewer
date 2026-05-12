@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Vocabulary</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
+    h1 { color: #2d6a4f; }
+    #status { color: #888; font-style: italic; }
+    #sections { margin-top: 24px; }
+    .section { background: #f0f7f4; border-radius: 8px; padding: 12px 16px; margin: 8px 0; }
+    .section strong { color: #2d6a4f; }
+    .count { color: #666; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h1>Spanish Vocabulary</h1>
+  <p id="status">Loading vocabulary...</p>
+  <div id="sections"></div>
+
+  <script>
+    async function loadCSV() {
+      const res = await fetch('vocabulary_database.csv');
+      const text = await res.text();
+      const lines = text.trim().split('\n').slice(1); // skip header
+
+      const words = lines
+        .map(line => {
+          const [spanish, english, section] = line.split(',');
+          return { spanish: spanish?.trim(), english: english?.trim(), section: section?.trim() };
+        })
+        .filter(w => w.spanish && w.english && w.section);
+
+      const sections = {};
+      for (const w of words) {
+        if (!sections[w.section]) sections[w.section] = [];
+        sections[w.section].push(w);
+      }
+
+      document.getElementById('status').textContent =
+        `Loaded ${words.length} words across ${Object.keys(sections).length} sections.`;
+
+      const container = document.getElementById('sections');
+      for (const [name, list] of Object.entries(sections)) {
+        const div = document.createElement('div');
+        div.className = 'section';
+        div.innerHTML = `<strong>${name}</strong> <span class="count">(${list.length} words)</span>`;
+        container.appendChild(div);
+      }
+    }
+
+    loadCSV().catch(err => {
+      document.getElementById('status').textContent = 'Error loading CSV: ' + err.message;
+    });
+  </script>
+</body>
+</html>
