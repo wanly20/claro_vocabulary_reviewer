@@ -137,6 +137,35 @@
     .wrong-item .yours { color: #999; font-style: italic; font-size: 0.83em; margin-top: 2px; display: block; }
 
     .score-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+
+    /* Flashcards */
+    .fc-hint { text-align: center; color: #aaa; font-size: 0.85rem; margin-bottom: 16px; min-height: 20px; }
+    .card-wrap { perspective: 1200px; margin-bottom: 28px; cursor: pointer; }
+    .card {
+      width: 100%; min-height: 220px; position: relative;
+      transform-style: preserve-3d; transition: transform 0.45s ease;
+    }
+    .card.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute; inset: 0; backface-visibility: hidden;
+      background: #fff; border: 2px solid #d8ece4; border-radius: 16px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 28px 24px; gap: 12px;
+    }
+    .card-face.back { transform: rotateY(180deg); border-color: #52b788; }
+    .card-word { font-size: 2rem; font-weight: 700; text-align: center; line-height: 1.2; }
+    .card-label { font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.08em; }
+    .speak-btn {
+      margin-top: 8px; background: #e8f5ef; border: none; border-radius: 50%;
+      width: 44px; height: 44px; font-size: 1.2rem; cursor: pointer;
+      transition: background 0.15s; display: flex; align-items: center; justify-content: center;
+    }
+    .speak-btn:hover { background: #cde8d8; }
+    .fc-nav {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .fc-nav .btn { flex: 1; }
+    .fc-counter { color: #666; font-size: 0.9rem; white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -163,13 +192,44 @@
     <h2>Activity</h2>
     <div class="activity-grid">
       <button class="activity-btn" onclick="startActivity('mc')">📋 Multiple Choice</button>
-      <button class="activity-btn" disabled>🃏 Flashcards<span class="soon-badge">soon</span></button>
+      <button class="activity-btn" onclick="startFlashcards()">🃏 Flashcards</button>
       <button class="activity-btn" disabled>✍️ Type Answer<span class="soon-badge">soon</span></button>
       <button class="activity-btn" disabled>🔊 Dictation<span class="soon-badge">soon</span></button>
     </div>
 
     <div class="divider">or skip the choices</div>
     <button class="omakase-btn" onclick="startOmakase()">🎲 Omakase — just start!</button>
+  </div>
+
+  <!-- ── FLASHCARD SCREEN ──────────────────────────────────────── -->
+  <div id="flashcard-screen" hidden>
+    <div class="quiz-header">
+      <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <span class="progress-text" id="fc-progress"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="fc-progress-fill"></div></div>
+
+    <p class="fc-hint" id="fc-hint">Tap the card to reveal</p>
+
+    <div class="card-wrap" onclick="flipCard()">
+      <div class="card" id="fc-card">
+        <div class="card-face front">
+          <span class="card-label" id="fc-front-label"></span>
+          <span class="card-word"  id="fc-front-word"></span>
+        </div>
+        <div class="card-face back">
+          <span class="card-label" id="fc-back-label"></span>
+          <span class="card-word"  id="fc-back-word"></span>
+          <button class="speak-btn" onclick="fcSpeak(event)" title="Hear it">🔊</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc-nav">
+      <button class="btn btn-ghost" id="fc-prev-btn" onclick="fcNav(-1)">← Prev</button>
+      <span class="fc-counter" id="fc-counter"></span>
+      <button class="btn btn-primary" id="fc-next-btn" onclick="fcNav(1)">Next →</button>
+    </div>
   </div>
 
   <!-- ── QUIZ SCREEN ─────────────────────────────────────────────── -->
@@ -275,7 +335,7 @@
   }
 
   function showScreen(id) {
-    ['home-screen', 'quiz-screen', 'score-screen'].forEach(s =>
+    ['home-screen', 'flashcard-screen', 'quiz-screen', 'score-screen'].forEach(s =>
       document.getElementById(s).hidden = (s !== id)
     );
   }
@@ -393,6 +453,64 @@
 
   function redoWrong() {
     startActivity(quiz.type, quiz.wrong.map(w => w.word), quiz.direction);
+  }
+
+  // ── Speech synthesis ──────────────────────────────────────────────────
+  function speak(text, lang = 'es-ES') {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    speechSynthesis.speak(u);
+  }
+
+  // ── Flashcards ────────────────────────────────────────────────────────
+  let fc = null;
+
+  function startFlashcards(wordPool, dir) {
+    const words = wordPool ?? getSelectedWords();
+    if (!words.length) { alert('Please select at least one topic.'); return; }
+    fc = { words: shuffle(words), index: 0, direction: dir ?? direction };
+    showScreen('flashcard-screen');
+    renderCard();
+  }
+
+  function renderCard() {
+    const word  = fc.words[fc.index];
+    const isES  = fc.direction === 'es-en';
+    const total = fc.words.length;
+
+    document.getElementById('fc-progress').textContent      = `${fc.index + 1} / ${total}`;
+    document.getElementById('fc-progress-fill').style.width = `${((fc.index + 1) / total) * 100}%`;
+    document.getElementById('fc-counter').textContent       = `${fc.index + 1} of ${total}`;
+    document.getElementById('fc-prev-btn').disabled         = fc.index === 0;
+    document.getElementById('fc-next-btn').textContent      = fc.index === total - 1 ? 'Done ✓' : 'Next →';
+
+    document.getElementById('fc-front-label').textContent = isES ? 'Spanish' : 'English';
+    document.getElementById('fc-front-word').textContent  = isES ? word.spanish : word.english;
+    document.getElementById('fc-back-label').textContent  = isES ? 'English' : 'Spanish';
+    document.getElementById('fc-back-word').textContent   = isES ? word.english : word.spanish;
+
+    // Reset flip & hint
+    document.getElementById('fc-card').classList.remove('flipped');
+    document.getElementById('fc-hint').textContent = 'Tap the card to reveal';
+  }
+
+  function flipCard() {
+    document.getElementById('fc-card').classList.toggle('flipped');
+    document.getElementById('fc-hint').textContent = '';
+  }
+
+  function fcSpeak(e) {
+    e.stopPropagation(); // don't re-flip the card
+    speak(fc.words[fc.index].spanish);
+  }
+
+  function fcNav(dir) {
+    const next = fc.index + dir;
+    if (next < 0) return;
+    if (next >= fc.words.length) { goHome(); return; }
+    fc.index = next;
+    renderCard();
   }
 
   // ── Omakase (stub) ────────────────────────────────────────────────────
