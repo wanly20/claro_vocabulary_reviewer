@@ -208,6 +208,15 @@
     .dict-speak-btn:active { transform: scale(0.94); }
     .dict-voice-label { color: #888; font-size: 0.8rem; margin-top: 10px; font-style: italic; min-height: 18px; }
     .dict-hint { color: #bbb; font-size: 0.78rem; margin-top: 3px; }
+
+    .dict-layout { display: flex; gap: 32px; align-items: flex-start; margin: 20px 0; }
+    .dict-side { flex: 0 0 100px; text-align: center; }
+    .dict-main { flex: 1; }
+    @media (max-width: 520px) {
+      .dict-layout { flex-direction: column; align-items: center; gap: 16px; }
+      .dict-side { flex: 0 0 auto; }
+      .dict-main { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -313,29 +322,35 @@
     </div>
     <div class="progress-bar"><div class="progress-fill" id="dict-progress-fill"></div></div>
 
-    <div class="dict-speaker-area">
-      <button class="dict-speak-btn" onclick="replayDictation()">🔊</button>
-      <p class="dict-voice-label" id="dict-voice-label"></p>
-      <p class="dict-hint">Tap to hear again</p>
-    </div>
+    <div class="dict-layout">
+      <div class="dict-side">
+        <div class="dict-speaker-area" style="margin: 0;">
+          <button class="dict-speak-btn" onclick="replayDictation()">🔊</button>
+          <p class="dict-voice-label" id="dict-voice-label"></p>
+          <p class="dict-hint">Tap to hear again</p>
+        </div>
+      </div>
 
-    <p class="prompt-label">Type the Spanish word you heard</p>
-    <input id="dict-input" class="type-input" type="text" placeholder="Escribe aquí…"
-           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-           onkeydown="if(event.key==='Enter') handleCheckNext()">
+      <div class="dict-main">
+        <p class="prompt-label" style="text-align: left;">Type the Spanish word you heard</p>
+        <input id="dict-input" class="type-input" type="text" placeholder="Escribe aquí…"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               onkeydown="if(event.key==='Enter') handleCheckNext()">
 
-    <p class="feedback"       id="dict-feedback"></p>
-    <p class="correct-answer" id="dict-correct"></p>
+        <p class="feedback"       id="dict-feedback" style="text-align: left;"></p>
+        <p class="correct-answer" id="dict-correct"  style="text-align: left;"></p>
 
-    <!-- Translation phase — shown for dict-choice and dict-type after spelling -->
-    <div id="dict-trans-phase" hidden>
-      <p class="prompt-label" style="margin-top:20px">Now: what does it mean in English?</p>
-      <div class="options" id="dict-trans-options"></div>
-      <input id="dict-trans-input" class="type-input" type="text" placeholder="Type the English meaning…"
-             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             onkeydown="if(event.key==='Enter') handleCheckNext()" hidden>
-      <p class="feedback"       id="dict-trans-feedback"></p>
-      <p class="correct-answer" id="dict-trans-correct"></p>
+        <!-- Translation phase — shown for dict-choice and dict-type after spelling -->
+        <div id="dict-trans-phase" hidden>
+          <p class="prompt-label" style="margin-top:20px; text-align: left;">Now: what does it mean in English?</p>
+          <div class="options" id="dict-trans-options"></div>
+          <input id="dict-trans-input" class="type-input" type="text" placeholder="Type the English meaning…"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 onkeydown="if(event.key==='Enter') handleCheckNext()" hidden>
+          <p class="feedback"       id="dict-trans-feedback" style="text-align: left;"></p>
+          <p class="correct-answer" id="dict-trans-correct"  style="text-align: left;"></p>
+        </div>
+      </div>
     </div>
 
     <div class="submit-row">
@@ -1065,13 +1080,13 @@
   function startOmakase() {
     alert('Omakase mode coming soon! Try other activites for now.');
   }
-
   // ── Global Listeners ────────────────────────────────────────────────
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       // If quiz is active and we're on a quiz screen, advance
       const onQuizScreen = ['quiz-screen','type-screen','dict-screen'].some(id => !document.getElementById(id).hidden);
       if (quiz && onQuizScreen) {
+        e.preventDefault();
         handleCheckNext();
       }
     } else if (e.key === 'Escape') {
