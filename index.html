@@ -356,7 +356,10 @@
   async function init() {
     const text = await fetch('vocabulary_database.csv').then(r => r.text());
     db.allWords = parseCSV(text)
-      .map(([s, e, sec]) => ({ spanish: s?.trim(), english: e?.trim(), section: sec?.trim() }))
+      .map(([s, e, sec, , capitals]) => ({
+        spanish: s?.trim(), english: e?.trim(), section: sec?.trim(),
+        capitals: capitals?.trim() === 'yes'
+      }))
       .filter(w => w.spanish && w.english && w.section);
 
     for (const w of db.allWords) {
@@ -600,16 +603,19 @@
   }
 
   // Returns 'correct' | 'nearly' | 'incorrect'
-  function grade(typed, correct) {
+  function grade(typed, correct, requiresCapital = false) {
     const t = typed.trim();
     const normT = normalise(t);
     const normC = normalise(correct);
 
-    // Exact match
-    if (t.toLowerCase() === correct.toLowerCase()) return 'correct';
+    if (t === correct) return 'correct';
 
-    // Correct letters, wrong accents only
+    // Case-insensitive match: full marks unless this word requires capital letters
+    if (t.toLowerCase() === correct.toLowerCase()) return requiresCapital ? 'nearly' : 'correct';
+
+    // Wrong/missing accents or missing spaces → nearly
     if (normT === normC) return 'nearly';
+    if (normT.replace(/\s/g, '') === normC.replace(/\s/g, '')) return 'nearly';
 
     // Partial word overlap (both sides must have ≥1 content word of length ≥4 in common)
     const wordsT = contentWords(t);
@@ -667,7 +673,7 @@
     const word    = quiz.words[quiz.index];
     const isES    = quiz.direction === 'es-en';
     const correct = isES ? word.english : word.spanish;
-    const result  = grade(typed, correct);
+    const result  = grade(typed, correct, isES && word.capitals);
 
     input.disabled  = true;
     input.classList.add(result);
