@@ -138,6 +138,20 @@
 
     .score-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 
+    /* Home two-column layout */
+    .home-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 28px;
+      align-items: start;
+    }
+    .home-left  { grid-column: 1; }
+    .home-right { grid-column: 2; }
+    @media (max-width: 520px) {
+      .home-layout { grid-template-columns: 1fr; }
+      .home-right  { grid-column: 1; }
+    }
+
     /* Flashcards */
     .fc-hint { text-align: center; color: #aaa; font-size: 0.85rem; margin-bottom: 16px; min-height: 20px; }
     .card-wrap { perspective: 1200px; margin-bottom: 28px; cursor: pointer; }
@@ -176,29 +190,37 @@
     <h1>¡Bienvenidos!</h1>
     <p class="subtitle">Practise your Spanish vocabulary.</p>
 
-    <h2>Topics</h2>
-    <div class="select-btns">
-      <button class="btn btn-ghost btn-sm" onclick="selectAll(true)">Select all</button>
-      <button class="btn btn-ghost btn-sm" onclick="selectAll(false)">Deselect all</button>
-    </div>
-    <div class="section-list" id="section-list"></div>
+    <div class="home-layout">
+      <!-- Left: topic selection -->
+      <div class="home-left">
+        <h2>Topics</h2>
+        <div class="select-btns">
+          <button class="btn btn-ghost btn-sm" onclick="selectAll(true)">Select all</button>
+          <button class="btn btn-ghost btn-sm" onclick="selectAll(false)">Deselect all</button>
+        </div>
+        <div class="section-list" id="section-list"></div>
+      </div>
 
-    <h2>Direction</h2>
-    <div class="direction-toggle">
-      <button id="dir-es-en" class="active" onclick="setDirection('es-en')">Spanish → English</button>
-      <button id="dir-en-es"               onclick="setDirection('en-es')">English → Spanish</button>
-    </div>
+      <!-- Right: direction + activity + random -->
+      <div class="home-right">
+        <h2>Direction</h2>
+        <div class="direction-toggle">
+          <button id="dir-es-en" class="active" onclick="setDirection('es-en')">Spanish → English</button>
+          <button id="dir-en-es"               onclick="setDirection('en-es')">English → Spanish</button>
+        </div>
 
-    <h2>Activity</h2>
-    <div class="activity-grid">
-      <button class="activity-btn" onclick="startActivity('mc')">📋 Multiple Choice</button>
-      <button class="activity-btn" onclick="startFlashcards()">🃏 Flashcards</button>
-      <button class="activity-btn" disabled>✍️ Type Answer<span class="soon-badge">soon</span></button>
-      <button class="activity-btn" disabled>🔊 Dictation<span class="soon-badge">soon</span></button>
-    </div>
+        <h2>Activity</h2>
+        <div class="activity-grid">
+          <button class="activity-btn" onclick="startActivity('mc')">📋 Multiple Choice</button>
+          <button class="activity-btn" onclick="startFlashcards()">🃏 Flashcards</button>
+          <button class="activity-btn" disabled>✍️ Type Answer<span class="soon-badge">soon</span></button>
+          <button class="activity-btn" disabled>🔊 Dictation<span class="soon-badge">soon</span></button>
+        </div>
 
-    <div class="divider">or skip the choices</div>
-    <button class="omakase-btn" onclick="startOmakase()">🎲 Omakase — just start!</button>
+        <div class="divider">or</div>
+        <button class="omakase-btn" onclick="startOmakase()">Just pick for me!</button>
+      </div>
+    </div>
   </div>
 
   <!-- ── FLASHCARD SCREEN ──────────────────────────────────────── -->
