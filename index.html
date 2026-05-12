@@ -281,8 +281,7 @@
     <p class="prompt-word"  id="type-word"></p>
 
     <input id="type-input" class="type-input" type="text" placeholder="Type your answer…"
-           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-           onkeydown="if(event.key==='Enter') handleCheckNext()">
+           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <div class="submit-row">
       <button id="type-skip-back-btn" class="btn btn-ghost"   onclick="handleSkipBack()">Skip</button>
       <button id="type-check-next-btn" class="btn btn-primary" onclick="handleCheckNext()">Check →</button>
@@ -779,6 +778,18 @@
   function startOmakase() {
     alert('Omakase mode coming soon! Try Multiple Choice for now.');
   }
+
+  // ── Global Listeners ────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      // If quiz is active and we're on a quiz screen, advance
+      if (quiz && (!document.getElementById('quiz-screen').hidden || !document.getElementById('type-screen').hidden)) {
+        handleCheckNext();
+      }
+    } else if (e.key === 'Escape') {
+      if (quiz) goHome();
+    }
+  });
 
   init();
 </script>
