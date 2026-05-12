@@ -478,11 +478,32 @@
   }
 
   // ── Speech synthesis ──────────────────────────────────────────────────
+  function initSpeech() {
+    if (!('speechSynthesis' in window)) {
+      console.warn('Speech synthesis NOT supported in this browser.');
+      return;
+    }
+    console.log('Speech synthesis supported.');
+    const logVoices = () => {
+      const voices = speechSynthesis.getVoices();
+      const spanish = voices.filter(v => v.lang.startsWith('es'));
+      console.log(`Total voices: ${voices.length}. Spanish voices:`, spanish.map(v => `${v.name} (${v.lang})`));
+    };
+    speechSynthesis.addEventListener('voiceschanged', logVoices);
+    logVoices();
+  }
+
   function speak(text, lang = 'es-ES') {
+    console.log(`speak() called — text: "${text}", lang: ${lang}`);
+    if (!('speechSynthesis' in window)) { console.warn('speechSynthesis not available'); return; }
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
+    u.onerror = e => console.error('SpeechSynthesisUtterance error:', e);
+    u.onstart = () => console.log('Speech started.');
+    u.onend   = () => console.log('Speech ended.');
     speechSynthesis.speak(u);
+    console.log('speechSynthesis.speak() called. pending:', speechSynthesis.pending, 'speaking:', speechSynthesis.speaking);
   }
 
   // ── Flashcards ────────────────────────────────────────────────────────
@@ -540,6 +561,7 @@
     alert('Omakase mode coming soon! Try Multiple Choice for now.');
   }
 
+  initSpeech();
   init();
 </script>
 </body>
