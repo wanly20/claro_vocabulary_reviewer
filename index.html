@@ -217,6 +217,30 @@
       .dict-side { flex: 0 0 auto; }
       .dict-main { width: 100%; }
     }
+
+    /* Omakase screen */
+    .omakase-message {
+      font-size: 1.35rem; font-weight: 700; text-align: center;
+      color: #2d6a4f; margin: 12px 0 18px; line-height: 1.3;
+    }
+    .omakase-phase-badge {
+      display: inline-block; background: #e0f0e8; color: #1b4332;
+      border-radius: 20px; padding: 5px 16px; font-size: 0.88rem; font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .omakase-sections-label { text-align: center; color: #555; font-size: 0.95rem; margin-bottom: 24px; }
+    .omakase-scoreboard { background: #fff; border: 1px solid #d8ece4; border-radius: 10px; padding: 14px 16px; }
+    .omakase-score-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid #f0f7f4; font-size: 0.9rem; gap: 8px;
+    }
+    .omakase-score-row:last-child { border-bottom: none; }
+    .omakase-score-val { font-weight: 700; color: #2d6a4f; white-space: nowrap; }
+    .omakase-first-badge {
+      font-size: 0.68rem; background: #f4a261; color: #fff;
+      padding: 2px 6px; border-radius: 10px; margin-left: 5px; vertical-align: middle;
+    }
+    .omakase-no-scores { color: #aaa; font-size: 0.85rem; text-align: center; padding: 4px 0; }
   </style>
 </head>
 <body>
@@ -382,12 +406,33 @@
       <div class="score-number" id="score-number"></div>
       <div class="score-label"  id="score-label"></div>
     </div>
+    <div id="score-omakase-section" hidden>
+      <h2 style="margin-top:20px;">Progress so far</h2>
+      <div class="omakase-scoreboard" style="margin-bottom:0;"><div id="score-omakase-history"></div></div>
+    </div>
     <p class="review-heading" id="review-heading" hidden>Review these:</p>
     <div class="wrong-list" id="wrong-list"></div>
     <div class="score-actions">
       <button class="btn btn-primary btn-full" id="redo-btn" onclick="redoWrong()" hidden>↩ Redo wrong answers</button>
-      <button class="btn btn-ghost   btn-full" onclick="goHome()">← Back to home</button>
+      <button class="btn btn-primary btn-full" id="next-phase-btn" onclick="nextOmakasePhase()" hidden>Next Phase →</button>
+      <button class="btn btn-ghost   btn-full" id="back-home-btn" onclick="goHome()">← Back to home</button>
     </div>
+  </div>
+
+  <!-- ── OMAKASE SCREEN ─────────────────────────────────────────────── -->
+  <div id="omakase-screen" hidden>
+    <div class="quiz-header">
+      <button class="btn btn-ghost btn-sm" onclick="goHome()">✕ Exit</button>
+      <span></span>
+    </div>
+    <div class="omakase-message" id="omakase-message"></div>
+    <div style="text-align:center; margin-bottom:8px;">
+      <span class="omakase-phase-badge" id="omakase-phase-badge"></span>
+    </div>
+    <p class="omakase-sections-label" id="omakase-sections-label"></p>
+    <h2>Scores so far</h2>
+    <div class="omakase-scoreboard" style="margin-bottom:24px;"><div id="omakase-scoreboard-list"></div></div>
+    <button class="btn btn-primary btn-full" onclick="launchOmakasePhase()">Let's go! →</button>
   </div>
 
 </div>
@@ -396,6 +441,7 @@
   const db = { allWords: [], sections: {} };
   let direction = 'es-en';
   let quiz = null;
+  let omakase = null;
 
   // ── CSV parser (handles quoted fields with commas) ───────────────────
   function parseCSV(text) {
@@ -464,12 +510,12 @@
   }
 
   function showScreen(id) {
-    ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen'].forEach(s =>
+    ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen', 'omakase-screen'].forEach(s =>
       document.getElementById(s).hidden = (s !== id)
     );
   }
 
-  function goHome() { quiz = null; showScreen('home-screen'); }
+  function goHome() { quiz = null; omakase = null; showScreen('home-screen'); }
 
   // ── Shuffle ───────────────────────────────────────────────────────────
   function shuffle(arr) {
@@ -666,7 +712,6 @@
     list.innerHTML = '';
     const hasWrong = wrong.length > 0;
     document.getElementById('review-heading').hidden = !hasWrong;
-    document.getElementById('redo-btn').hidden       = !hasWrong;
 
     for (const r of wrong) {
       const word = quiz.words[quiz.results.indexOf(r)];
@@ -681,6 +726,27 @@
             : `You answered: ${r.chosen}`
         }</span>`;
       list.appendChild(div);
+    }
+
+    const redoBtn      = document.getElementById('redo-btn');
+    const nextPhaseBtn = document.getElementById('next-phase-btn');
+    const backHomeBtn  = document.getElementById('back-home-btn');
+    const omaSection   = document.getElementById('score-omakase-section');
+
+    if (omakase) {
+      omakase._pendingScore = score;
+      omakase._pendingTotal = total;
+      redoBtn.hidden      = true;
+      nextPhaseBtn.hidden = false;
+      backHomeBtn.hidden  = true;
+      const currentEntry  = { label: OMAKASE_PHASES[omakase.phaseIndex].label, score, total };
+      renderOmakaseScoreboard('score-omakase-history', currentEntry);
+      omaSection.hidden   = false;
+    } else {
+      redoBtn.hidden      = !hasWrong;
+      nextPhaseBtn.hidden = true;
+      backHomeBtn.hidden  = false;
+      omaSection.hidden   = true;
     }
   }
 
@@ -746,7 +812,11 @@
   function fcNav(dir) {
     const next = fc.index + dir;
     if (next < 0) return;
-    if (next >= fc.words.length) { goHome(); return; }
+    if (next >= fc.words.length) {
+      if (omakase) { advanceOmakase(null, null); return; }
+      goHome();
+      return;
+    }
     fc.index = next;
     renderCard();
   }
@@ -1074,9 +1144,106 @@
     renderDictQuestion();
   }
 
-  // ── Omakase (stub) ────────────────────────────────────────────────────
+  // ── Just pick for me! ────────────────────────────────────────────────
+  const OMAKASE_PHASES = [
+    { type: 'fc',          dir: 'es-en', label: 'Flashcards',            scored: false },
+    { type: 'mc',          dir: 'es-en', label: 'Multiple Choice ES→EN', scored: true  },
+    { type: 'mc',          dir: 'en-es', label: 'Multiple Choice EN→ES', scored: true  },
+    { type: 'type',        dir: 'es-en', label: 'Type Answer ES→EN',     scored: true  },
+    { type: 'type',        dir: 'en-es', label: 'Type Answer EN→ES',     scored: true  },
+    { type: 'dict',        dir: 'es-en', label: 'Dictation — Spell',     scored: true  },
+    { type: 'dict-choice', dir: 'es-en', label: 'Dictation + Choose',    scored: true  },
+    { type: 'dict-type',   dir: 'es-en', label: 'Dictation + Type',      scored: true  },
+  ];
+
+  const PHASE_MESSAGES = [
+    '🃏 Let\'s warm up with some flashcards!',
+    '🧠 Warm-up done! Ready to quiz yourself?',
+    '🔄 Same words, opposite direction!',
+    '✍️ No options this time — type it out!',
+    '✍️ Flip it around — Spanish this time!',
+    '🔊 Listen carefully — can you spell it?',
+    '🔊 Hear it, spell it, then pick the meaning!',
+    '🔊 The ultimate challenge — hear, spell, and translate!',
+  ];
+
+  function pickOmakaseBatch() {
+    const sectionNames = Object.keys(db.sections);
+    const shuffled = shuffle(sectionNames);
+    if (shuffled.length === 1) {
+      return { sections: [shuffled[0]], words: shuffle(db.sections[shuffled[0]]).slice(0, 10) };
+    }
+    const sec1 = shuffled[0], sec2 = shuffled[1];
+    const words1 = shuffle(db.sections[sec1]).slice(0, 5);
+    const words2 = shuffle(db.sections[sec2]).slice(0, 5);
+    return { sections: [sec1, sec2], words: [...words1, ...words2] };
+  }
+
   function startOmakase() {
-    alert('Omakase mode coming soon! Try other activites for now.');
+    omakase = { phaseIndex: 0, scores: [], currentBatch: null, _pendingScore: null, _pendingTotal: null };
+    showOmakasePhase();
+  }
+
+  function showOmakasePhase() {
+    const phaseIdx = omakase.phaseIndex;
+    const phase = OMAKASE_PHASES[phaseIdx];
+    omakase.currentBatch = pickOmakaseBatch();
+
+    document.getElementById('omakase-message').textContent =
+      PHASE_MESSAGES[phaseIdx % PHASE_MESSAGES.length];
+    document.getElementById('omakase-phase-badge').textContent =
+      `Phase ${phaseIdx + 1} of ${OMAKASE_PHASES.length}: ${phase.label}`;
+    const secs = omakase.currentBatch.sections;
+    document.getElementById('omakase-sections-label').textContent =
+      secs.length === 2 ? `📚 Studying: ${secs[0]} & ${secs[1]}` : `📚 Studying: ${secs[0]}`;
+
+    renderOmakaseScoreboard('omakase-scoreboard-list', null);
+    showScreen('omakase-screen');
+  }
+
+  function launchOmakasePhase() {
+    const phase = OMAKASE_PHASES[omakase.phaseIndex];
+    const { words } = omakase.currentBatch;
+    if (phase.type === 'fc') {
+      startFlashcards(words, phase.dir);
+    } else {
+      startActivity(phase.type, words, phase.dir);
+    }
+  }
+
+  function nextOmakasePhase() {
+    advanceOmakase(omakase._pendingScore, omakase._pendingTotal);
+  }
+
+  function advanceOmakase(score, total) {
+    const phase = OMAKASE_PHASES[omakase.phaseIndex];
+    if (score !== null && total !== null && phase.scored) {
+      omakase.scores.push({ label: phase.label, score, total });
+    }
+    omakase.phaseIndex = (omakase.phaseIndex + 1) % OMAKASE_PHASES.length;
+    omakase._pendingScore = null;
+    omakase._pendingTotal = null;
+    showOmakasePhase();
+  }
+
+  function renderOmakaseScoreboard(containerId, currentEntry) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const allScores = [...(omakase?.scores || []), ...(currentEntry ? [currentEntry] : [])];
+    if (allScores.length === 0) {
+      el.innerHTML = '<p class="omakase-no-scores">No scores yet — complete a phase to see results.</p>';
+      return;
+    }
+    el.innerHTML = allScores.map((s, i) => {
+      const sd  = Number.isInteger(s.score) ? s.score : s.score.toFixed(1);
+      const pct = Math.round((s.score / s.total) * 100);
+      const firstBadge = i === 0 ? '<span class="omakase-first-badge">⭐ first</span>' : '';
+      const isCurrent  = currentEntry && i === allScores.length - 1;
+      return `<div class="omakase-score-row"${isCurrent ? ' style="font-weight:600;"' : ''}>
+        <span>${s.label}${firstBadge}</span>
+        <span class="omakase-score-val">${sd}/${s.total} <small style="color:#999">(${pct}%)</small></span>
+      </div>`;
+    }).join('');
   }
   // ── Global Listeners ────────────────────────────────────────────────
   document.addEventListener('keydown', e => {
