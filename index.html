@@ -19,6 +19,7 @@
       --text-secondary: #64748b;
       --brand-green: #059669;
       --brand-green-light: rgba(5, 150, 105, 0.08);
+      --brand-green-light-solid: #e6f4ea;
       --brand-green-hover: #047857;
       --brand-green-dark: #064e3b;
       --border-color: #e2e8f0;
@@ -55,6 +56,7 @@
       --text-secondary: #9ca3af;
       --brand-green: #10b981;
       --brand-green-light: rgba(16, 185, 129, 0.12);
+      --brand-green-light-solid: #0c241a;
       --brand-green-hover: #34d399;
       --brand-green-dark: #d1fae5;
       --border-color: #243049;
@@ -586,14 +588,22 @@
 
     /* Flashcards */
     .fc-hint { text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; min-height: 20px; font-weight: 500; }
-    .card-wrap { perspective: 1200px; margin-bottom: 28px; cursor: pointer; max-width: 380px; }
+    .card-wrap { 
+      perspective: 1200px; 
+      margin: 0 auto 28px auto; 
+      cursor: pointer; 
+      width: 100%;
+      max-width: 500px; 
+    }
     .card {
-      width: 100%; min-height: 240px; position: relative;
+      width: 100%; min-height: 300px; position: relative;
       transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .card.flipped { transform: rotateY(180deg); }
     .card-face {
-      position: absolute; inset: 0; backface-visibility: hidden;
+      position: absolute; inset: 0; 
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
       background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 20px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 32px 24px; gap: 12px;
@@ -603,7 +613,7 @@
     .card-face.back {
       transform: rotateY(180deg);
       border-color: var(--brand-green);
-      background: linear-gradient(135deg, var(--card-bg), var(--brand-green-light));
+      background: linear-gradient(135deg, var(--card-bg), var(--brand-green-light-solid));
     }
     .card-word { font-size: 2.2rem; font-weight: 800; text-align: center; line-height: 1.25; font-family: var(--font-heading); color: var(--text-primary); }
     .card-label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
