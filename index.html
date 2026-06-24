@@ -730,6 +730,63 @@
     #animal-canvas:hover {
       transform: scale(1.03);
     }
+
+    /* Teacher Mode Button Active State */
+    .theme-toggle-btn.active {
+      color: var(--brand-green) !important;
+      border-color: var(--brand-green) !important;
+      background: var(--brand-green-light-solid) !important;
+    }
+
+    /* Autocentered Student Pill */
+    .student-caller-pill {
+      background: var(--brand-green-light-solid);
+      border: 1px solid var(--border-color);
+      border-radius: 99px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brand-green);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+      user-select: none;
+      min-width: 90px;
+      justify-content: center;
+    }
+    .student-caller-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+      background: var(--brand-green);
+      color: white;
+      border-color: var(--brand-green);
+    }
+    .student-caller-pill:active {
+      transform: translateY(0);
+    }
+
+    /* Modal Overlay & Card */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4);
+      display: flex; align-items: center; justify-content: center; z-index: 1000;
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    }
+    .modal-card {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
+      width: 90%; max-width: 440px; padding: 24px; box-shadow: var(--shadow-lg);
+      animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-header h3 { margin: 0; font-size: 1.2rem; font-family: var(--font-heading); font-weight: 700; color: var(--text-primary); }
+    .btn-close { background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
+    .btn-close:hover { color: var(--text-primary); }
   </style>
 </head>
 <body>
@@ -741,16 +798,21 @@
         <span class="logo-emoji">🇪🇸</span>
         <span class="logo-text">Claro Vocab</span>
       </div>
-      <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
-        <!-- Sun icon (shown in dark theme) -->
-        <svg class="sun-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <!-- Moon icon (shown in light theme) -->
-        <svg class="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-      </button>
+      <div class="header-actions" style="display: flex; align-items: center; gap: 8px;">
+        <button id="teacher-toggle-btn" class="theme-toggle-btn" aria-label="Teacher Mode" title="Teacher Mode Settings" onclick="openTeacherModal()">
+          👨‍🏫
+        </button>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+          <!-- Sun icon (shown in dark theme) -->
+          <svg class="sun-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <!-- Moon icon (shown in light theme) -->
+          <svg class="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -818,6 +880,9 @@
   <div id="flashcard-screen" hidden>
     <div class="quiz-header">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+        👤 <span class="student-caller-name">Name</span>
+      </div>
       <span class="progress-text" id="fc-progress"></span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="fc-progress-fill"></div></div>
@@ -849,6 +914,9 @@
   <div id="type-screen" hidden>
     <div class="quiz-header">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+        👤 <span class="student-caller-name">Name</span>
+      </div>
       <span class="progress-text" id="type-progress"></span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="type-progress-fill"></div></div>
@@ -870,6 +938,9 @@
   <div id="dict-screen" hidden>
     <div class="quiz-header">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+        👤 <span class="student-caller-name">Name</span>
+      </div>
       <span class="progress-text" id="dict-progress"></span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="dict-progress-fill"></div></div>
@@ -913,6 +984,9 @@
   <div id="quiz-screen" hidden>
     <div class="quiz-header">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+        👤 <span class="student-caller-name">Name</span>
+      </div>
       <span class="progress-text" id="progress-text"></span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -951,6 +1025,9 @@
   <div id="retrato-screen" hidden>
     <div class="quiz-header">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+        👤 <span class="student-caller-name">Name</span>
+      </div>
       <span class="progress-text" id="retrato-progress"></span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="retrato-progress-fill"></div></div>
@@ -1005,6 +1082,9 @@
   <div id="animal-screen" hidden>
     <div class="quiz-header">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+      <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+        👤 <span class="student-caller-name">Name</span>
+      </div>
       <span class="progress-text" id="animal-progress"></span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="animal-progress-fill"></div></div>
@@ -1027,6 +1107,9 @@
   <div id="omakase-screen" hidden>
     <div class="quiz-header">
       <button class="btn btn-ghost btn-sm" onclick="goHome()">✕ Exit</button>
+      <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+        👤 <span class="student-caller-name">Name</span>
+      </div>
       <span></span>
     </div>
     <div class="omakase-message" id="omakase-message"></div>
@@ -1040,6 +1123,30 @@
   </div>
 
 </div>
+
+<!-- Teacher Mode Modal -->
+<div id="teacher-modal" class="modal-overlay" hidden>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Teacher Mode Settings</h3>
+      <button class="btn-close" onclick="closeTeacherModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+        <label for="teacher-mode-enable" style="font-weight: 600; cursor: pointer; color: var(--text-primary);">Enable Teacher Mode</label>
+        <input type="checkbox" id="teacher-mode-enable" style="width: 20px; height: 20px; accent-color: var(--brand-green); cursor: pointer;" onchange="handleTeacherToggleChange()">
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">
+        Paste student names below (one name per line):
+      </p>
+      <textarea id="teacher-names-input" placeholder="e.g.&#10;Juan&#10;Maria&#10;Carlos..." style="width: 100%; height: 160px; padding: 12px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none; transition: border-color 0.2s;" oninput="saveTeacherNames()"></textarea>
+    </div>
+    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+      <button class="btn btn-primary" onclick="closeTeacherModal()">Save & Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // ── Theme Toggle Logic ────────────────────────────────────────────────
   function initTheme() {
@@ -1080,6 +1187,11 @@
   let aQuiz = null;
   let rQuiz = null;
 
+  // Teacher Mode State
+  let teacherMode = false;
+  let studentNames = [];
+  let currentStudent = '';
+
   // ── CSV parser (handles quoted fields with commas) ───────────────────
   function parseCSV(text) {
     const rows = [];
@@ -1095,6 +1207,110 @@
       if (cols.length >= 3) rows.push(cols);
     }
     return rows;
+  }
+
+  // ── Teacher Mode Logic ────────────────────────────────────────────────
+  function initTeacherMode() {
+    const savedMode = localStorage.getItem('teacherMode') === 'true';
+    const savedNames = localStorage.getItem('teacherNames') || '';
+    
+    teacherMode = savedMode;
+    studentNames = savedNames.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    
+    document.getElementById('teacher-mode-enable').checked = teacherMode;
+    document.getElementById('teacher-names-input').value = savedNames;
+    
+    updateTeacherUI();
+  }
+
+  function openTeacherModal() {
+    document.getElementById('teacher-modal').hidden = false;
+  }
+  
+  function closeTeacherModal() {
+    document.getElementById('teacher-modal').hidden = true;
+    updateTeacherUI();
+  }
+
+  function handleTeacherToggleChange() {
+    const checked = document.getElementById('teacher-mode-enable').checked;
+    teacherMode = checked;
+    localStorage.setItem('teacherMode', teacherMode);
+    updateTeacherUI();
+  }
+
+  function saveTeacherNames() {
+    const rawVal = document.getElementById('teacher-names-input').value;
+    localStorage.setItem('teacherNames', rawVal);
+    studentNames = rawVal.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    if (teacherMode && !currentStudent) {
+      rollStudent();
+    }
+  }
+
+  function updateTeacherUI() {
+    const btn = document.getElementById('teacher-toggle-btn');
+    if (btn) btn.classList.toggle('active', teacherMode);
+    
+    const activeScreenId = ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen', 'animal-screen', 'omakase-screen', 'retrato-screen'].find(id => {
+      const el = document.getElementById(id);
+      return el && !el.hidden;
+    });
+    const ACTIVITY_SCREENS = ['flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'animal-screen', 'retrato-screen', 'omakase-screen'];
+    
+    if (teacherMode && ACTIVITY_SCREENS.includes(activeScreenId)) {
+      if (!currentStudent) rollStudent();
+      showAllStudentPills();
+    } else {
+      hideAllStudentPills();
+    }
+  }
+
+  function rollStudent() {
+    if (!teacherMode) return;
+    
+    if (!studentNames.length) {
+      document.querySelectorAll('.student-caller-name').forEach(el => {
+        el.textContent = 'No names (Tap to set)';
+      });
+      currentStudent = '';
+      return;
+    }
+    
+    let nextStudent = currentStudent;
+    if (studentNames.length === 1) {
+      nextStudent = studentNames[0];
+    } else {
+      const choices = studentNames.filter(name => name !== currentStudent);
+      nextStudent = choices[Math.floor(Math.random() * choices.length)];
+    }
+    
+    currentStudent = nextStudent;
+    
+    document.querySelectorAll('.student-caller-name').forEach(el => {
+      el.textContent = currentStudent;
+    });
+  }
+
+  function handlePillClick(e) {
+    e.stopPropagation();
+    if (!studentNames.length) {
+      openTeacherModal();
+    } else {
+      rollStudent();
+    }
+  }
+
+  function showAllStudentPills() {
+    document.querySelectorAll('.student-caller-pill').forEach(el => {
+      el.hidden = false;
+    });
+  }
+
+  function hideAllStudentPills() {
+    document.querySelectorAll('.student-caller-pill').forEach(el => {
+      el.hidden = true;
+    });
   }
 
   // ── Init ─────────────────────────────────────────────────────────────
@@ -1113,6 +1329,7 @@
       db.sections[w.section].push(w);
     }
     renderSectionList();
+    initTeacherMode();
   }
 
   // ── Home helpers ─────────────────────────────────────────────────────
@@ -1151,6 +1368,13 @@
     ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen', 'animal-screen', 'omakase-screen', 'retrato-screen'].forEach(s =>
       document.getElementById(s).hidden = (s !== id)
     );
+    const ACTIVITY_SCREENS = ['flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'animal-screen', 'retrato-screen', 'omakase-screen'];
+    if (teacherMode && ACTIVITY_SCREENS.includes(id)) {
+      rollStudent();
+      showAllStudentPills();
+    } else {
+      hideAllStudentPills();
+    }
   }
 
   function goHome() { quiz = null; omakase = null; aQuiz = null; rQuiz = null; showScreen('home-screen'); }
@@ -1257,6 +1481,7 @@
     quiz.index++;
     if (quiz.index >= quiz.total) renderScore();
     else {
+      rollStudent();
       if (quiz.type === 'mc') renderQuestion();
       else if (quiz.type === 'type') renderTypeQuestion();
       else if (quiz.type.startsWith('dict')) renderDictQuestion();
@@ -1266,6 +1491,7 @@
   function prevQuestion() {
     if (quiz.index > 0) {
       quiz.index--;
+      rollStudent();
       if (quiz.type === 'mc') renderQuestion();
       else if (quiz.type === 'type') renderTypeQuestion();
       else if (quiz.type.startsWith('dict')) renderDictQuestion();
@@ -1281,6 +1507,7 @@
     const isES = quiz.direction === 'es-en';
     const correct = isES ? word.english : word.spanish;
     quiz.results[quiz.index] = { ok: false, score: 0, chosen: '—', correct };
+    rollStudent();
     if (quiz.type === 'mc') renderQuestion();
     else renderTypeQuestion();
   }
@@ -1456,6 +1683,7 @@
       return;
     }
     fc.index = next;
+    rollStudent();
     renderCard();
   }
 
@@ -2075,7 +2303,10 @@
     } else {
       aQuiz.index++;
       if (aQuiz.index >= aQuiz.total) renderAnimalScore();
-      else renderAnimalQuestion();
+      else {
+        rollStudent();
+        renderAnimalQuestion();
+      }
     }
   }
 
@@ -2083,9 +2314,11 @@
     const res = aQuiz.results[aQuiz.index];
     if (!res) {
       aQuiz.results[aQuiz.index] = { ok: false, score: 0, chosen: '—', result: 'incorrect' };
+      rollStudent();
       renderAnimalQuestion();
     } else if (aQuiz.index > 0) {
       aQuiz.index--;
+      rollStudent();
       renderAnimalQuestion();
     }
   }
@@ -2774,7 +3007,10 @@
     } else {
       rQuiz.index++;
       if (rQuiz.index >= rQuiz.total) renderRetratoScore();
-      else renderRetratoQuestion();
+      else {
+        rollStudent();
+        renderRetratoQuestion();
+      }
     }
   }
 
@@ -2789,9 +3025,11 @@
         correct: q.correct,
         result: 'incorrect'
       };
+      rollStudent();
       renderRetratoQuestion();
     } else if (rQuiz.index > 0) {
       rQuiz.index--;
+      rollStudent();
       renderRetratoQuestion();
     }
   }
