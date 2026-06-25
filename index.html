@@ -1132,12 +1132,34 @@
       <button class="btn-close" onclick="closeTeacherModal()">&times;</button>
     </div>
     <div class="modal-body">
+      <!-- Enable Teacher Mode Row -->
       <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
         <label for="teacher-mode-enable" style="font-weight: 600; cursor: pointer; color: var(--text-primary);">Enable Teacher Mode</label>
         <input type="checkbox" id="teacher-mode-enable" style="width: 20px; height: 20px; accent-color: var(--brand-green); cursor: pointer;" onchange="handleTeacherToggleChange()">
       </div>
+
+      <!-- Class Dropdown Selector -->
+      <div style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Select Class</label>
+        <div style="display: flex; gap: 8px;">
+          <select id="teacher-class-select" style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; outline: none;" onchange="handleClassSelectChange()">
+            <!-- Dynamically populated options -->
+          </select>
+          <button class="btn btn-ghost" style="padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-color);" onclick="handleDeleteClass()" title="Delete active class">🗑️</button>
+        </div>
+      </div>
+
+      <!-- Create New Class -->
+      <div style="margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Create New Class</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="new-class-name-input" placeholder="e.g. Year 7 Claro" style="flex: 1; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; outline: none;">
+          <button class="btn btn-primary" style="padding: 10px 16px; border-radius: 12px; font-weight: 600;" onclick="handleCreateClass()">Add</button>
+        </div>
+      </div>
+
       <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">
-        Paste student names below (one name per line):
+        Student names (one per line):
       </p>
       <textarea id="teacher-names-input" placeholder="e.g.&#10;Juan&#10;Maria&#10;Carlos..." style="width: 100%; height: 160px; padding: 12px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none; transition: border-color 0.2s;" oninput="saveTeacherNames()"></textarea>
     </div>
@@ -1191,6 +1213,8 @@
   let teacherMode = false;
   let studentNames = [];
   let currentStudent = '';
+  let teacherClasses = {};
+  let currentClass = '';
 
   // ── CSV parser (handles quoted fields with commas) ───────────────────
   function parseCSV(text) {
@@ -1212,19 +1236,69 @@
   // ── Teacher Mode Logic ────────────────────────────────────────────────
   function initTeacherMode() {
     const savedMode = localStorage.getItem('teacherMode') === 'true';
-    const savedNames = localStorage.getItem('teacherNames') || '';
     
+    // Parse classes dictionary or handle legacy single-class migration
+    let savedClassesStr = localStorage.getItem('teacherClasses');
+    let savedClasses = {};
+    if (savedClassesStr) {
+      try {
+        savedClasses = JSON.parse(savedClassesStr);
+      } catch (e) {
+        savedClasses = { "Class 1": "" };
+      }
+    } else {
+      // Migrate legacy single class list if it exists
+      const legacyNames = localStorage.getItem('teacherNames');
+      if (legacyNames !== null) {
+        savedClasses = { "Class 1": legacyNames };
+        localStorage.setItem('teacherClasses', JSON.stringify(savedClasses));
+        localStorage.removeItem('teacherNames'); // clean up legacy key
+      } else {
+        savedClasses = { "Class 1": "" };
+      }
+    }
+    
+    teacherClasses = savedClasses;
     teacherMode = savedMode;
-    studentNames = savedNames.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    
+    // Get selected class or default to first class
+    let savedCurrentClass = localStorage.getItem('teacherCurrentClass');
+    if (!savedCurrentClass || !teacherClasses[savedCurrentClass]) {
+      savedCurrentClass = Object.keys(teacherClasses)[0] || "Class 1";
+    }
+    currentClass = savedCurrentClass;
+    localStorage.setItem('teacherCurrentClass', currentClass);
+    
+    // Parse names for active class
+    const classNamesText = teacherClasses[currentClass] || "";
+    studentNames = classNamesText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
     
     document.getElementById('teacher-mode-enable').checked = teacherMode;
-    document.getElementById('teacher-names-input').value = savedNames;
+    document.getElementById('teacher-names-input').value = classNamesText;
     
+    renderClassSelectOptions();
     updateTeacherUI();
+  }
+
+  function renderClassSelectOptions() {
+    const select = document.getElementById('teacher-class-select');
+    if (!select) return;
+    select.innerHTML = '';
+    
+    for (const className of Object.keys(teacherClasses)) {
+      const opt = document.createElement('option');
+      opt.value = className;
+      opt.textContent = className;
+      opt.selected = className === currentClass;
+      select.appendChild(opt);
+    }
   }
 
   function openTeacherModal() {
     document.getElementById('teacher-modal').hidden = false;
+    document.getElementById('new-class-name-input').value = '';
+    renderClassSelectOptions();
+    document.getElementById('teacher-names-input').value = teacherClasses[currentClass] || "";
   }
   
   function closeTeacherModal() {
@@ -1239,10 +1313,89 @@
     updateTeacherUI();
   }
 
+  function handleClassSelectChange() {
+    const select = document.getElementById('teacher-class-select');
+    if (!select) return;
+    currentClass = select.value;
+    localStorage.setItem('teacherCurrentClass', currentClass);
+    
+    const classNamesText = teacherClasses[currentClass] || "";
+    document.getElementById('teacher-names-input').value = classNamesText;
+    studentNames = classNamesText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    
+    currentStudent = ''; // reset rolled student
+    if (teacherMode) {
+      rollStudent();
+    }
+  }
+
+  function handleCreateClass() {
+    const input = document.getElementById('new-class-name-input');
+    if (!input) return;
+    const newName = input.value.trim();
+    if (!newName) {
+      alert('Please enter a class name.');
+      return;
+    }
+    if (teacherClasses[newName] !== undefined) {
+      alert('A class with this name already exists.');
+      return;
+    }
+    
+    // Add to dictionary
+    teacherClasses[newName] = "";
+    localStorage.setItem('teacherClasses', JSON.stringify(teacherClasses));
+    
+    // Switch to new class
+    currentClass = newName;
+    localStorage.setItem('teacherCurrentClass', currentClass);
+    
+    input.value = '';
+    renderClassSelectOptions();
+    
+    // Set textarea to empty names
+    document.getElementById('teacher-names-input').value = "";
+    studentNames = [];
+    currentStudent = '';
+    
+    document.getElementById('teacher-names-input').focus();
+  }
+
+  function handleDeleteClass() {
+    const classKeys = Object.keys(teacherClasses);
+    if (classKeys.length <= 1) {
+      alert('You must keep at least one class list.');
+      return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete the class "${currentClass}"?`)) {
+      return;
+    }
+    
+    delete teacherClasses[currentClass];
+    localStorage.setItem('teacherClasses', JSON.stringify(teacherClasses));
+    
+    // Switch to another class
+    currentClass = Object.keys(teacherClasses)[0];
+    localStorage.setItem('teacherCurrentClass', currentClass);
+    
+    renderClassSelectOptions();
+    const classNamesText = teacherClasses[currentClass] || "";
+    document.getElementById('teacher-names-input').value = classNamesText;
+    studentNames = classNamesText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    currentStudent = '';
+    
+    if (teacherMode) {
+      rollStudent();
+    }
+  }
+
   function saveTeacherNames() {
     const rawVal = document.getElementById('teacher-names-input').value;
-    localStorage.setItem('teacherNames', rawVal);
+    teacherClasses[currentClass] = rawVal;
+    localStorage.setItem('teacherClasses', JSON.stringify(teacherClasses));
     studentNames = rawVal.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+    
     if (teacherMode && !currentStudent) {
       rollStudent();
     }
