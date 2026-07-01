@@ -1370,8 +1370,14 @@
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <!-- Verbs selection -->
         <div>
-          <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 8px;">Select Verbs</label>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; margin: 0;">Select Verbs</label>
+            <div style="display: flex; gap: 10px;">
+              <span style="font-size: 0.8rem; color: var(--brand-green); cursor: pointer; font-weight: 700; user-select: none;" onclick="toggleAllVerbs(true)">Select All</span>
+              <span style="font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; font-weight: 700; user-select: none;" onclick="toggleAllVerbs(false)">Deselect All</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
             <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; color: var(--text-primary);">
               <input type="checkbox" name="verb-select" value="ser" checked style="width: 18px; height: 18px; accent-color: var(--brand-green);"> ser (to be)
             </label>
@@ -1385,6 +1391,10 @@
               <input type="checkbox" name="verb-select" value="llamarse" checked style="width: 18px; height: 18px; accent-color: var(--brand-green);"> llamarse (to be called)
             </label>
           </div>
+          <!-- Pronoun selection -->
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; color: var(--text-primary); margin-top: 14px;">
+            <input type="checkbox" id="verb-formal" style="width: 18px; height: 18px; accent-color: var(--brand-green);"> Include formal pronouns (usted / ustedes)
+          </label>
         </div>
 
         <!-- Practice type -->
@@ -3672,6 +3682,12 @@
   // ── Verb Conjugation Challenge Logic ─────────────────────────────────
   let vQuiz = null;
 
+  function toggleAllVerbs(select) {
+    document.querySelectorAll('input[name="verb-select"]').forEach(cb => {
+      cb.checked = select;
+    });
+  }
+
   const VERB_DATA = {
     ser: {
       infinitive: "ser",
@@ -3680,9 +3696,11 @@
         "yo": "soy",
         "tú": "eres",
         "él/ella": "es",
+        "usted": "es",
         "nosotros": "somos",
         "vosotros": "sois",
-        "ellos": "son"
+        "ellos": "son",
+        "ustedes": "son"
       },
       sentences: {
         "yo": [
@@ -3698,6 +3716,10 @@
           { spanish: "él es alto y delgado", english: "he is tall and thin" },
           { spanish: "ella es baja y gorda", english: "she is short and fat" }
         ],
+        "usted": [
+          { spanish: "usted es de España", english: "you (singular, formal) are from Spain" },
+          { spanish: "usted es inteligente", english: "you (singular, formal) are intelligent" }
+        ],
         "nosotros": [
           { spanish: "nosotros somos hispanohablantes", english: "we are Spanish-speaking" }
         ],
@@ -3706,6 +3728,10 @@
         ],
         "ellos": [
           { spanish: "ellos son famosos", english: "they are famous" }
+        ],
+        "ustedes": [
+          { spanish: "ustedes son de los Estados Unidos", english: "you (plural, formal) are from the United States" },
+          { spanish: "ustedes son hispanohablantes", english: "you (plural, formal) are Spanish-speaking" }
         ]
       }
     },
@@ -3716,9 +3742,11 @@
         "yo": "estoy",
         "tú": "estás",
         "él/ella": "está",
+        "usted": "está",
         "nosotros": "estamos",
         "vosotros": "estáis",
-        "ellos": "están"
+        "ellos": "están",
+        "ustedes": "están"
       },
       sentences: {
         "yo": [
@@ -3733,6 +3761,10 @@
           { spanish: "él está bien", english: "he is well" },
           { spanish: "ella está regular", english: "she is so-so" }
         ],
+        "usted": [
+          { spanish: "usted está bien", english: "you (singular, formal) are well" },
+          { spanish: "usted está regular", english: "you (singular, formal) are so-so" }
+        ],
         "nosotros": [
           { spanish: "nosotros estamos bien", english: "we are well" }
         ],
@@ -3741,6 +3773,10 @@
         ],
         "ellos": [
           { spanish: "ellos están fenomenal", english: "they are great" }
+        ],
+        "ustedes": [
+          { spanish: "ustedes están bien", english: "you (plural, formal) are well" },
+          { spanish: "ustedes están fenomenal", english: "you (plural, formal) are great" }
         ]
       }
     },
@@ -3751,9 +3787,11 @@
         "yo": "tengo",
         "tú": "tienes",
         "él/ella": "tiene",
+        "usted": "tiene",
         "nosotros": "tenemos",
         "vosotros": "tenéis",
-        "ellos": "tienen"
+        "ellos": "tienen",
+        "ustedes": "tienen"
       },
       sentences: {
         "yo": [
@@ -3769,6 +3807,10 @@
           { spanish: "él tiene el pelo rubio y corto", english: "he has short, blond hair" },
           { spanish: "ella tiene los ojos marrones", english: "she has brown eyes" }
         ],
+        "usted": [
+          { spanish: "usted tiene los ojos verdes", english: "you (singular, formal) have green eyes" },
+          { spanish: "usted tiene un perro", english: "you (singular, formal) have a dog" }
+        ],
         "nosotros": [
           { spanish: "nosotros tenemos un gato y un perro", english: "we have a cat and a dog" }
         ],
@@ -3777,6 +3819,10 @@
         ],
         "ellos": [
           { spanish: "ellos tienen una serpiente", english: "they have a snake" }
+        ],
+        "ustedes": [
+          { spanish: "ustedes tienen catorce años", english: "you (plural, formal) are 14 years old" },
+          { spanish: "ustedes tienen un perro y un gato", english: "you (plural, formal) have a dog and a cat" }
         ]
       }
     },
@@ -3787,9 +3833,11 @@
         "yo": "me llamo",
         "tú": "te llamas",
         "él/ella": "se llama",
+        "usted": "se llama",
         "nosotros": "nos llamamos",
         "vosotros": "os llamáis",
-        "ellos": "se llaman"
+        "ellos": "se llaman",
+        "ustedes": "se llaman"
       },
       sentences: {
         "yo": [
@@ -3803,6 +3851,10 @@
           { spanish: "él se llama Pedro", english: "he is called Pedro" },
           { spanish: "ella se llama Ana", english: "she is called Ana" }
         ],
+        "usted": [
+          { spanish: "usted se llama Carlos", english: "you (singular, formal) are called Carlos" },
+          { spanish: "usted se llama Ana", english: "you (singular, formal) are called Ana" }
+        ],
         "nosotros": [
           { spanish: "nosotros nos llamamos Gómez", english: "we are called Gómez" }
         ],
@@ -3811,6 +3863,10 @@
         ],
         "ellos": [
           { spanish: "ellos se llaman Sánchez", english: "they are called Sánchez" }
+        ],
+        "ustedes": [
+          { spanish: "ustedes se llaman Gómez", english: "you (plural, formal) are called Gómez" },
+          { spanish: "ustedes se llaman Sánchez", english: "you (plural, formal) are called Sánchez" }
         ]
       }
     }
@@ -3820,9 +3876,54 @@
     "yo": "I",
     "tú": "you (singular, informal)",
     "él/ella": "he/she",
+    "usted": "you (singular, formal)",
     "nosotros": "we",
     "vosotros": "you (plural, informal)",
-    "ellos": "they"
+    "ellos": "they",
+    "ustedes": "you (plural, formal)"
+  };
+
+  const ENGLISH_CONJUGATIONS = {
+    ser: {
+      "yo": "I am (essential)",
+      "tú": "you are (essential)",
+      "él/ella": "he/she is (essential)",
+      "usted": "you (singular, formal) are (essential)",
+      "nosotros": "we are (essential)",
+      "vosotros": "you (plural) are (essential)",
+      "ellos": "they are (essential)",
+      "ustedes": "you (plural, formal) are (essential)"
+    },
+    estar: {
+      "yo": "I am (feeling/location)",
+      "tú": "you are (feeling/location)",
+      "él/ella": "he/she is (feeling/location)",
+      "usted": "you (singular, formal) are (feeling/location)",
+      "nosotros": "we are (feeling/location)",
+      "vosotros": "you (plural) are (feeling/location)",
+      "ellos": "they are (feeling/location)",
+      "ustedes": "you (plural, formal) are (feeling/location)"
+    },
+    tener: {
+      "yo": "I have",
+      "tú": "you have",
+      "él/ella": "he/she has",
+      "usted": "you (singular, formal) have",
+      "nosotros": "we have",
+      "vosotros": "you (plural) have",
+      "ellos": "they have",
+      "ustedes": "you (plural, formal) have"
+    },
+    llamarse: {
+      "yo": "I am called",
+      "tú": "you are called",
+      "él/ella": "he/she is called",
+      "usted": "you (singular, formal) are called",
+      "nosotros": "we are called",
+      "vosotros": "you (plural) are called",
+      "ellos": "they are called",
+      "ustedes": "you (plural, formal) are called"
+    }
   };
 
   function openVerbSetup() {
@@ -3847,18 +3948,23 @@
     const mode = document.querySelector('input[name="verb-mode"]:checked').value;
     const direction = document.getElementById('verb-dir').value;
     const style = document.querySelector('input[name="verb-style"]:checked').value;
+    const includeFormal = document.getElementById('verb-formal').checked;
 
     vQuiz = {
       selectedVerbs: selected,
       mode: mode,
       direction: direction,
       style: style,
+      includeFormal: includeFormal,
       questions: [],
       currentIndex: 0,
       score: 0
     };
 
-    const pronouns = ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos"];
+    const pronouns = includeFormal
+      ? ["yo", "tú", "él/ella", "usted", "nosotros", "vosotros", "ellos", "ustedes"]
+      : ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos"];
+
     for (let i = 0; i < 10; i++) {
       const verbKey = selected[Math.floor(Math.random() * selected.length)];
       const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
@@ -3874,28 +3980,7 @@
 
       if (mode === 'pure') {
         spanishText = pronoun + " " + verbObj.conjugations[pronoun];
-        
-        let verbMeaning = '';
-        if (verbKey === 'ser') verbMeaning = "am/are/is (essential)";
-        else if (verbKey === 'estar') verbMeaning = "am/are/is (feeling/location)";
-        else if (verbKey === 'tener') verbMeaning = verbObj.conjugations[pronoun] === 'tiene' ? "has" : "have";
-        else if (verbKey === 'llamarse') {
-          const conj = verbObj.conjugations[pronoun];
-          if (conj.endsWith('o')) verbMeaning = "am called";
-          else if (conj.endsWith('as') || conj.endsWith('áis')) verbMeaning = "are called";
-          else if (conj.endsWith('a') || conj.endsWith('an')) verbMeaning = "is/are called";
-          else verbMeaning = "are called";
-        }
-        
-        let engPronoun = PRONOUN_MEANINGS[pronoun];
-        if (pronoun === 'yo') engPronoun = "I";
-        else if (pronoun === 'tú') engPronoun = "you";
-        else if (pronoun === 'él/ella') engPronoun = "he/she";
-        else if (pronoun === 'nosotros') engPronoun = "we";
-        else if (pronoun === 'vosotros') engPronoun = "you (plural)";
-        else if (pronoun === 'ellos') engPronoun = "they";
-
-        englishText = `${engPronoun} ${verbMeaning}`;
+        englishText = ENGLISH_CONJUGATIONS[verbKey][pronoun];
       } else {
         const sentenceList = verbObj.sentences[pronoun];
         const randomSentence = sentenceList[Math.floor(Math.random() * sentenceList.length)];
@@ -3960,36 +4045,19 @@
 
     const distractors = [];
     const targetConjs = VERB_DATA[q.verb].conjugations;
+    const pronounPool = vQuiz.includeFormal
+      ? ["yo", "tú", "él/ella", "usted", "nosotros", "vosotros", "ellos", "ustedes"]
+      : ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos"];
 
     if (vQuiz.mode === 'pure') {
       if (q.dir === 'es-en') {
-        Object.keys(targetConjs).forEach(p => {
+        pronounPool.forEach(p => {
           if (p !== q.pronoun) {
-            let verbMeaning = '';
-            if (q.verb === 'ser') verbMeaning = "am/are/is (essential)";
-            else if (q.verb === 'estar') verbMeaning = "am/are/is (feeling/location)";
-            else if (q.verb === 'tener') verbMeaning = targetConjs[p] === 'tiene' ? "has" : "have";
-            else if (q.verb === 'llamarse') {
-              const conj = targetConjs[p];
-              if (conj.endsWith('o')) verbMeaning = "am called";
-              else if (conj.endsWith('as') || conj.endsWith('áis')) verbMeaning = "are called";
-              else if (conj.endsWith('a') || conj.endsWith('an')) verbMeaning = "is/are called";
-              else verbMeaning = "are called";
-            }
-
-            let engPronoun = PRONOUN_MEANINGS[p];
-            if (p === 'yo') engPronoun = "I";
-            else if (p === 'tú') engPronoun = "you";
-            else if (p === 'él/ella') engPronoun = "he/she";
-            else if (p === 'nosotros') engPronoun = "we";
-            else if (p === 'vosotros') engPronoun = "you (plural)";
-            else if (p === 'ellos') engPronoun = "they";
-
-            distractors.push(`${engPronoun} ${verbMeaning}`);
+            distractors.push(ENGLISH_CONJUGATIONS[q.verb][p]);
           }
         });
       } else {
-        Object.keys(targetConjs).forEach(p => {
+        pronounPool.forEach(p => {
           if (p !== q.pronoun) {
             distractors.push(p + " " + targetConjs[p]);
           }
@@ -3999,10 +4067,12 @@
       const allSentences = [];
       Object.keys(VERB_DATA).forEach(vk => {
         const verbObj = VERB_DATA[vk];
-        Object.keys(verbObj.sentences).forEach(p => {
-          verbObj.sentences[p].forEach(sent => {
-            allSentences.push(sent);
-          });
+        pronounPool.forEach(p => {
+          if (verbObj.sentences[p]) {
+            verbObj.sentences[p].forEach(sent => {
+              allSentences.push(sent);
+            });
+          }
         });
       });
 
