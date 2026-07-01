@@ -1163,8 +1163,9 @@
       </p>
       <textarea id="teacher-names-input" placeholder="e.g.&#10;Juan&#10;Maria&#10;Carlos..." style="width: 100%; height: 160px; padding: 12px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; resize: vertical; outline: none; transition: border-color 0.2s;" oninput="saveTeacherNames()"></textarea>
     </div>
-    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
-      <button class="btn btn-primary" onclick="closeTeacherModal()">Save & Close</button>
+    <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px;">
+      <button class="btn btn-ghost" onclick="saveTeacherNames(); window.location.href='seating_planner_app.html';" style="border-radius: 12px; font-weight: 600; padding: 10px 16px;">🪑 Seating Planner</button>
+      <button class="btn btn-primary" onclick="closeTeacherModal()" style="border-radius: 12px; font-weight: 600; padding: 10px 16px;">Save & Close</button>
     </div>
   </div>
 </div>
@@ -1279,6 +1280,13 @@
     renderClassSelectOptions();
     updateTeacherUI();
   }
+
+  // Listen for changes from other tabs (like the Seating Planner)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'teacherClasses' || e.key === 'teacherCurrentClass' || e.key === 'teacherMode') {
+      initTeacherMode();
+    }
+  });
 
   function renderClassSelectOptions() {
     const select = document.getElementById('teacher-class-select');
