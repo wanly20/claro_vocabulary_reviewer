@@ -566,11 +566,27 @@
     .wrong-item:hover {
       transform: translateX(3px);
     }
-    .wrong-item .es { font-weight: 700; color: var(--color-incorrect); }
-    .wrong-item .en { color: var(--text-primary); }
-    .wrong-item .yours { color: var(--text-secondary); font-style: italic; font-size: 0.85em; margin-top: 4px; display: block; }
+    .wrong-item .es {
+      font-weight: 700;
+      color: var(--color-incorrect);
+    }
+    .wrong-item .en {
+      color: var(--text-primary);
+    }
+    .wrong-item .yours {
+      color: var(--text-secondary);
+      font-style: italic;
+      font-size: 0.85em;
+      margin-top: 4px;
+      display: block;
+    }
 
-    .score-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .score-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+    }
 
     /* Home layout grid */
     .home-layout {
@@ -581,13 +597,49 @@
     }
     .home-left  { grid-column: 1; }
     .home-right { grid-column: 2; }
+    
+    /* Compact layout adjustments to save vertical space in home-right */
+    .home-right h2 {
+      margin: 16px 0 8px;
+    }
+    .home-right h2:first-of-type {
+      margin-top: 0;
+    }
+    .home-right .direction-toggle {
+      margin-bottom: 16px;
+    }
+    .home-right .activity-grid {
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+    .home-right .divider {
+      margin: 12px 0;
+    }
+    .home-right .omakase-btn {
+      padding: 14px;
+    }
+    .home-right .challenge-card {
+      padding: 14px 18px;
+      margin-top: 8px;
+    }
+    .home-right .challenge-card-sub {
+      margin-bottom: 10px;
+    }
+
     @media (max-width: 680px) {
       .home-layout { grid-template-columns: 1fr; gap: 24px 0; }
       .home-right  { grid-column: 1; }
     }
 
     /* Flashcards */
-    .fc-hint { text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; min-height: 20px; font-weight: 500; }
+    .fc-hint {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      min-height: 20px;
+      font-weight: 500;
+    }
     .card-wrap { 
       perspective: 1200px; 
       margin: 0 auto 28px auto; 
@@ -596,17 +648,29 @@
       max-width: 500px; 
     }
     .card {
-      width: 100%; min-height: 300px; position: relative;
-      transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 100%;
+      min-height: 300px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .card.flipped { transform: rotateY(180deg); }
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
     .card-face {
-      position: absolute; inset: 0; 
+      position: absolute;
+      inset: 0; 
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 20px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 32px 24px; gap: 12px;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      gap: 12px;
       box-shadow: var(--shadow-md);
       transition: all 0.3s;
     }
@@ -615,31 +679,77 @@
       border-color: var(--brand-green);
       background: linear-gradient(135deg, var(--card-bg), var(--brand-green-light-solid));
     }
-    .card-word { font-size: 2.2rem; font-weight: 800; text-align: center; line-height: 1.25; font-family: var(--font-heading); color: var(--text-primary); }
-    .card-label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+    .card-word {
+      font-size: 2.2rem;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.25;
+      font-family: var(--font-heading);
+      color: var(--text-primary);
+    }
+    .card-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
     
     .speak-btn {
-      margin-top: 8px; background: var(--brand-green-light); border: 1px solid var(--border-color); border-radius: 50%;
-      width: 48px; height: 48px; font-size: 1.25rem; cursor: pointer;
-      transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+      margin-top: 8px;
+      background: var(--brand-green-light);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .speak-btn:hover { background: var(--brand-green); color: white; transform: scale(1.1); border-color: var(--brand-green); }
+    .speak-btn:hover {
+      background: var(--brand-green);
+      color: white;
+      transform: scale(1.1);
+      border-color: var(--brand-green);
+    }
     
     .fc-nav {
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
-    .fc-nav .btn { flex: 1; }
-    .fc-counter { color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; white-space: nowrap; }
+    .fc-nav .btn {
+      flex: 1;
+    }
+    .fc-counter {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
 
     /* Type Answer */
     .type-input {
-      width: 100%; padding: 16px; font-size: 1.15rem;
-      border: 2px solid var(--border-color); border-radius: 16px; outline: none;
-      transition: all 0.2s; background: var(--card-bg); color: var(--text-primary);
+      width: 100%;
+      padding: 16px;
+      font-size: 1.15rem;
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      outline: none;
+      transition: all 0.2s;
+      background: var(--card-bg);
+      color: var(--text-primary);
       margin-bottom: 14px;
       box-shadow: var(--shadow-sm);
     }
-    .type-input:focus { border-color: var(--brand-green); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+    .type-input:focus {
+      border-color: var(--brand-green);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
     
     .type-input.correct {
       border-color: var(--color-correct);
@@ -656,69 +766,192 @@
       background-color: var(--bg-incorrect);
       color: var(--text-incorrect);
     }
-    .submit-row { display: flex; gap: 10px; margin-bottom: 20px; }
-    .submit-row .btn { flex: 1; padding: 14px; font-size: 1rem; }
-    .correct-answer { text-align: center; color: var(--text-secondary); font-size: 0.95rem; min-height: 22px; margin-bottom: 16px; }
-    .correct-answer strong { color: var(--brand-green); }
+    .submit-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .submit-row .btn {
+      flex: 1;
+      padding: 14px;
+      font-size: 1rem;
+    }
+    .correct-answer {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      min-height: 22px;
+      margin-bottom: 16px;
+    }
+    .correct-answer strong {
+      color: var(--brand-green);
+    }
 
     /* Dictation Mode */
-    .dict-speaker-area { text-align: center; margin: 24px 0 28px; }
+    .dict-speaker-area {
+      text-align: center;
+      margin: 24px 0 28px;
+    }
     .dict-speak-btn {
-      width: 96px; height: 96px; border-radius: 50%; border: none;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: none;
       background: linear-gradient(135deg, var(--brand-green), var(--brand-green-hover));
-      color: #fff; font-size: 2.6rem; cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); display: inline-flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 2.6rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
     }
-    .dict-speak-btn:hover  { transform: scale(1.08); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); }
-    .dict-speak-btn:active { transform: scale(0.95); }
-    .dict-voice-label { color: var(--brand-green); font-size: 0.85rem; font-weight: 700; margin-top: 10px; min-height: 18px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .dict-hint { color: var(--text-secondary); font-size: 0.8rem; margin-top: 4px; font-weight: 500; }
+    .dict-speak-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    }
+    .dict-speak-btn:active {
+      transform: scale(0.95);
+    }
+    .dict-voice-label {
+      color: var(--brand-green);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 10px;
+      min-height: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .dict-hint {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-top: 4px;
+      font-weight: 500;
+    }
 
-    .dict-layout { display: flex; gap: 32px; align-items: flex-start; margin: 20px 0; }
-    .dict-side { flex: 0 0 110px; text-align: center; }
-    .dict-main { flex: 1; }
+    .dict-layout {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      margin: 20px 0;
+    }
+    .dict-side {
+      flex: 0 0 110px;
+      text-align: center;
+    }
+    .dict-main {
+      flex: 1;
+    }
     @media (max-width: 520px) {
-      .dict-layout { flex-direction: column; align-items: center; gap: 16px; }
-      .dict-side { flex: 0 0 auto; }
-      .dict-main { width: 100%; }
+      .dict-layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .dict-side {
+        flex: 0 0 auto;
+      }
+      .dict-main {
+        width: 100%;
+      }
     }
 
     /* Omakase screen */
     .omakase-message {
-      font-size: 1.4rem; font-weight: 800; text-align: center;
-      color: var(--brand-green); margin: 12px 0 18px; line-height: 1.35;
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--brand-green);
+      margin: 12px 0 18px;
+      line-height: 1.35;
       font-family: var(--font-heading);
     }
     .omakase-phase-badge {
-      display: inline-block; background: var(--brand-green-light); color: var(--brand-green);
-      border-radius: 99px; padding: 6px 18px; font-size: 0.9rem; font-weight: 700;
-      margin-bottom: 12px; border: 1px solid var(--border-correct);
+      display: inline-block;
+      background: var(--brand-green-light);
+      color: var(--brand-green);
+      border-radius: 99px;
+      padding: 6px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      border: 1px solid var(--border-correct);
     }
-    .omakase-sections-label { text-align: center; color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 24px; font-weight: 500; }
-    .omakase-scoreboard { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; }
+    .omakase-sections-label {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    .omakase-scoreboard {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+    }
     .omakase-score-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; gap: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95rem;
+      gap: 8px;
     }
-    .omakase-score-row:last-child { border-bottom: none; }
-    .omakase-score-val { font-weight: 700; color: var(--brand-green); white-space: nowrap; }
+    .omakase-score-row:last-child {
+      border-bottom: none;
+    }
+    .omakase-score-val {
+      font-weight: 700;
+      color: var(--brand-green);
+      white-space: nowrap;
+    }
     .omakase-first-badge {
-      font-size: 0.7rem; background: var(--color-nearly); color: var(--text-nearly);
-      padding: 2px 8px; border-radius: 99px; margin-left: 6px; font-weight: 700;
+      font-size: 0.7rem;
+      background: var(--color-nearly);
+      color: var(--text-nearly);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-left: 6px;
+      font-weight: 700;
       border: 1px solid var(--border-nearly);
     }
-    .omakase-no-scores { color: var(--text-secondary); font-size: 0.9rem; text-align: center; padding: 8px 0; font-weight: 500; }
+    .omakase-no-scores {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 8px 0;
+      font-weight: 500;
+    }
 
-    /* Animal Colour activity */
-    .animal-colour-card {
-      background: var(--bg-color); border: 1px solid var(--border-color);
-      border-radius: 20px; padding: 20px; margin-top: 12px;
+    /* Challenge card layout */
+    .challenge-card {
+      background: var(--bg-color); 
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 12px;
       box-shadow: var(--shadow-sm);
     }
-    .animal-colour-card-title { font-size: 1.1rem; font-weight: 700; color: var(--brand-green); margin-bottom: 4px; font-family: var(--font-heading); }
-    .animal-colour-card-sub   { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 16px; }
-    .animal-canvas-wrap { display: flex; justify-content: center; margin: 12px 0 24px; }
+    .challenge-card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--brand-green);
+      margin-bottom: 4px;
+      font-family: var(--font-heading);
+    }
+    .challenge-card-sub {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+    }
+    .animal-canvas-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 12px 0 24px;
+    }
     #animal-canvas {
       width: 220px; height: 220px;
       background: var(--bg-color);
@@ -770,23 +1003,63 @@
 
     /* Modal Overlay & Card */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4);
-      display: flex; align-items: center; justify-content: center; z-index: 1000;
-      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
     .modal-card {
-      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
-      width: 90%; max-width: 440px; padding: 24px; box-shadow: var(--shadow-lg);
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 440px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
       animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes modalFadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .modal-header h3 { margin: 0; font-size: 1.2rem; font-family: var(--font-heading); font-weight: 700; color: var(--text-primary); }
-    .btn-close { background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
-    .btn-close:hover { color: var(--text-primary); }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-close:hover {
+      color: var(--text-primary);
+    }
   </style>
 </head>
 <body>
@@ -854,17 +1127,17 @@
         <button class="omakase-btn" onclick="startOmakase()">Just pick for me!</button>
 
         <div class="divider">también</div>
-        <div class="animal-colour-card">
-          <p class="animal-colour-card-title">🎨 ¿De qué color es?</p>
-          <p class="animal-colour-card-sub">Animal colour challenge</p>
+        <div class="challenge-card">
+          <p class="challenge-card-title">🎨 ¿De qué color es?</p>
+          <p class="challenge-card-sub">Animal colour challenge</p>
           <div style="display:flex; gap:8px;">
             <button class="btn btn-primary" style="flex:1" onclick="startAnimalColour('mc')">📋 Choose</button>
             <button class="btn btn-primary" style="flex:1" onclick="startAnimalColour('type')">✍️ Type</button>
           </div>
         </div>
-        <div class="animal-colour-card" style="margin-top:12px;">
-          <p class="animal-colour-card-title">👤 Retrato Robot</p>
-          <p class="animal-colour-card-sub">Suspect description challenge</p>
+        <div class="challenge-card">
+          <p class="challenge-card-title">👤 Retrato Robot</p>
+          <p class="challenge-card-sub">Suspect description challenge</p>
           <div style="display:flex; gap:8px;">
             <button class="btn btn-primary" style="flex:1" onclick="startRetrato('lineup')">📋 Lineup</button>
             <button class="btn btn-primary" style="flex:1" onclick="startRetrato('describe')">✍️ Describe</button>
