@@ -4039,6 +4039,114 @@
     }
   }
 
+  function getVerbSwapDistractor(q) {
+    const targetConj = VERB_DATA[q.verb].conjugations[q.pronoun];
+    let swapVerb = null;
+    if (q.verb === 'ser') swapVerb = 'estar';
+    else if (q.verb === 'estar') swapVerb = 'ser';
+    else if (q.verb === 'tener') swapVerb = 'ser';
+    else if (q.verb === 'llamarse') swapVerb = 'ser';
+
+    if (swapVerb) {
+      const swapConj = VERB_DATA[swapVerb].conjugations[q.pronoun];
+      if (q.dir === 'en-es') {
+        return q.spanish.replace(targetConj, swapConj);
+      } else {
+        let engTarget = q.english;
+        if (q.verb === 'ser') {
+          return engTarget.replace("am", "am (feeling)").replace("are", "are (feeling)").replace("is", "is (feeling)");
+        } else if (q.verb === 'estar') {
+          return engTarget.replace("am", "am (essential)").replace("are", "are (essential)").replace("is", "is (essential)");
+        } else if (q.verb === 'tener') {
+          return engTarget.replace("am", "have").replace("are", "have").replace("is", "has");
+        } else if (q.verb === 'llamarse') {
+          return engTarget.replace("am called", "am").replace("are called", "are").replace("is called", "is");
+        }
+      }
+    }
+    return null;
+  }
+
+  function getSubjectSwapDistractor(q, otherPronoun) {
+    const targetConj = VERB_DATA[q.verb].conjugations[q.pronoun];
+    const otherConj = VERB_DATA[q.verb].conjugations[otherPronoun];
+    
+    if (q.dir === 'en-es') {
+      let dist = q.spanish;
+      const words = dist.split(' ');
+      if (words.length > 1) {
+        let currentPronounWord = q.pronoun;
+        if (q.pronoun === 'él/ella') {
+          currentPronounWord = words[0] === 'ella' ? 'ella' : 'él';
+        }
+        
+        let nextPronounWord = otherPronoun;
+        if (otherPronoun === 'él/ella') {
+          nextPronounWord = Math.random() < 0.5 ? 'él' : 'ella';
+        }
+
+        if (words[0] === currentPronounWord) {
+          words[0] = nextPronounWord;
+        }
+        
+        let subSentence = words.join(' ');
+        const escapedConj = targetConj.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regex = new RegExp('\\b' + escapedConj + '\\b', 'g');
+        subSentence = subSentence.replace(regex, otherConj);
+        
+        return subSentence;
+      }
+    } else {
+      let currentEng = PRONOUN_MEANINGS[q.pronoun];
+      if (q.pronoun === 'yo') currentEng = "I";
+      else if (q.pronoun === 'tú') currentEng = "you";
+      else if (q.pronoun === 'él/ella') currentEng = "he/she";
+      else if (q.pronoun === 'nosotros') currentEng = "we";
+      else if (q.pronoun === 'vosotros') currentEng = "you (plural)";
+      else if (q.pronoun === 'ellos') currentEng = "they";
+      else if (q.pronoun === 'usted') currentEng = "you (singular, formal)";
+      else if (q.pronoun === 'ustedes') currentEng = "you (plural, formal)";
+
+      let nextEng = PRONOUN_MEANINGS[otherPronoun];
+      if (otherPronoun === 'yo') nextEng = "I";
+      else if (otherPronoun === 'tú') nextEng = "you";
+      else if (otherPronoun === 'él/ella') nextEng = "he/she";
+      else if (otherPronoun === 'nosotros') nextEng = "we";
+      else if (otherPronoun === 'vosotros') nextEng = "you (plural)";
+      else if (otherPronoun === 'ellos') nextEng = "they";
+      else if (otherPronoun === 'usted') nextEng = "you (singular, formal)";
+      else if (otherPronoun === 'ustedes') nextEng = "you (plural, formal)";
+
+      let engTarget = q.english;
+      if (engTarget.startsWith(currentEng)) {
+        let rest = engTarget.slice(currentEng.length);
+        if (q.verb === 'ser' || q.verb === 'estar') {
+          if (rest.startsWith(" am")) rest = rest.replace(" am", " are");
+          else if (rest.startsWith(" is")) rest = rest.replace(" is", " are");
+          else if (rest.startsWith(" are")) {
+            if (otherPronoun === 'yo') rest = rest.replace(" are", " am");
+            else if (otherPronoun === 'él/ella') rest = rest.replace(" are", " is");
+          }
+        } else if (q.verb === 'tener') {
+          if (rest.startsWith(" have")) {
+            if (otherPronoun === 'él/ella') rest = rest.replace(" have", " has");
+          } else if (rest.startsWith(" has")) {
+            rest = rest.replace(" has", " have");
+          }
+        } else if (q.verb === 'llamarse') {
+          if (rest.startsWith(" am called")) rest = rest.replace(" am called", " are called");
+          else if (rest.startsWith(" is called")) rest = rest.replace(" is called", " are called");
+          else if (rest.startsWith(" are called")) {
+            if (otherPronoun === 'yo') rest = rest.replace(" are called", " am called");
+            else if (otherPronoun === 'él/ella') rest = rest.replace(" are called", " is called");
+          }
+        }
+        return nextEng + rest;
+      }
+    }
+    return null;
+  }
+
   function generateVerbMCOptions(q) {
     const container = document.getElementById('verb-mc-container');
     container.innerHTML = '';
@@ -4064,24 +4172,39 @@
         });
       }
     } else {
-      const allSentences = [];
-      Object.keys(VERB_DATA).forEach(vk => {
-        const verbObj = VERB_DATA[vk];
-        pronounPool.forEach(p => {
-          if (verbObj.sentences[p]) {
-            verbObj.sentences[p].forEach(sent => {
-              allSentences.push(sent);
-            });
-          }
+      const verbSwap = getVerbSwapDistractor(q);
+      const otherPronouns = pronounPool.filter(p => p !== q.pronoun);
+      const shuffledOthers = shuffle(otherPronouns);
+      const subSwap1 = getSubjectSwapDistractor(q, shuffledOthers[0]);
+      const subSwap2 = getSubjectSwapDistractor(q, shuffledOthers[1]);
+
+      const list = [verbSwap, subSwap1, subSwap2].filter(item => item && item !== q.correctAnswer);
+      const uniqueList = Array.from(new Set(list));
+      
+      if (uniqueList.length < 3) {
+        const allSentences = [];
+        Object.keys(VERB_DATA).forEach(vk => {
+          const verbObj = VERB_DATA[vk];
+          pronounPool.forEach(p => {
+            if (verbObj.sentences[p]) {
+              verbObj.sentences[p].forEach(sent => {
+                allSentences.push(sent);
+              });
+            }
+          });
         });
-      });
 
-      const optionsPool = allSentences
-        .map(sent => q.dir === 'es-en' ? sent.english : sent.spanish)
-        .filter(text => text !== q.correctAnswer);
+        const optionsPool = allSentences
+          .map(sent => q.dir === 'es-en' ? sent.english : sent.spanish)
+          .filter(text => text !== q.correctAnswer && !uniqueList.includes(text));
 
-      const uniquePool = Array.from(new Set(optionsPool));
-      shuffle(uniquePool).slice(0, 3).forEach(d => distractors.push(d));
+        const fallbackChoices = shuffle(Array.from(new Set(optionsPool)));
+        while (uniqueList.length < 3 && fallbackChoices.length > 0) {
+          uniqueList.push(fallbackChoices.pop());
+        }
+      }
+
+      shuffle(uniqueList).slice(0, 3).forEach(d => distractors.push(d));
     }
 
     const options = shuffle([q.correctAnswer, ...distractors.slice(0, 3)]);
