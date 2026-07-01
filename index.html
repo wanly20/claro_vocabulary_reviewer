@@ -2258,6 +2258,25 @@
     return normalise(s).split(' ').filter(w => w.length >= 4);
   }
 
+  function stripStartingPronoun(s) {
+    const pronouns = ['yo', 'tu', 'el', 'ella', 'nosotros', 'nosotras', 'vosotros', 'vosotras', 'ellos', 'ellas', 'usted', 'ustedes'];
+    const words = s.split(' ');
+    if (words.length > 1 && pronouns.includes(words[0])) {
+      return words.slice(1).join(' ');
+    }
+    return s;
+  }
+
+  function stripStartingPronounAccented(s) {
+    const pronouns = ['yo', 'tú', 'él', 'ella', 'nosotros', 'nosotras', 'vosotros', 'vosotras', 'ellos', 'ellas', 'usted', 'ustedes',
+                      'Yo', 'Tú', 'Él', 'Ella', 'Nosotros', 'Nosotras', 'Vosotros', 'Vosotras', 'Ellos', 'Ellas', 'Usted', 'Ustedes'];
+    const words = s.trim().split(' ');
+    if (words.length > 1 && pronouns.includes(words[0])) {
+      return words.slice(1).join(' ');
+    }
+    return s.trim();
+  }
+
   // Returns 'correct' | 'nearly' | 'incorrect'
   function grade(typed, correct, requiresCapital = false) {
     const t = typed.trim();
@@ -2269,8 +2288,19 @@
     // Case-insensitive match: full marks unless this word requires capital letters
     if (t.toLowerCase() === correct.toLowerCase()) return requiresCapital ? 'nearly' : 'correct';
 
+    // Check with optional starting subject pronouns (case-insensitive, accents preserved)
+    const tNoPronoun = stripStartingPronounAccented(t).toLowerCase();
+    const cNoPronoun = stripStartingPronounAccented(correct).toLowerCase();
+    if (tNoPronoun === cNoPronoun) return requiresCapital ? 'nearly' : 'correct';
+
     // Wrong/missing accents or missing spaces → nearly
     if (normT === normC) return 'nearly';
+
+    // Check normalised version without starting pronouns (handles missing accents + optional pronouns)
+    const cleanNormT = stripStartingPronoun(normT);
+    const cleanNormC = stripStartingPronoun(normC);
+    if (cleanNormT === cleanNormC) return 'nearly';
+
     if (normT.replace(/\s/g, '') === normC.replace(/\s/g, '')) return 'nearly';
 
     // Partial word overlap (both sides must have ≥1 content word of length ≥4 in common)
@@ -4029,11 +4059,11 @@
     
     const result = grade(userVal, q.correctAnswer);
 
-    if (result.status === 'correct') {
+    if (result === 'correct') {
       input.className = 'type-input correct';
       feedback.innerHTML = `🎉 Correct!`;
       vQuiz.score += 1.0;
-    } else if (result.status === 'nearly') {
+    } else if (result === 'nearly') {
       input.className = 'type-input nearly';
       feedback.innerHTML = `⚠️ Nearly! Smart Match: <strong>${q.correctAnswer}</strong><br><small style="color:var(--text-secondary)">Your answer: "${userVal}"</small>`;
       vQuiz.score += 0.5;
