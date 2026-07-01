@@ -1146,7 +1146,10 @@
         <div class="challenge-card">
           <p class="challenge-card-title">⚙️ Verbo Conjugación</p>
           <p class="challenge-card-sub">Verb conjugation & translation challenge</p>
-          <button class="btn btn-primary btn-full" style="padding: 10px 16px; border-radius: 12px; font-weight: 600;" onclick="openVerbSetup()">🎮 Play</button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary" style="flex:1; padding: 10px 16px; border-radius: 12px; font-weight: 600;" onclick="openVerbSetup()">📋 Practice</button>
+            <button class="btn btn-primary" style="flex:1; padding: 10px 16px; border-radius: 12px; font-weight: 600;" onclick="openVerbReview()">📖 Review</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1473,6 +1476,31 @@
 
       <div class="submit-row" id="verb-next-container" hidden>
         <button class="btn btn-primary" onclick="nextVerbQuestion()">Next Question →</button>
+      </div>
+    </div>
+
+    <!-- Review View -->
+    <div id="verb-review-view" hidden>
+      <div class="quiz-header">
+        <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+        <span class="logo-emoji" style="font-size: 1.5rem;">📖</span>
+      </div>
+      <h2 style="margin-top: 0; text-align: center; color: var(--brand-green); margin-bottom: 16px;">Verb Conjugation Review</h2>
+
+      <!-- Verb select tabs -->
+      <div id="verb-tabs" style="display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px;">
+        <!-- Injected tab buttons: ser, estar, tener, llamarse -->
+      </div>
+
+      <!-- Conjugation Grid Table -->
+      <div id="verb-conjugation-chart-container" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+          <h3 id="verb-review-title" style="margin: 0; font-size: 1.15rem; color: var(--brand-green); font-family: var(--font-heading); font-weight: 700;">ser (to be)</h3>
+          <button class="btn btn-primary btn-sm" onclick="speakAllReviewConjugations()" style="padding: 6px 12px; font-size: 0.85rem; border-radius: 8px;">🔊 Speak All</button>
+        </div>
+        <div id="verb-chart-rows" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Injected rows -->
+        </div>
       </div>
     </div>
   </div>
@@ -3934,6 +3962,7 @@
   function showVerbSetup() {
     document.getElementById('verb-setup-view').hidden = false;
     document.getElementById('verb-play-view').hidden = true;
+    document.getElementById('verb-review-view').hidden = true;
     vQuiz = null;
   }
 
@@ -4297,6 +4326,157 @@
     document.getElementById('redo-btn').hidden = true;
     document.getElementById('next-phase-btn').hidden = true;
     document.getElementById('back-home-btn').hidden = false;
+  }
+
+  // ── Verb Review Logic ────────────────────────────────────────────────
+  let activeReviewVerb = 'ser';
+
+  function openVerbReview() {
+    showScreen('verb-screen');
+    document.getElementById('verb-setup-view').hidden = true;
+    document.getElementById('verb-play-view').hidden = true;
+    document.getElementById('verb-review-view').hidden = false;
+    vQuiz = null;
+    
+    renderVerbReviewTabs();
+    renderVerbReviewChart('ser');
+  }
+
+  function renderVerbReviewTabs() {
+    const container = document.getElementById('verb-tabs');
+    container.innerHTML = '';
+    
+    const verbs = ['ser', 'estar', 'tener', 'llamarse'];
+    verbs.forEach(v => {
+      const btn = document.createElement('button');
+      btn.className = 'btn verb-tab-btn';
+      btn.setAttribute('data-verb', v);
+      btn.style.flex = '1';
+      btn.style.padding = '8px 12px';
+      btn.style.borderRadius = '10px';
+      btn.style.border = '1px solid var(--border-color)';
+      btn.style.fontFamily = 'inherit';
+      btn.style.fontWeight = '700';
+      btn.style.fontSize = '0.9rem';
+      btn.style.cursor = 'pointer';
+      btn.style.whiteSpace = 'nowrap';
+      btn.style.transition = 'all 0.2s';
+      btn.textContent = v;
+      btn.onclick = () => renderVerbReviewChart(v);
+      
+      container.appendChild(btn);
+    });
+  }
+
+  function renderVerbReviewChart(verbKey) {
+    activeReviewVerb = verbKey;
+    const verbObj = VERB_DATA[verbKey];
+    
+    document.getElementById('verb-review-title').textContent = `${verbObj.infinitive} (${verbObj.meaning})`;
+    
+    const tabs = document.querySelectorAll('.verb-tab-btn');
+    tabs.forEach(tab => {
+      const active = tab.getAttribute('data-verb') === verbKey;
+      tab.style.background = active ? 'var(--brand-green)' : 'var(--bg-color)';
+      tab.style.color = active ? 'white' : 'var(--text-primary)';
+      tab.style.borderColor = active ? 'var(--brand-green)' : 'var(--border-color)';
+    });
+
+    const rowsContainer = document.getElementById('verb-chart-rows');
+    rowsContainer.innerHTML = '';
+
+    const pronouns = ["yo", "tú", "él/ella", "usted", "nosotros", "vosotros", "ellos", "ustedes"];
+    
+    pronouns.forEach(p => {
+      const conj = verbObj.conjugations[p];
+      const translation = ENGLISH_CONJUGATIONS[verbKey][p];
+      
+      const row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.padding = '8px 12px';
+      row.style.borderRadius = '10px';
+      row.style.borderBottom = '1px solid var(--border-color)';
+      row.style.gap = '12px';
+
+      const pCol = document.createElement('span');
+      pCol.style.flex = '1';
+      pCol.style.fontWeight = '700';
+      pCol.style.color = 'var(--text-secondary)';
+      pCol.textContent = p;
+
+      const cCol = document.createElement('span');
+      cCol.style.flex = '1.2';
+      cCol.style.fontWeight = '800';
+      cCol.style.color = 'var(--brand-green)';
+      cCol.textContent = conj;
+
+      const tCol = document.createElement('span');
+      tCol.style.flex = '2';
+      tCol.style.fontSize = '0.9rem';
+      tCol.style.color = 'var(--text-secondary)';
+      tCol.textContent = translation;
+
+      const sBtn = document.createElement('button');
+      sBtn.className = 'btn btn-ghost';
+      sBtn.style.padding = '4px 8px';
+      sBtn.style.borderRadius = '6px';
+      sBtn.style.fontSize = '1.1rem';
+      sBtn.innerHTML = '🔊';
+      sBtn.onclick = () => speakVerbRandomAccent(`${p} ${conj}`);
+
+      row.appendChild(pCol);
+      row.appendChild(cCol);
+      row.appendChild(tCol);
+      row.appendChild(sBtn);
+      
+      rowsContainer.appendChild(row);
+    });
+  }
+
+  function speakVerbRandomAccent(text) {
+    if (!('speechSynthesis' in window)) return;
+    
+    const u = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('es'));
+    if (voices.length > 0) {
+      const randomVoice = voices[Math.floor(Math.random() * voices.length)];
+      u.voice = randomVoice;
+      u.lang = randomVoice.lang;
+    } else {
+      u.lang = 'es-ES';
+    }
+    
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+
+  function speakAllReviewConjugations() {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    
+    const verbObj = VERB_DATA[activeReviewVerb];
+    const pronouns = ["yo", "tú", "él/ella", "usted", "nosotros", "vosotros", "ellos", "ustedes"];
+    
+    const voices = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('es'));
+    const randomVoice = voices.length > 0 ? voices[Math.floor(Math.random() * voices.length)] : null;
+    
+    pronouns.forEach(p => {
+      const conj = verbObj.conjugations[p];
+      let pronounToSpeak = p;
+      if (p === 'él/ella') {
+        pronounToSpeak = Math.random() < 0.5 ? 'él' : 'ella';
+      }
+      
+      const u = new SpeechSynthesisUtterance(`${pronounToSpeak} ${conj}`);
+      if (randomVoice) {
+        u.voice = randomVoice;
+        u.lang = randomVoice.lang;
+      } else {
+        u.lang = 'es-ES';
+      }
+      speechSynthesis.speak(u);
+    });
   }
   
   // ── Global Listeners ────────────────────────────────────────────────
