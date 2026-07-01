@@ -185,7 +185,7 @@
     }
 
     /* Screen containers (Card panels) */
-    #home-screen, #flashcard-screen, #type-screen, #dict-screen, #quiz-screen, #score-screen, #animal-screen, #omakase-screen {
+    #home-screen, #flashcard-screen, #type-screen, #dict-screen, #quiz-screen, #score-screen, #animal-screen, #omakase-screen, #verb-screen {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 24px;
@@ -200,7 +200,7 @@
       margin: 0 auto;
       width: 100%;
     }
-    #flashcard-screen, #type-screen, #dict-screen, #quiz-screen, #score-screen, #animal-screen, #omakase-screen {
+    #flashcard-screen, #type-screen, #dict-screen, #quiz-screen, #score-screen, #animal-screen, #omakase-screen, #verb-screen {
       max-width: 680px;
       margin: 0 auto;
       width: 100%;
@@ -1143,6 +1143,11 @@
             <button class="btn btn-primary" style="flex:1" onclick="startRetrato('describe')">✍️ Describe</button>
           </div>
         </div>
+        <div class="challenge-card">
+          <p class="challenge-card-title">⚙️ Verbo Conjugación</p>
+          <p class="challenge-card-sub">Verb conjugation & translation challenge</p>
+          <button class="btn btn-primary btn-full" style="padding: 10px 16px; border-radius: 12px; font-weight: 600;" onclick="openVerbSetup()">🎮 Play</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1346,6 +1351,119 @@
     <div class="submit-row" id="retrato-nav-row" hidden>
       <button class="btn btn-ghost" id="retrato-back-skip-btn" onclick="retratoBackSkip()">Skip</button>
       <button class="btn btn-primary" id="retrato-check-next-btn" onclick="retratoCheckNext()">Check →</button>
+    </div>
+  </div>
+
+  <!-- ── VERB CHALLENGE SCREEN ───────────────────────────────────── -->
+  <div id="verb-screen" hidden>
+    <!-- Setup View -->
+    <div id="verb-setup-view">
+      <div class="quiz-header">
+        <button class="btn btn-ghost btn-sm" onclick="goHome()">← Back</button>
+        <span class="logo-emoji" style="font-size: 1.5rem;">⚙️</span>
+      </div>
+      <h2 style="margin-top: 0; text-align: center; color: var(--brand-green);">Verb Conjugation Challenge</h2>
+      <p style="color: var(--text-secondary); text-align: center; margin-bottom: 24px; font-size: 0.95rem;">
+        Select your verbs and choose your preferences to start practicing!
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Verbs selection -->
+        <div>
+          <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 8px;">Select Verbs</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; color: var(--text-primary);">
+              <input type="checkbox" name="verb-select" value="ser" checked style="width: 18px; height: 18px; accent-color: var(--brand-green);"> ser (to be)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; color: var(--text-primary);">
+              <input type="checkbox" name="verb-select" value="estar" checked style="width: 18px; height: 18px; accent-color: var(--brand-green);"> estar (to be)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; color: var(--text-primary);">
+              <input type="checkbox" name="verb-select" value="tener" checked style="width: 18px; height: 18px; accent-color: var(--brand-green);"> tener (to have)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; color: var(--text-primary);">
+              <input type="checkbox" name="verb-select" value="llamarse" checked style="width: 18px; height: 18px; accent-color: var(--brand-green);"> llamarse (to be called)
+            </label>
+          </div>
+        </div>
+
+        <!-- Practice type -->
+        <div>
+          <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 8px;">Practice Mode</label>
+          <div style="display: flex; gap: 12px;">
+            <label style="flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); justify-content: center; background: var(--bg-color);">
+              <input type="radio" name="verb-mode" value="pure" checked style="accent-color: var(--brand-green);"> Pure Conjugation
+            </label>
+            <label style="flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); justify-content: center; background: var(--bg-color);">
+              <input type="radio" name="verb-mode" value="sentence" style="accent-color: var(--brand-green);"> Mixed Sentences
+            </label>
+          </div>
+        </div>
+
+        <!-- Translation direction -->
+        <div>
+          <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 8px;">Translation Direction</label>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <select id="verb-dir" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-color); color: var(--text-primary); font-family: inherit; font-size: 0.95rem; outline: none; font-weight: 600;">
+              <option value="es-en" selected>🇪🇸 → 🇬🇧 Spanish to English</option>
+              <option value="en-es">🇬🇧 → 🇪🇸 English to Spanish</option>
+              <option value="mixed">🔀 Mixed Directions</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Question Style -->
+        <div>
+          <label style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 8px;">Activity Style</label>
+          <div style="display: flex; gap: 12px;">
+            <label style="flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); justify-content: center; background: var(--bg-color);">
+              <input type="radio" name="verb-style" value="mc" checked style="accent-color: var(--brand-green);"> 📋 Multiple Choice
+            </label>
+            <label style="flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); justify-content: center; background: var(--bg-color);">
+              <input type="radio" name="verb-style" value="type" style="accent-color: var(--brand-green);"> ✍️ Type Answer
+            </label>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" style="padding: 14px; border-radius: 14px; margin-top: 10px;" onclick="startVerbPractice()">Start Conjugation Challenge! →</button>
+      </div>
+    </div>
+
+    <!-- Play View -->
+    <div id="verb-play-view" hidden>
+      <div class="quiz-header">
+        <button class="btn btn-ghost btn-sm" onclick="showVerbSetup()">← Quit</button>
+        <div class="student-caller-pill" onclick="handlePillClick(event)" hidden>
+          👤 <span class="student-caller-name">Name</span>
+        </div>
+        <span class="fc-counter" id="verb-counter">1 / 10</span>
+      </div>
+
+      <!-- Question display -->
+      <div style="text-align: center; margin: 24px 0 28px;">
+        <span id="verb-question-hint" style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">How do you say:</span>
+        <h3 id="verb-question-text" style="font-size: 1.8rem; font-weight: 800; margin: 0; line-height: 1.25; font-family: var(--font-heading); color: var(--text-primary);">yo soy</h3>
+      </div>
+
+      <!-- Type Answer layout -->
+      <div id="verb-type-container" hidden>
+        <input type="text" id="verb-type-input" placeholder="Type your translation..." autocomplete="off" class="type-input" style="margin-bottom: 12px;">
+        <div class="submit-row">
+          <button class="btn btn-primary" id="verb-type-btn" onclick="submitVerbType()">Check</button>
+        </div>
+      </div>
+
+      <!-- Multiple Choice layout -->
+      <div id="verb-mc-container" class="options" style="margin-bottom: 20px;" hidden>
+        <!-- Injected option-btn elements -->
+      </div>
+
+      <!-- Result Banner -->
+      <div class="correct-answer" id="verb-feedback" style="min-height: 24px;"></div>
+
+      <div class="submit-row" id="verb-next-container" hidden>
+        <button class="btn btn-primary" onclick="nextVerbQuestion()">Next Question →</button>
+      </div>
     </div>
   </div>
 
@@ -1684,11 +1802,11 @@
     const btn = document.getElementById('teacher-toggle-btn');
     if (btn) btn.classList.toggle('active', teacherMode);
     
-    const activeScreenId = ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen', 'animal-screen', 'omakase-screen', 'retrato-screen'].find(id => {
+    const activeScreenId = ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen', 'animal-screen', 'omakase-screen', 'retrato-screen', 'verb-screen'].find(id => {
       const el = document.getElementById(id);
       return el && !el.hidden;
     });
-    const ACTIVITY_SCREENS = ['flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'animal-screen', 'retrato-screen', 'omakase-screen'];
+    const ACTIVITY_SCREENS = ['flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'animal-screen', 'retrato-screen', 'omakase-screen', 'verb-screen'];
     
     if (teacherMode && ACTIVITY_SCREENS.includes(activeScreenId)) {
       if (!currentStudent) rollStudent();
@@ -1797,10 +1915,10 @@
   }
 
   function showScreen(id) {
-    ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen', 'animal-screen', 'omakase-screen', 'retrato-screen'].forEach(s =>
+    ['home-screen', 'flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'score-screen', 'animal-screen', 'omakase-screen', 'retrato-screen', 'verb-screen'].forEach(s =>
       document.getElementById(s).hidden = (s !== id)
     );
-    const ACTIVITY_SCREENS = ['flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'animal-screen', 'retrato-screen', 'omakase-screen'];
+    const ACTIVITY_SCREENS = ['flashcard-screen', 'type-screen', 'dict-screen', 'quiz-screen', 'animal-screen', 'retrato-screen', 'omakase-screen', 'verb-screen'];
     if (teacherMode && ACTIVITY_SCREENS.includes(id)) {
       rollStudent();
       showAllStudentPills();
@@ -1809,7 +1927,7 @@
     }
   }
 
-  function goHome() { quiz = null; omakase = null; aQuiz = null; rQuiz = null; showScreen('home-screen'); }
+  function goHome() { quiz = null; omakase = null; aQuiz = null; rQuiz = null; vQuiz = null; showScreen('home-screen'); }
 
   // ── Shuffle ───────────────────────────────────────────────────────────
   function shuffle(arr) {
@@ -3521,11 +3639,449 @@
     return parts.join(', ');
   }
 
+  // ── Verb Conjugation Challenge Logic ─────────────────────────────────
+  let vQuiz = null;
+
+  const VERB_DATA = {
+    ser: {
+      infinitive: "ser",
+      meaning: "to be (essential/origin)",
+      conjugations: {
+        "yo": "soy",
+        "tú": "eres",
+        "él/ella": "es",
+        "nosotros": "somos",
+        "vosotros": "sois",
+        "ellos": "son"
+      },
+      sentences: {
+        "yo": [
+          { spanish: "yo soy de España", english: "I am from Spain" },
+          { spanish: "yo soy de Argentina", english: "I am from Argentina" },
+          { spanish: "yo soy de Cuba", english: "I am from Cuba" }
+        ],
+        "tú": [
+          { spanish: "tú eres inteligente", english: "you are intelligent" },
+          { spanish: "tú eres de Colombia", english: "you are from Colombia" }
+        ],
+        "él/ella": [
+          { spanish: "él es alto y delgado", english: "he is tall and thin" },
+          { spanish: "ella es baja y gorda", english: "she is short and fat" }
+        ],
+        "nosotros": [
+          { spanish: "nosotros somos hispanohablantes", english: "we are Spanish-speaking" }
+        ],
+        "vosotros": [
+          { spanish: "vosotros sois de los Estados Unidos", english: "you are from the United States" }
+        ],
+        "ellos": [
+          { spanish: "ellos son famosos", english: "they are famous" }
+        ]
+      }
+    },
+    estar: {
+      infinitive: "estar",
+      meaning: "to be (feeling/location)",
+      conjugations: {
+        "yo": "estoy",
+        "tú": "estás",
+        "él/ella": "está",
+        "nosotros": "estamos",
+        "vosotros": "estáis",
+        "ellos": "están"
+      },
+      sentences: {
+        "yo": [
+          { spanish: "yo estoy bien", english: "I am well" },
+          { spanish: "yo estoy fatal", english: "I am awful" }
+        ],
+        "tú": [
+          { spanish: "tú estás regular", english: "you are so-so" },
+          { spanish: "tú estás fenomenal", english: "you are great" }
+        ],
+        "él/ella": [
+          { spanish: "él está bien", english: "he is well" },
+          { spanish: "ella está regular", english: "she is so-so" }
+        ],
+        "nosotros": [
+          { spanish: "nosotros estamos bien", english: "we are well" }
+        ],
+        "vosotros": [
+          { spanish: "vosotros estáis fatal", english: "you are awful" }
+        ],
+        "ellos": [
+          { spanish: "ellos están fenomenal", english: "they are great" }
+        ]
+      }
+    },
+    tener: {
+      infinitive: "tener",
+      meaning: "to have",
+      conjugations: {
+        "yo": "tengo",
+        "tú": "tienes",
+        "él/ella": "tiene",
+        "nosotros": "tenemos",
+        "vosotros": "tenéis",
+        "ellos": "tienen"
+      },
+      sentences: {
+        "yo": [
+          { spanish: "yo tengo catorce años", english: "I am 14 years old" },
+          { spanish: "yo tengo quince años", english: "I am 15 years old" },
+          { spanish: "yo tengo una mascota", english: "I have a pet" }
+        ],
+        "tú": [
+          { spanish: "tú tienes los ojos verdes", english: "you have green eyes" },
+          { spanish: "tú tienes un conejo", english: "you have a rabbit" }
+        ],
+        "él/ella": [
+          { spanish: "él tiene el pelo rubio y corto", english: "he has short, blond hair" },
+          { spanish: "ella tiene los ojos marrones", english: "she has brown eyes" }
+        ],
+        "nosotros": [
+          { spanish: "nosotros tenemos un gato y un perro", english: "we have a cat and a dog" }
+        ],
+        "vosotros": [
+          { spanish: "vosotros tenéis una cobaya", english: "you have a guinea pig" }
+        ],
+        "ellos": [
+          { spanish: "ellos tienen una serpiente", english: "they have a snake" }
+        ]
+      }
+    },
+    llamarse: {
+      infinitive: "llamarse",
+      meaning: "to be called",
+      conjugations: {
+        "yo": "me llamo",
+        "tú": "te llamas",
+        "él/ella": "se llama",
+        "nosotros": "nos llamamos",
+        "vosotros": "os llamáis",
+        "ellos": "se llaman"
+      },
+      sentences: {
+        "yo": [
+          { spanish: "yo me llamo Juan", english: "I am called Juan" },
+          { spanish: "yo me llamo María", english: "I am called María" }
+        ],
+        "tú": [
+          { spanish: "tú te llamas Carlos", english: "you are called Carlos" }
+        ],
+        "él/ella": [
+          { spanish: "él se llama Pedro", english: "he is called Pedro" },
+          { spanish: "ella se llama Ana", english: "she is called Ana" }
+        ],
+        "nosotros": [
+          { spanish: "nosotros nos llamamos Gómez", english: "we are called Gómez" }
+        ],
+        "vosotros": [
+          { spanish: "vosotros os llamáis Torres", english: "you are called Torres" }
+        ],
+        "ellos": [
+          { spanish: "ellos se llaman Sánchez", english: "they are called Sánchez" }
+        ]
+      }
+    }
+  };
+
+  const PRONOUN_MEANINGS = {
+    "yo": "I",
+    "tú": "you (singular, informal)",
+    "él/ella": "he/she",
+    "nosotros": "we",
+    "vosotros": "you (plural, informal)",
+    "ellos": "they"
+  };
+
+  function openVerbSetup() {
+    showScreen('verb-screen');
+    showVerbSetup();
+  }
+
+  function showVerbSetup() {
+    document.getElementById('verb-setup-view').hidden = false;
+    document.getElementById('verb-play-view').hidden = true;
+    vQuiz = null;
+  }
+
+  function startVerbPractice() {
+    const checkedBoxes = document.querySelectorAll('input[name="verb-select"]:checked');
+    const selected = Array.from(checkedBoxes).map(cb => cb.value);
+    if (selected.length === 0) {
+      alert("Please select at least one verb to practice.");
+      return;
+    }
+
+    const mode = document.querySelector('input[name="verb-mode"]:checked').value;
+    const direction = document.getElementById('verb-dir').value;
+    const style = document.querySelector('input[name="verb-style"]:checked').value;
+
+    vQuiz = {
+      selectedVerbs: selected,
+      mode: mode,
+      direction: direction,
+      style: style,
+      questions: [],
+      currentIndex: 0,
+      score: 0
+    };
+
+    const pronouns = ["yo", "tú", "él/ella", "nosotros", "vosotros", "ellos"];
+    for (let i = 0; i < 10; i++) {
+      const verbKey = selected[Math.floor(Math.random() * selected.length)];
+      const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+      const verbObj = VERB_DATA[verbKey];
+      
+      let questionDir = direction;
+      if (direction === 'mixed') {
+        questionDir = Math.random() < 0.5 ? 'es-en' : 'en-es';
+      }
+
+      let spanishText = '';
+      let englishText = '';
+
+      if (mode === 'pure') {
+        spanishText = pronoun + " " + verbObj.conjugations[pronoun];
+        
+        let verbMeaning = '';
+        if (verbKey === 'ser') verbMeaning = "am/are/is (essential)";
+        else if (verbKey === 'estar') verbMeaning = "am/are/is (feeling/location)";
+        else if (verbKey === 'tener') verbMeaning = verbObj.conjugations[pronoun] === 'tiene' ? "has" : "have";
+        else if (verbKey === 'llamarse') {
+          const conj = verbObj.conjugations[pronoun];
+          if (conj.endsWith('o')) verbMeaning = "am called";
+          else if (conj.endsWith('as') || conj.endsWith('áis')) verbMeaning = "are called";
+          else if (conj.endsWith('a') || conj.endsWith('an')) verbMeaning = "is/are called";
+          else verbMeaning = "are called";
+        }
+        
+        let engPronoun = PRONOUN_MEANINGS[pronoun];
+        if (pronoun === 'yo') engPronoun = "I";
+        else if (pronoun === 'tú') engPronoun = "you";
+        else if (pronoun === 'él/ella') engPronoun = "he/she";
+        else if (pronoun === 'nosotros') engPronoun = "we";
+        else if (pronoun === 'vosotros') engPronoun = "you (plural)";
+        else if (pronoun === 'ellos') engPronoun = "they";
+
+        englishText = `${engPronoun} ${verbMeaning}`;
+      } else {
+        const sentenceList = verbObj.sentences[pronoun];
+        const randomSentence = sentenceList[Math.floor(Math.random() * sentenceList.length)];
+        spanishText = randomSentence.spanish;
+        englishText = randomSentence.english;
+      }
+
+      vQuiz.questions.push({
+        verb: verbKey,
+        pronoun: pronoun,
+        dir: questionDir,
+        spanish: spanishText,
+        english: englishText,
+        questionText: questionDir === 'es-en' ? spanishText : englishText,
+        correctAnswer: questionDir === 'es-en' ? englishText : spanishText
+      });
+    }
+
+    document.getElementById('verb-setup-view').hidden = true;
+    document.getElementById('verb-play-view').hidden = false;
+    
+    if (teacherMode) {
+      rollStudent();
+      showAllStudentPills();
+    }
+
+    loadVerbQuestion();
+  }
+
+  function loadVerbQuestion() {
+    const q = vQuiz.questions[vQuiz.currentIndex];
+    
+    document.getElementById('verb-counter').textContent = `${vQuiz.currentIndex + 1} / 10`;
+    document.getElementById('verb-question-hint').textContent = 
+      q.dir === 'es-en' ? "Translate to English:" : "Translate to Spanish:";
+    document.getElementById('verb-question-text').textContent = q.questionText;
+
+    document.getElementById('verb-feedback').innerHTML = '';
+    document.getElementById('verb-feedback').className = 'correct-answer';
+    document.getElementById('verb-next-container').hidden = true;
+
+    if (vQuiz.style === 'mc') {
+      document.getElementById('verb-mc-container').hidden = false;
+      document.getElementById('verb-type-container').hidden = true;
+      generateVerbMCOptions(q);
+    } else {
+      document.getElementById('verb-mc-container').hidden = true;
+      document.getElementById('verb-type-container').hidden = false;
+      const input = document.getElementById('verb-type-input');
+      input.value = '';
+      input.disabled = false;
+      input.className = 'type-input';
+      document.getElementById('verb-type-btn').hidden = false;
+      
+      setTimeout(() => input.focus(), 100);
+    }
+  }
+
+  function generateVerbMCOptions(q) {
+    const container = document.getElementById('verb-mc-container');
+    container.innerHTML = '';
+
+    const distractors = [];
+    const targetConjs = VERB_DATA[q.verb].conjugations;
+
+    if (vQuiz.mode === 'pure') {
+      if (q.dir === 'es-en') {
+        Object.keys(targetConjs).forEach(p => {
+          if (p !== q.pronoun) {
+            let verbMeaning = '';
+            if (q.verb === 'ser') verbMeaning = "am/are/is (essential)";
+            else if (q.verb === 'estar') verbMeaning = "am/are/is (feeling/location)";
+            else if (q.verb === 'tener') verbMeaning = targetConjs[p] === 'tiene' ? "has" : "have";
+            else if (q.verb === 'llamarse') {
+              const conj = targetConjs[p];
+              if (conj.endsWith('o')) verbMeaning = "am called";
+              else if (conj.endsWith('as') || conj.endsWith('áis')) verbMeaning = "are called";
+              else if (conj.endsWith('a') || conj.endsWith('an')) verbMeaning = "is/are called";
+              else verbMeaning = "are called";
+            }
+
+            let engPronoun = PRONOUN_MEANINGS[p];
+            if (p === 'yo') engPronoun = "I";
+            else if (p === 'tú') engPronoun = "you";
+            else if (p === 'él/ella') engPronoun = "he/she";
+            else if (p === 'nosotros') engPronoun = "we";
+            else if (p === 'vosotros') engPronoun = "you (plural)";
+            else if (p === 'ellos') engPronoun = "they";
+
+            distractors.push(`${engPronoun} ${verbMeaning}`);
+          }
+        });
+      } else {
+        Object.keys(targetConjs).forEach(p => {
+          if (p !== q.pronoun) {
+            distractors.push(p + " " + targetConjs[p]);
+          }
+        });
+      }
+    } else {
+      const allSentences = [];
+      Object.keys(VERB_DATA).forEach(vk => {
+        const verbObj = VERB_DATA[vk];
+        Object.keys(verbObj.sentences).forEach(p => {
+          verbObj.sentences[p].forEach(sent => {
+            allSentences.push(sent);
+          });
+        });
+      });
+
+      const optionsPool = allSentences
+        .map(sent => q.dir === 'es-en' ? sent.english : sent.spanish)
+        .filter(text => text !== q.correctAnswer);
+
+      const uniquePool = Array.from(new Set(optionsPool));
+      shuffle(uniquePool).slice(0, 3).forEach(d => distractors.push(d));
+    }
+
+    const options = shuffle([q.correctAnswer, ...distractors.slice(0, 3)]);
+    
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => submitVerbMC(btn, opt, q.correctAnswer);
+      container.appendChild(btn);
+    });
+  }
+
+  function submitVerbMC(clickedBtn, selectedAnswer, correctAnswer) {
+    const buttons = document.querySelectorAll('#verb-mc-container .option-btn');
+    buttons.forEach(btn => btn.disabled = true);
+
+    const feedback = document.getElementById('verb-feedback');
+    
+    if (selectedAnswer === correctAnswer) {
+      clickedBtn.classList.add('correct');
+      feedback.innerHTML = `🎉 Correct! <strong>${correctAnswer}</strong>`;
+      vQuiz.score++;
+    } else {
+      clickedBtn.classList.add('incorrect');
+      buttons.forEach(btn => {
+        if (btn.textContent === correctAnswer) btn.classList.add('correct');
+      });
+      feedback.innerHTML = `❌ Incorrect. Correct answer: <strong>${correctAnswer}</strong>`;
+    }
+
+    document.getElementById('verb-next-container').hidden = false;
+  }
+
+  function submitVerbType() {
+    const input = document.getElementById('verb-type-input');
+    const userVal = input.value.trim();
+    if (!userVal) return;
+
+    input.disabled = true;
+    document.getElementById('verb-type-btn').hidden = true;
+
+    const q = vQuiz.questions[vQuiz.currentIndex];
+    const feedback = document.getElementById('verb-feedback');
+    
+    const result = grade(userVal, q.correctAnswer);
+
+    if (result.status === 'correct') {
+      input.className = 'type-input correct';
+      feedback.innerHTML = `🎉 Correct!`;
+      vQuiz.score += 1.0;
+    } else if (result.status === 'nearly') {
+      input.className = 'type-input nearly';
+      feedback.innerHTML = `⚠️ Nearly! Smart Match: <strong>${q.correctAnswer}</strong><br><small style="color:var(--text-secondary)">Your answer: "${userVal}"</small>`;
+      vQuiz.score += 0.5;
+    } else {
+      input.className = 'type-input incorrect';
+      feedback.innerHTML = `❌ Incorrect. Correct answer: <strong>${q.correctAnswer}</strong>`;
+    }
+
+    document.getElementById('verb-next-container').hidden = false;
+  }
+
+  function nextVerbQuestion() {
+    vQuiz.currentIndex++;
+    if (vQuiz.currentIndex < 10) {
+      loadVerbQuestion();
+    } else {
+      showVerbResults();
+    }
+  }
+
+  function showVerbResults() {
+    showScreen('score-screen');
+    
+    const sd = Number(vQuiz.score.toFixed(1));
+    document.getElementById('score-number').textContent = `${sd}/10`;
+    
+    let msg = "";
+    if (sd === 10) msg = "🎉 ¡Perfecto! Absolute mastery of conjugations!";
+    else if (sd >= 8) msg = "👍 ¡Excelente trabajo! Superb verb mastery!";
+    else if (sd >= 5) msg = "😊 Buen intento! Practice more to perfect those endings.";
+    else msg = "💪 Keep learning! Try again to build your confidence.";
+    
+    document.getElementById('score-label').textContent = msg;
+    
+    document.getElementById('score-omakase-section').hidden = true;
+    document.getElementById('review-heading').hidden = true;
+    document.getElementById('wrong-list').innerHTML = '';
+    document.getElementById('redo-btn').hidden = true;
+    document.getElementById('next-phase-btn').hidden = true;
+    document.getElementById('back-home-btn').hidden = false;
+  }
+  
   // ── Global Listeners ────────────────────────────────────────────────
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       const onAnimal = !document.getElementById('animal-screen').hidden;
       const onRetrato = !document.getElementById('retrato-screen').hidden;
+      const onVerb = !document.getElementById('verb-screen').hidden;
       const onQuiz   = ['quiz-screen','type-screen','dict-screen'].some(id => !document.getElementById(id).hidden);
       if (aQuiz && aQuiz.mode === 'type' && onAnimal) {
         e.preventDefault(); animalCheckNext();
@@ -3533,9 +4089,17 @@
         e.preventDefault(); retratoCheckNext();
       } else if (quiz && onQuiz) {
         e.preventDefault(); handleCheckNext();
+      } else if (vQuiz && vQuiz.style === 'type' && onVerb) {
+        e.preventDefault();
+        const nextBtn = document.getElementById('verb-next-container');
+        if (!nextBtn.hidden) {
+          nextVerbQuestion();
+        } else {
+          submitVerbType();
+        }
       }
     } else if (e.key === 'Escape') {
-      if (quiz || aQuiz || rQuiz) goHome();
+      if (quiz || aQuiz || rQuiz || vQuiz) goHome();
     }
   });
 
