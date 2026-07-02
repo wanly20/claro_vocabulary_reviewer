@@ -776,8 +776,13 @@
 <body>
 
   <header>
-    <div class="header-logo" onclick="location.href='index.html'">
-      🦉 Buhísimo
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button class="btn btn-grey" onclick="location.href='index.html'" style="box-shadow: none; padding: 6px 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+        ← Back
+      </button>
+      <div class="header-logo" onclick="location.href='index.html'">
+        🦉 Buhísimo
+      </div>
     </div>
     <div class="stats-bar">
       <div class="stat-badge" title="Daily Streak">🔥 <span id="header-streak">0</span></div>
