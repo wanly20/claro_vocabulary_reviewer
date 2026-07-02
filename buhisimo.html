@@ -1143,7 +1143,10 @@
 
         const label = document.createElement('span');
         label.style.fontWeight = '700';
-        label.textContent = THEME_LABELS[t.name] || t.name;
+        const wordsInTheme = Object.keys(VOCAB_DATABASE).filter(w => VOCAB_DATABASE[w].theme === t.name);
+        const totalCount = wordsInTheme.length;
+        const learnedCount = wordsInTheme.filter(w => state.word_strengths[w] && state.word_strengths[w].strength > 0).length;
+        label.textContent = `${THEME_LABELS[t.name] || t.name} (${learnedCount}/${totalCount})`;
 
         const valWrap = document.createElement('div');
         valWrap.style.display = 'flex';
