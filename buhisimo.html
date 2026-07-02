@@ -885,7 +885,7 @@
         <div class="progress-bar-container">
           <div id="lesson-progress-fill" class="progress-bar-fill"></div>
         </div>
-        <div id="lesson-lives-box" class="hearts-container" hidden></div>
+        <div id="lesson-lives-box" class="hearts-container" style="display: none;"></div>
       </div>
 
       <div class="question-panel" id="question-area">
@@ -893,7 +893,7 @@
       </div>
 
       <div class="footer-action-banner">
-        <div id="feedback-banner" class="feedback-banner" hidden></div>
+        <div id="feedback-banner" class="feedback-banner" style="display: none;"></div>
         <div class="submit-row">
           <button id="skip-btn" class="btn btn-grey btn-full" onclick="skipQuestion()" hidden>Skip</button>
           <button id="forgot-btn" class="btn btn-grey btn-full" onclick="forgotQuestion()" hidden>I forgot</button>
@@ -1270,7 +1270,7 @@
         session.queue.push(generateRandomQuestion(activePool));
       }
 
-      document.getElementById('lesson-lives-box').hidden = true;
+      document.getElementById('lesson-lives-box').style.display = 'none';
       document.getElementById('lesson-overlay').style.display = 'flex';
       
       updateProgressFill();
@@ -1368,7 +1368,7 @@
       const q = session.queue.shift();
       session.currentCard = q;
 
-      document.getElementById('feedback-banner').hidden = true;
+      document.getElementById('feedback-banner').style.display = 'none';
       document.getElementById('check-btn').hidden = false;
       document.getElementById('check-btn').disabled = false;
       document.getElementById('check-btn').textContent = "Check";
@@ -1628,7 +1628,7 @@
             const banner = document.getElementById('feedback-banner');
             banner.className = 'feedback-banner correct';
             banner.textContent = "🎉 Match Complete!";
-            banner.hidden = false;
+            banner.style.display = 'flex';
             
             document.getElementById('check-btn').textContent = "Continue";
             document.getElementById('check-btn').hidden = false;
@@ -1656,7 +1656,7 @@
       const banner = document.getElementById('feedback-banner');
       banner.className = 'feedback-banner incorrect';
       banner.innerHTML = `Study: Correct answer: <strong>${q.correct}</strong>`;
-      banner.hidden = false;
+      banner.style.display = 'flex';
 
       document.getElementById('check-btn').disabled = true;
       document.getElementById('forgot-btn').hidden = true;
@@ -1699,7 +1699,7 @@
         session.mistakesQueue.push(q);
       }
 
-      banner.hidden = false;
+      banner.style.display = 'flex';
       document.getElementById('forgot-btn').hidden = true;
 
       checkBtn.textContent = "Continue";
