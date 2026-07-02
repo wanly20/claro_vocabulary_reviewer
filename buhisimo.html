@@ -209,6 +209,48 @@
     .bubble-left { transform: translateX(-60px); }
     .bubble-right { transform: translateX(60px); }
 
+    /* Circular Progress Ring and Crown Badge wrapper */
+    .bubble-btn-container {
+      position: relative;
+      width: 104px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(-90deg);
+      pointer-events: none;
+    }
+
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.35s;
+      transform-origin: 50% 50%;
+    }
+
+    .bubble-crown-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 8px;
+      background: var(--brand-gold);
+      color: #1e293b;
+      font-size: 0.75rem;
+      font-weight: 800;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+
     .bubble-btn {
       width: 84px;
       height: 80px;
@@ -867,10 +909,17 @@
       
       <!-- Bubble 1: Greetings & Countries -->
       <div class="bubble-wrapper">
-        <div class="bubble-level-tag" id="b1-level">0/3</div>
-        <button class="bubble-btn bubble-active" id="b1-btn" onclick="startStudySession()">
-          <span class="bubble-emoji">💬</span>
-        </button>
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b1-progress-circle" stroke="var(--brand-green)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn bubble-active" id="b1-btn" onclick="startStudySession()">
+            <span class="bubble-emoji">💬</span>
+          </button>
+          <div class="bubble-crown-badge" id="b1-crown-badge">0</div>
+        </div>
         <div class="bubble-label">Saludos y Países</div>
       </div>
 
@@ -1065,8 +1114,8 @@
       document.getElementById('header-crowns').textContent = state.crowns;
       document.getElementById('header-xp').textContent = state.xp;
 
-      // Render Bubble 1 Crown badge
-      document.getElementById('b1-level').textContent = `${state.b1_crown}/3`;
+      // Update Bubble 1 crown badge number and button styles
+      document.getElementById('b1-crown-badge').textContent = state.b1_crown;
       const b1 = document.getElementById('b1-btn');
       
       b1.className = 'bubble-btn';
@@ -1074,6 +1123,19 @@
         b1.classList.add('bubble-gold');
       } else {
         b1.classList.add('bubble-active');
+      }
+
+      // Update circular progress ring
+      const circle = document.getElementById('b1-progress-circle');
+      const circumference = 276.46;
+      const progressRatio = state.b1_crown / 3;
+      const offset = circumference * (1 - progressRatio);
+      circle.style.strokeDashoffset = offset;
+      
+      if (state.b1_crown === 3) {
+        circle.style.stroke = 'var(--brand-gold)';
+      } else {
+        circle.style.stroke = 'var(--brand-green)';
       }
 
       // Render Bubble 2 (Game Node)
