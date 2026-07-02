@@ -1371,9 +1371,11 @@
       session.currentCard = q;
 
       document.getElementById('feedback-banner').style.display = 'none';
-      document.getElementById('check-btn').hidden = false;
-      document.getElementById('check-btn').disabled = false;
-      document.getElementById('check-btn').textContent = "Check";
+      const checkBtn = document.getElementById('check-btn');
+      checkBtn.hidden = false;
+      checkBtn.disabled = false;
+      checkBtn.textContent = "Check";
+      checkBtn.onclick = submitAnswer;
       document.getElementById('forgot-btn').hidden = true;
       document.getElementById('skip-btn').hidden = true;
 
