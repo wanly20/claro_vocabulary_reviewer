@@ -104,15 +104,36 @@
       border: 1px solid var(--border-color);
     }
 
+    /* App Side-by-Side Columns Layout */
+    .app-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+      width: 100%;
+      max-width: 900px;
+      padding: 32px 24px;
+      align-items: flex-start;
+      margin: 0 auto;
+    }
+
+    .sidebar-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: sticky;
+      top: 100px;
+    }
+
     /* Path Map Container */
     .map-container {
-      width: 100%;
-      max-width: 480px;
-      padding: 32px 16px 64px;
+      flex: 1.2;
+      max-width: 420px;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
+      padding: 0 16px;
     }
 
     .unit-banner {
@@ -121,7 +142,7 @@
       color: white;
       border-radius: 16px;
       padding: 16px 20px;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
       box-shadow: var(--shadow-md);
       position: relative;
     }
@@ -142,12 +163,33 @@
     /* Vertical Connection Line */
     .path-connector {
       position: absolute;
-      top: 140px;
-      bottom: 200px;
+      top: 40px;
+      bottom: 120px;
       width: 6px;
       background: var(--border-color);
       border-radius: 3px;
       z-index: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .app-layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+      }
+      .sidebar-layout {
+        width: 100%;
+        position: static;
+      }
+      .map-container {
+        width: 100%;
+        max-width: 480px;
+        padding-top: 24px;
+      }
+      .path-connector {
+        top: 60px;
+      }
     }
 
     /* Path Bubbles */
@@ -791,44 +833,49 @@
     </div>
   </header>
 
-  <main class="map-container">
-    <div class="path-connector"></div>
-    
-    <div class="unit-banner">
-      <div class="unit-banner-title">Capítulo 1.1</div>
-      <div class="unit-banner-desc">El Español Global y Saludos</div>
-    </div>
-
-    <!-- Bubble 1: Greetings & Countries -->
-    <div class="bubble-wrapper">
-      <div class="bubble-level-tag" id="b1-level">0/3</div>
-      <button class="bubble-btn bubble-active" id="b1-btn" onclick="startStudySession()">
-        <span class="bubble-emoji">💬</span>
-      </button>
-      <div class="bubble-label">Saludos y Países</div>
-    </div>
-
-    <!-- Bubble 2: River Crossing Game -->
-    <div class="bubble-wrapper bubble-right">
-      <button class="bubble-btn locked" id="b2-btn" onclick="startCrossingGame()">
-        <span class="bubble-emoji">🐸</span>
-      </button>
-      <div class="bubble-label">Cruce del Río</div>
-    </div>
-
-    <!-- Controls Panel -->
-    <div class="dashboard-panel">
-      <div class="dashboard-panel-title">⚙️ Buhísimo Controls</div>
-      <div class="dashboard-panel-grid">
-        <button class="btn btn-green" onclick="openStrengthModal()" style="grid-column: span 2; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          📊 My Vocabulary
-        </button>
-        <button class="btn btn-grey" onclick="resetBuhisimoData()">Reset Data</button>
-        <button class="btn btn-grey" onclick="exportBuhisimoData()">Save Data</button>
-        <button class="btn btn-grey" onclick="importBuhisimoData()" style="grid-column: span 2; margin-top: 8px;">Transfer In (Load)</button>
+  <div class="app-layout">
+    <!-- Left Column: Info & Control Panels -->
+    <aside class="sidebar-layout">
+      <div class="unit-banner">
+        <div class="unit-banner-title">Capítulo 1.1</div>
+        <div class="unit-banner-desc">El Español Global y Saludos</div>
       </div>
-    </div>
-  </main>
+
+      <div class="dashboard-panel" style="margin-top: 0; width: 100%;">
+        <div class="dashboard-panel-title">⚙️ Buhísimo Controls</div>
+        <div class="dashboard-panel-grid">
+          <button class="btn btn-green" onclick="openStrengthModal()" style="grid-column: span 2; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            📊 My Vocabulary
+          </button>
+          <button class="btn btn-grey" onclick="resetBuhisimoData()">Reset Data</button>
+          <button class="btn btn-grey" onclick="exportBuhisimoData()">Save Data</button>
+          <button class="btn btn-grey" onclick="importBuhisimoData()" style="grid-column: span 2; margin-top: 8px;">Transfer In (Load)</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Column: Interactive Path Map -->
+    <main class="map-container">
+      <div class="path-connector"></div>
+      
+      <!-- Bubble 1: Greetings & Countries -->
+      <div class="bubble-wrapper">
+        <div class="bubble-level-tag" id="b1-level">0/3</div>
+        <button class="bubble-btn bubble-active" id="b1-btn" onclick="startStudySession()">
+          <span class="bubble-emoji">💬</span>
+        </button>
+        <div class="bubble-label">Saludos y Países</div>
+      </div>
+
+      <!-- Bubble 2: River Crossing Game -->
+      <div class="bubble-wrapper bubble-right">
+        <button class="bubble-btn locked" id="b2-btn" onclick="startCrossingGame()">
+          <span class="bubble-emoji">🐸</span>
+        </button>
+        <div class="bubble-label">Cruce del Río</div>
+      </div>
+    </main>
+  </div>
 
   <!-- LESSON PLAY OVERLAY -->
   <div id="lesson-overlay" class="overlay-view" style="display: none;">
