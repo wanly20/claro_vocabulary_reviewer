@@ -14,6 +14,7 @@
       --brand-green-light: #e8f8f0;
       --brand-green-dark: #27ae60;
       --brand-blue: #3498db;
+      --brand-orange: #ff9600;
       --brand-gold: #f1c40f;
       --brand-gold-light: #fef9e7;
       --bg-color: #f8fafc;
@@ -912,7 +913,7 @@
         <div class="bubble-btn-container">
           <svg class="progress-ring" width="104" height="100">
             <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
-            <circle class="progress-ring-circle" id="b1-progress-circle" stroke="var(--brand-green)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+            <circle class="progress-ring-circle" id="b1-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
                     stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
           </svg>
           <button class="bubble-btn bubble-active" id="b1-btn" onclick="startStudySession()">
@@ -1135,7 +1136,7 @@
       if (state.b1_crown === 3) {
         circle.style.stroke = 'var(--brand-gold)';
       } else {
-        circle.style.stroke = 'var(--brand-green)';
+        circle.style.stroke = 'var(--brand-orange)';
       }
 
       // Render Bubble 2 (Game Node)
