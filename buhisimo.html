@@ -826,7 +826,7 @@
   </main>
 
   <!-- LESSON PLAY OVERLAY -->
-  <div id="lesson-overlay" class="overlay-view" hidden>
+  <div id="lesson-overlay" class="overlay-view" style="display: none;">
     <div class="overlay-content">
       <div class="lesson-header">
         <button class="close-lesson-btn" onclick="quitLesson()">✕</button>
@@ -852,7 +852,7 @@
   </div>
 
   <!-- STRENGTH STATISTICS MODAL -->
-  <div id="strength-modal" class="vocab-modal-mask" hidden>
+  <div id="strength-modal" class="vocab-modal-mask" style="display: none;">
     <div class="vocab-modal-box">
       <div class="vocab-modal-header">
         <h3 id="modal-title">📊 Vocabulary Strengths</h3>
@@ -1052,11 +1052,11 @@
     function openStrengthModal() {
       decayStrengths();
       renderThemeList();
-      document.getElementById('strength-modal').hidden = false;
+      document.getElementById('strength-modal').style.display = 'flex';
     }
 
     function closeStrengthModal() {
-      document.getElementById('strength-modal').hidden = true;
+      document.getElementById('strength-modal').style.display = 'none';
     }
 
     function renderThemeList() {
@@ -1219,7 +1219,7 @@
       }
 
       document.getElementById('lesson-lives-box').hidden = true;
-      document.getElementById('lesson-overlay').hidden = false;
+      document.getElementById('lesson-overlay').style.display = 'flex';
       
       updateProgressFill();
       loadNextQuestion();
@@ -1692,13 +1692,13 @@
 
     function quitLesson() {
       if (confirm("Are you sure you want to quit? Your progress in this lesson will be lost.")) {
-        document.getElementById('lesson-overlay').hidden = true;
+        document.getElementById('lesson-overlay').style.display = 'none';
         session = null;
       }
     }
 
     function completeLesson() {
-      document.getElementById('lesson-overlay').hidden = true;
+      document.getElementById('lesson-overlay').style.display = 'none';
       session = null;
 
       let rewardXP = 20;
@@ -1762,7 +1762,7 @@
       `;
 
       document.getElementById('check-btn').hidden = true;
-      document.getElementById('lesson-overlay').hidden = false;
+      document.getElementById('lesson-overlay').style.display = 'flex';
 
       initFroggerGame();
     }
@@ -1926,7 +1926,7 @@
       gameLoop = null;
       gameObj = null;
       document.removeEventListener('keydown', handleGameKeys);
-      document.getElementById('lesson-overlay').hidden = true;
+      document.getElementById('lesson-overlay').style.display = 'none';
     }
 
     function completeCrossingGame() {
@@ -1934,7 +1934,7 @@
       gameLoop = null;
       gameObj = null;
       document.removeEventListener('keydown', handleGameKeys);
-      document.getElementById('lesson-overlay').hidden = true;
+      document.getElementById('lesson-overlay').style.display = 'none';
 
       state.game_unlocked = false;
       state.xp += 15;
