@@ -886,8 +886,9 @@
   <div class="app-layout">
     <!-- Left Column: Info & Control Panels -->
     <aside class="sidebar-layout">
-      <div class="unit-banner">
+      <div class="unit-banner" style="text-align: center;">
         <div class="unit-banner-title">Capítulo 1.1</div>
+        <div id="banner-student-name" style="font-weight: 800; font-size: 1rem; color: var(--brand-gold); margin: 6px 0; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 8px; display: inline-block;">Estudiante: -</div>
         <div class="unit-banner-desc">El Español Global y Saludos</div>
       </div>
 
@@ -991,6 +992,19 @@
     </div>
   </div>
 
+  <!-- STUDENT NAME INPUT MODAL -->
+  <div id="name-modal" class="vocab-modal-mask" style="display: none; z-index: 3000;">
+    <div class="vocab-modal-box" style="padding: 24px; text-align: center; max-width: 360px;">
+      <span style="font-size: 4rem; display: block; animation: bounceMASCOT 1.5s infinite;">🦉</span>
+      <h3 style="font-size: 1.5rem; font-weight: 800; margin-top: 12px; font-family: var(--font-heading);">¡Bienvenido a Buhísimo!</h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; margin-bottom: 20px;">Please enter your First & Last name. You will not be able to change this without resetting your progress data.</p>
+      
+      <input type="text" id="student-name-input" class="typing-input" placeholder="Your Name" style="margin-bottom: 20px; text-align: center;">
+      
+      <button class="btn btn-green btn-full" onclick="saveStudentName()" style="width: 100%;">Get Started</button>
+    </div>
+  </div>
+
   <script>
     // ── DATABASE & CURRICULUM DEFINITIONS ──────────────────────────────
     
@@ -1067,6 +1081,11 @@
         }
       }
       
+      // Initialize name if missing from state
+      if (state.student_name === undefined) {
+        state.student_name = "";
+      }
+      
       // Initialize strengths if missing
       Object.keys(VOCAB_DATABASE).forEach(w => {
         if (!state.word_strengths[w]) {
@@ -1081,6 +1100,11 @@
 
       decayStrengths();
       renderMap();
+
+      // Show name entry modal if student name is empty
+      if (!state.student_name) {
+        document.getElementById('name-modal').style.display = 'flex';
+      }
     }
 
     function saveProgress() {
@@ -1110,7 +1134,20 @@
       });
     }
 
+    function saveStudentName() {
+      const input = document.getElementById('student-name-input');
+      const nameVal = input.value.trim();
+      if (!nameVal) {
+        alert("⚠️ Please enter your name to continue!");
+        return;
+      }
+      state.student_name = nameVal;
+      saveProgress();
+      document.getElementById('name-modal').style.display = 'none';
+    }
+
     function renderMap() {
+      document.getElementById('banner-student-name').textContent = `Estudiante: ${state.student_name || 'Anonymous'}`;
       document.getElementById('header-streak').textContent = state.streak;
       document.getElementById('header-crowns').textContent = state.crowns;
       document.getElementById('header-xp').textContent = state.xp;
@@ -1151,9 +1188,10 @@
     // ── EXPORT / IMPORT CONTROLS ───────────────────────────────────────
     
     function resetBuhisimoData() {
-      if (confirm("Are you sure you want to delete all your progress data? You will start from Level 0.")) {
+      if (confirm("Are you sure you want to delete all your progress data? You will start from Level 0 and need to re-enter your name.")) {
         localStorage.removeItem('buhisimo_progress');
         state = {
+          student_name: "",
           streak: 0,
           crowns: 0,
           xp: 0,
@@ -1182,9 +1220,16 @@
         try {
           const parsed = JSON.parse(atob(code));
           if (parsed.xp !== undefined && parsed.b1_crown !== undefined) {
-            state = parsed;
-            saveProgress();
-            alert("🎉 Progress imported successfully!");
+            const ownerName = parsed.student_name || "Unknown";
+            const confirmMsg = `⚠️ WARNING: This backup key belongs to "${ownerName}".\n\n` +
+                               `Importing it will overwrite all your current progress and permanently set your Student Name to "${ownerName}".\n\n` +
+                               `Are you sure you want to proceed?`;
+            
+            if (confirm(confirmMsg)) {
+              state = parsed;
+              saveProgress();
+              alert("🎉 Progress imported successfully!");
+            }
           } else {
             alert("❌ Invalid backup key format.");
           }
