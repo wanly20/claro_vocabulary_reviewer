@@ -127,10 +127,11 @@ const FroggerGame = (function() {
 
   function handleGameKeys(e) {
     if (!gameObj) return;
-    if (e.key === 'ArrowUp') move(0, -1);
-    else if (e.key === 'ArrowDown') move(0, 1);
-    else if (e.key === 'ArrowLeft') move(-1, 0);
-    else if (e.key === 'ArrowRight') move(1, 0);
+    const key = e.key.toLowerCase();
+    if (e.key === 'ArrowUp' || key === 'k') move(0, -1);
+    else if (e.key === 'ArrowDown' || key === 'j') move(0, 1);
+    else if (e.key === 'ArrowLeft' || key === 'h') move(-1, 0);
+    else if (e.key === 'ArrowRight' || key === 'l') move(1, 0);
   }
 
   function move(dx, dy) {
