@@ -1502,6 +1502,15 @@
           <!-- Injected rows -->
         </div>
       </div>
+
+      <!-- Example Sentences Container -->
+      <div id="verb-review-examples-container" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+        <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--text-primary); font-family: var(--font-heading); font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">💡 Ejemplos de uso <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);">(Examples of use)</span></h3>
+        <div id="verb-review-grammar-note" style="margin-bottom: 16px;" hidden></div>
+        <div id="verb-review-examples-list" style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Injected example rows -->
+        </div>
+      </div>
     </div>
   </div>
 
@@ -4431,6 +4440,72 @@
       row.appendChild(sBtn);
       
       rowsContainer.appendChild(row);
+    });
+
+    // Render Grammar Note & Example Sentences
+    const noteEl = document.getElementById('verb-review-grammar-note');
+    if (verbKey === 'tener') {
+      noteEl.innerHTML = `
+        <div style="background: var(--brand-green-light-solid); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; line-height: 1.45; color: var(--text-primary); font-size: 0.92rem; box-shadow: var(--shadow-sm);">
+          <strong style="color: var(--brand-green);">⚠️ Nota Gramatical (Age Usage):</strong> In Spanish, 
+          the verb <strong>tener</strong> (to have) is used to express age instead of "to be" (e.g., 
+          <em>yo tengo catorce años</em> literally translates to "I have 14 years", which means 
+          "I am 14 years old").
+        </div>`;
+      noteEl.hidden = false;
+    } else {
+      noteEl.hidden = true;
+    }
+
+    const listContainer = document.getElementById('verb-review-examples-list');
+    listContainer.innerHTML = '';
+
+    pronouns.forEach(p => {
+      const sentenceList = verbObj.sentences[p];
+      if (sentenceList && sentenceList.length > 0) {
+        sentenceList.forEach(item => {
+          const row = document.createElement('div');
+          row.style.display = 'flex';
+          row.style.justifyContent = 'space-between';
+          row.style.alignItems = 'center';
+          row.style.padding = '10px 12px';
+          row.style.borderRadius = '10px';
+          row.style.borderBottom = '1px dashed var(--border-color)';
+          row.style.gap = '16px';
+          
+          const textWrap = document.createElement('div');
+          textWrap.style.display = 'flex';
+          textWrap.style.flexDirection = 'column';
+          textWrap.style.gap = '3px';
+
+          const esText = document.createElement('span');
+          esText.style.color = 'var(--brand-green)';
+          esText.style.fontWeight = '700';
+          esText.style.fontSize = '1.05rem';
+          esText.textContent = item.spanish;
+
+          const enText = document.createElement('span');
+          enText.style.color = 'var(--text-secondary)';
+          enText.style.fontSize = '0.85rem';
+          enText.textContent = item.english;
+
+          textWrap.appendChild(esText);
+          textWrap.appendChild(enText);
+
+          const sBtn = document.createElement('button');
+          sBtn.className = 'btn btn-ghost';
+          sBtn.style.padding = '4px 8px';
+          sBtn.style.borderRadius = '6px';
+          sBtn.style.fontSize = '1.1rem';
+          sBtn.innerHTML = '🔊';
+          sBtn.onclick = () => speakVerbRandomAccent(item.spanish);
+
+          row.appendChild(textWrap);
+          row.appendChild(sBtn);
+
+          listContainer.appendChild(row);
+        });
+      }
     });
   }
 
