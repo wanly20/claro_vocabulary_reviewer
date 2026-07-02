@@ -2061,7 +2061,7 @@
 
       // Row 0 is the top row, Row N-1 is the bottom row
       for (let i = 0; i < gameObj.numRows; i++) {
-        const correctWord = gameObj.spanishChunks[i];
+        const correctWord = gameObj.spanishChunks[gameObj.numRows - 1 - i];
         
         // Select a distractor that is NOT the correct word for this row
         let dist = "";
@@ -2135,7 +2135,7 @@
       if (frog.y > 50 && frog.y < canvas.height - 50) {
         // Identify which row index the frog is landing on (0 is top row, N-1 is bottom row)
         const rowIndex = Math.floor((frog.y - 50) / 50);
-        const correctWord = gameObj.spanishChunks[rowIndex];
+        const correctWord = gameObj.spanishChunks[gameObj.numRows - 1 - rowIndex];
 
         gameObj.logs.forEach(log => {
           if (frog.y >= log.y && frog.y <= log.y + log.h) {
