@@ -977,6 +977,13 @@
       "Identidad Personal": "👤 Identidad"
     };
 
+    // Total words per theme in Chapter 1.1 (active unit)
+    const THEME_TOTAL_COUNTS_1_1 = {
+      "Saludos y Sentimientos": 17,
+      "Países": 24,
+      "Identidad Personal": 3
+    };
+
     // ── GLOBAL APPLICATION STATE ──────────────────────────────────────
     let state = {
       streak: 0,
@@ -1167,7 +1174,7 @@
         const label = document.createElement('span');
         label.style.fontWeight = '700';
         const wordsInTheme = Object.keys(VOCAB_DATABASE).filter(w => VOCAB_DATABASE[w].theme === t.name);
-        const totalCount = wordsInTheme.length;
+        const totalCount = THEME_TOTAL_COUNTS_1_1[t.name] || wordsInTheme.length;
         const learnedCount = wordsInTheme.filter(w => state.word_strengths[w] && state.word_strengths[w].strength > 0).length;
         label.textContent = `${THEME_LABELS[t.name] || t.name} (${learnedCount}/${totalCount})`;
 
