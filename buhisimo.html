@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buhísimo — Camino de Aprendizaje</title>
   <link rel="stylesheet" href="games/frogger/frogger.css">
+  <link rel="stylesheet" href="games/space/space.css">
   
   <style>
     /* Styling System matching the Claro Vocab app */
@@ -875,7 +876,7 @@
             <circle class="progress-ring-circle" id="b1-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
                     stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
           </svg>
-          <button class="bubble-btn bubble-active" id="b1-btn" onclick="startStudySession()">
+          <button class="bubble-btn bubble-active" id="b1-btn" onclick="startStudySession(1)">
             <span class="bubble-emoji">💬</span>
           </button>
           <div class="bubble-crown-badge" id="b1-crown-badge">0</div>
@@ -889,6 +890,30 @@
           <span class="bubble-emoji">🐸</span>
         </button>
         <div class="bubble-label">Cruce del Río</div>
+      </div>
+
+      <!-- Bubble 3: Geografía y Ciudades -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b3-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b3-btn" onclick="startStudySession(3)">
+            <span class="bubble-emoji">🗺️</span>
+          </button>
+          <div class="bubble-crown-badge" id="b3-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Geografía y Ciudades</div>
+      </div>
+
+      <!-- Bubble 4: Space Invaders Game -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b4-btn" onclick="SpaceInvadersGame.start()">
+          <span class="bubble-emoji">👾</span>
+        </button>
+        <div class="bubble-label">Invasores del Espacio</div>
       </div>
     </main>
   </div>
@@ -964,6 +989,7 @@
   </div>
 
   <script src="games/frogger/frogger.js"></script>
+  <script src="games/space/space.js"></script>
   <script>
     // ── DATABASE & CURRICULUM DEFINITIONS ──────────────────────────────
     
@@ -983,7 +1009,20 @@
       // Helper Pronouns (Approved additions)
       "él": { english: "he", theme: "Identidad Personal" },
       "ella": { english: "she", theme: "Identidad Personal" },
-      "es": { english: "is", theme: "Identidad Personal" }
+      "es": { english: "is", theme: "Identidad Personal" },
+      // Bubble 3 Words (Theme: Países y Geografía)
+      "el mapa": { english: "the map", theme: "Países" },
+      "el país": { english: "the country", theme: "Países" },
+      "el mundo": { english: "the world", theme: "Países" },
+      "la capital": { english: "the capital", theme: "Países" },
+      "tú": { english: "you", theme: "Identidad Personal" },
+      "eres": { english: "are (tú)", theme: "Identidad Personal" },
+      "¿de dónde eres?": { english: "where are you from?", theme: "Identidad Personal" },
+      "de dónde": { english: "from where", theme: "Identidad Personal" },
+      "famoso": { english: "famous", theme: "Países" },
+      "histórico": { english: "historic", theme: "Países" },
+      "la lengua": { english: "the language", theme: "Países" },
+      "hispanohablante": { english: "Spanish-speaking", theme: "Países" }
     };
 
     // Bubble 1 Crowns vocabulary scope mapping
@@ -991,6 +1030,13 @@
       ["¡hola!", "Buenos días", "¡Adiós!", "¿Qué tal?"], // Level 1 (Greetings)
       ["soy de", "España", "Estados Unidos", "Argentina"], // Level 2 (+ countries)
       ["él", "ella", "es", "Cuba"] // Level 3 (+ pronouns)
+    ];
+
+    // Bubble 3 Crowns vocabulary scope mapping
+    const BUBBLE_3_LEVELS = [
+      ["el mapa", "el país", "el mundo", "la capital"], // Level 1 (Geography)
+      ["tú", "eres", "¿de dónde eres?", "de dónde"], // Level 2 (Pronouns/Questions)
+      ["famoso", "histórico", "la lengua", "hispanohablante"] // Level 3 (Descriptions)
     ];
 
     // Theme references matching database
@@ -1004,17 +1050,20 @@
     const THEME_TOTAL_COUNTS_1_1 = {
       "Saludos y Sentimientos": 17,
       "Países": 24,
-      "Identidad Personal": 3
+      "Identidad Personal": 7
     };
 
     // ── GLOBAL APPLICATION STATE ──────────────────────────────────────
     let state = {
+      student_name: "",
       streak: 0,
       crowns: 0,
       xp: 0,
       lastActive: "",
       b1_crown: 0, // 0 to 3
+      b3_crown: 0, // 0 to 3
       game_unlocked: false,
+      game2_unlocked: false,
       word_strengths: {}, // wordKey -> { strength: float, last_practiced: timestamp }
       theme_strengths: {}  // themeKey -> { strength: float, last_practiced: timestamp }
     };
@@ -1043,6 +1092,12 @@
       // Initialize name if missing from state
       if (state.student_name === undefined) {
         state.student_name = "";
+      }
+      if (state.b3_crown === undefined) {
+        state.b3_crown = 0;
+      }
+      if (state.game2_unlocked === undefined) {
+        state.game2_unlocked = false;
       }
       
       // Initialize strengths if missing
@@ -1111,10 +1166,11 @@
       document.getElementById('header-crowns').textContent = state.crowns;
       document.getElementById('header-xp').textContent = state.xp;
 
+      const circumference = 276.46;
+
       // Update Bubble 1 crown badge number and button styles
       document.getElementById('b1-crown-badge').textContent = state.b1_crown;
       const b1 = document.getElementById('b1-btn');
-      
       b1.className = 'bubble-btn';
       if (state.b1_crown === 3) {
         b1.classList.add('bubble-gold');
@@ -1122,25 +1178,55 @@
         b1.classList.add('bubble-active');
       }
 
-      // Update circular progress ring
-      const circle = document.getElementById('b1-progress-circle');
-      const circumference = 276.46;
-      const progressRatio = state.b1_crown / 3;
-      const offset = circumference * (1 - progressRatio);
-      circle.style.strokeDashoffset = offset;
-      
-      if (state.b1_crown === 3) {
-        circle.style.stroke = 'var(--brand-gold)';
-      } else {
-        circle.style.stroke = 'var(--brand-orange)';
-      }
+      // Update circular progress ring 1
+      const circle1 = document.getElementById('b1-progress-circle');
+      const progressRatio1 = state.b1_crown / 3;
+      const offset1 = circumference * (1 - progressRatio1);
+      circle1.style.strokeDashoffset = offset1;
+      circle1.style.stroke = (state.b1_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-orange)';
 
-      // Render Bubble 2 (Game Node)
+      // Render Bubble 2 (Game Node 1)
       const b2 = document.getElementById('b2-btn');
       if (state.b1_crown === 3 && state.game_unlocked) {
         b2.className = 'bubble-btn bubble-game';
+        b2.disabled = false;
       } else {
         b2.className = 'bubble-btn locked';
+        b2.disabled = true;
+      }
+
+      // Render Bubble 3 (Geography study node)
+      const b3 = document.getElementById('b3-btn');
+      const circle3 = document.getElementById('b3-progress-circle');
+      document.getElementById('b3-crown-badge').textContent = state.b3_crown;
+
+      b3.className = 'bubble-btn';
+      if (state.b1_crown === 3) {
+        b3.disabled = false;
+        if (state.b3_crown === 3) {
+          b3.classList.add('bubble-gold');
+        } else {
+          b3.classList.add('bubble-active');
+        }
+      } else {
+        b3.classList.add('locked');
+        b3.disabled = true;
+      }
+
+      // Update circular progress ring 3
+      const progressRatio3 = state.b3_crown / 3;
+      const offset3 = circumference * (1 - progressRatio3);
+      circle3.style.strokeDashoffset = offset3;
+      circle3.style.stroke = (state.b3_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-orange)';
+
+      // Render Bubble 4 (Game Node 2)
+      const b4 = document.getElementById('b4-btn');
+      if (state.b3_crown === 3 && state.game2_unlocked) {
+        b4.className = 'bubble-btn bubble-game';
+        b4.disabled = false;
+      } else {
+        b4.className = 'bubble-btn locked';
+        b4.disabled = true;
       }
     }
 
@@ -1156,7 +1242,9 @@
           xp: 0,
           lastActive: "",
           b1_crown: 0,
+          b3_crown: 0,
           game_unlocked: false,
+          game2_unlocked: false,
           word_strengths: {},
           theme_strengths: {}
         };
@@ -1330,23 +1418,28 @@
 
     // ── LESSON PLAY LOOP ───────────────────────────────────────────────
     
-    function startStudySession() {
+    function startStudySession(bubbleNum = 1) {
       decayStrengths();
       
-      const isGold = state.b1_crown === 3;
+      const isB1 = bubbleNum === 1;
+      const crownLevel = isB1 ? state.b1_crown : state.b3_crown;
+      const levelsPool = isB1 ? BUBBLE_1_LEVELS : BUBBLE_3_LEVELS;
+      
+      const isGold = crownLevel === 3;
       const targetCount = isGold ? 10 : 12;
-      const level = Math.min(2, state.b1_crown);
+      const level = Math.min(2, crownLevel);
       
       const activePool = [];
       for (let i = 0; i <= level; i++) {
-        activePool.push(...BUBBLE_1_LEVELS[i]);
+        activePool.push(...levelsPool[i]);
       }
 
       session = {
+        bubbleNum: bubbleNum,
         isGold: isGold,
         level: level,
         activePool: activePool,
-        newWords: isGold ? [] : BUBBLE_1_LEVELS[level],
+        newWords: isGold ? [] : levelsPool[level],
         introducedCount: 0,
         queue: [], 
         currentCard: null,
@@ -1871,23 +1964,46 @@
       let subtitle = "";
       let emoji = "👑";
 
-      if (state.b1_crown < 3) {
-        state.b1_crown++;
-        rewardXP += 10; 
-        title = "Level Up!";
-        subtitle = `Saludos y Países is now Level ${state.b1_crown}/3`;
-        if (state.b1_crown === 3) {
-          state.crowns++;
-          state.game_unlocked = true;
-          title = "Crown Unlocked!";
-          subtitle = "You completed Bubble 1! River game unlocked!";
-          emoji = "🏆";
+      const bNum = session.bubbleNum;
+
+      if (bNum === 1) {
+        if (state.b1_crown < 3) {
+          state.b1_crown++;
+          rewardXP += 10; 
+          title = "Level Up!";
+          subtitle = `Saludos y Países is now Level ${state.b1_crown}/3`;
+          if (state.b1_crown === 3) {
+            state.crowns++;
+            state.game_unlocked = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 1! River game unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Greetings & Countries!";
+          emoji = "💪";
+          state.game_unlocked = true; 
         }
-      } else {
-        title = "Practice Complete!";
-        subtitle = "Great review of Greetings & Countries!";
-        emoji = "💪";
-        state.game_unlocked = true; 
+      } else if (bNum === 3) {
+        if (state.b3_crown < 3) {
+          state.b3_crown++;
+          rewardXP += 10; 
+          title = "Level Up!";
+          subtitle = `Geografía y Ciudades is now Level ${state.b3_crown}/3`;
+          if (state.b3_crown === 3) {
+            state.crowns++;
+            state.game2_unlocked = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 3! Space Invaders unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Geography & Cities!";
+          emoji = "💪";
+          state.game2_unlocked = true; 
+        }
       }
 
       state.xp += rewardXP;
@@ -2016,7 +2132,7 @@
       if (e.key === 'Enter') {
         const overlay = document.getElementById('lesson-overlay');
         if (overlay && overlay.style.display === 'flex') {
-          if (FroggerGame.isActive()) return; // Ignore during Frogger game
+          if (FroggerGame.isActive() || SpaceInvadersGame.isActive()) return; // Ignore during games
           const checkBtn = document.getElementById('check-btn');
           if (checkBtn && !checkBtn.disabled && checkBtn.style.display !== 'none') {
             checkBtn.click();
