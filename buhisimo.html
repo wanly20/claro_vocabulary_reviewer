@@ -1967,15 +1967,18 @@
         targetWord: "",
         correctAnswer: "",
         score: 0,
-        lives: 3,
-        frog: { x: 200, y: 270, w: 20, h: 20 },
+        lives: 4,
+        frog: { x: 185, y: 255, w: 30, h: 30 },
         logs: [
-          { x: 50, y: 80, w: 90, h: 30, speed: 1.2, word: "" },
-          { x: 250, y: 80, w: 90, h: 30, speed: 1.2, word: "" },
-          { x: 10, y: 140, w: 95, h: 30, speed: -1.0, word: "" },
-          { x: 210, y: 140, w: 95, h: 30, speed: -1.0, word: "" },
-          { x: 100, y: 200, w: 90, h: 30, speed: 1.5, word: "" },
-          { x: 300, y: 200, w: 90, h: 30, speed: 1.5, word: "" }
+          // Row 1 (y: 100), speed 1.8, width 120
+          { x: 50, y: 100, w: 120, h: 40, speed: 1.8, word: "" },
+          { x: 250, y: 100, w: 120, h: 40, speed: 1.8, word: "" },
+          // Row 2 (y: 150), speed -1.4, width 120
+          { x: 80, y: 150, w: 120, h: 40, speed: -1.4, word: "" },
+          { x: 280, y: 150, w: 120, h: 40, speed: -1.4, word: "" },
+          // Row 3 (y: 200), speed 1.2, width 120
+          { x: 10, y: 200, w: 120, h: 40, speed: 1.2, word: "" },
+          { x: 210, y: 200, w: 120, h: 40, speed: 1.2, word: "" }
         ]
       };
 
@@ -1992,21 +1995,32 @@
       gameObj.targetWord = VOCAB_DATABASE[target].english;
       gameObj.correctAnswer = target;
 
-      document.getElementById('game-prompt-title').textContent = `Cross on correct log: "${gameObj.targetWord}"`;
+      document.getElementById('game-prompt-title').textContent = `Cross on correct logs for: "${gameObj.targetWord}"`;
 
       const distractors = shuffle(gameObj.words.filter(w => w !== target));
 
-      const correctLogIdx = Math.floor(Math.random() * gameObj.logs.length);
-      gameObj.logs.forEach((log, idx) => {
-        if (idx === correctLogIdx) {
-          log.word = target;
-        } else {
-          log.word = distractors[idx % distractors.length];
-        }
-      });
+      // Each row gets exactly 1 correct log and 1 distractor
+      gameObj.logs[0].word = target;
+      gameObj.logs[1].word = distractors[0];
+      
+      gameObj.logs[2].word = target;
+      gameObj.logs[3].word = distractors[1];
+      
+      gameObj.logs[4].word = target;
+      gameObj.logs[5].word = distractors[2];
 
-      gameObj.frog.x = 200;
-      gameObj.frog.y = 270;
+      // Randomize log start positions horizontally
+      gameObj.logs[0].x = Math.random() * 100;
+      gameObj.logs[1].x = gameObj.logs[0].x + 200;
+      
+      gameObj.logs[2].x = Math.random() * 100;
+      gameObj.logs[3].x = gameObj.logs[2].x + 200;
+      
+      gameObj.logs[4].x = Math.random() * 100;
+      gameObj.logs[5].x = gameObj.logs[4].x + 200;
+
+      gameObj.frog.x = 185;
+      gameObj.frog.y = 255;
     }
 
     function handleGameKeys(e) {
@@ -2019,14 +2033,16 @@
 
     function moveFrog(dx, dy) {
       if (!gameObj) return;
-      const step = 30;
-      gameObj.frog.x = Math.max(10, Math.min(370, gameObj.frog.x + dx * step));
-      gameObj.frog.y = Math.max(10, Math.min(275, gameObj.frog.y + dy * step));
+      const stepX = 30;
+      const stepY = 50; 
+      gameObj.frog.x = Math.max(10, Math.min(360, gameObj.frog.x + dx * stepX));
+      gameObj.frog.y = Math.max(55, Math.min(255, gameObj.frog.y + dy * stepY));
     }
 
     function updateGameFrame() {
       if (!gameObj) return;
 
+      // Move Logs
       gameObj.logs.forEach(log => {
         log.x += log.speed;
         if (log.speed > 0 && log.x > canvas.width) {
@@ -2040,47 +2056,57 @@
       let onLog = false;
       let matchedLogWord = "";
 
-      if (frog.y > 60 && frog.y < 240) {
+      // River zones (y=205, y=155, y=105)
+      if (frog.y > 60 && frog.y < 250) {
         gameObj.logs.forEach(log => {
-          if (frog.x + frog.w > log.x && frog.x < log.x + log.w &&
-              frog.y + frog.h > log.y && frog.y < log.y + log.h) {
-            onLog = true;
-            matchedLogWord = log.word;
-            
-            frog.x += log.speed;
+          if (frog.y >= log.y && frog.y <= log.y + log.h) {
+            if (frog.x + frog.w > log.x && frog.x < log.x + log.w) {
+              onLog = true;
+              matchedLogWord = log.word;
+              
+              frog.x += log.speed;
+            }
           }
         });
+
+        if (frog.x < 0 || frog.x + frog.w > canvas.width) {
+          resetRoundLoss("Splash! You floated off the screen.");
+          return;
+        }
 
         if (!onLog) {
           resetRoundLoss("Splash! You fell in the water.");
           return;
+        } else if (matchedLogWord !== gameObj.correctAnswer) {
+          resetRoundLoss(`Incorrect! Landed on "${matchedLogWord}" instead of "${gameObj.correctAnswer}".`);
+          return;
         }
       }
 
-      if (frog.y <= 60) {
-        if (matchedLogWord === gameObj.correctAnswer) {
-          gameObj.score++;
-          if (gameObj.score >= 5) {
-            completeCrossingGame();
-          } else {
-            alert(`🎉 Correct! Crossing ${gameObj.score} / 5 complete!`);
-            rollNextGameRound();
-          }
+      // Check win zone (top bank: y <= 55)
+      if (frog.y <= 55) {
+        gameObj.score++;
+        if (gameObj.score >= 5) {
+          completeCrossingGame();
         } else {
-          resetRoundLoss("Wrong log! That translation was incorrect.");
+          alert(`🎉 Correct! Crossing ${gameObj.score} / 5 complete!`);
+          rollNextGameRound();
         }
       }
 
+      // Draw Everything
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Draw banks
       ctx.fillStyle = '#27ae60'; 
       ctx.fillRect(0, 0, canvas.width, 60);
       ctx.fillRect(0, 240, canvas.width, 60);
 
+      // Draw river
       ctx.fillStyle = '#3498db'; 
       ctx.fillRect(0, 60, canvas.width, 180);
 
-      ctx.fillStyle = '#8e44ad'; 
+      // Draw logs
       gameObj.logs.forEach(log => {
         ctx.fillStyle = '#873600'; 
         ctx.fillRect(log.x, log.y, log.w, log.h);
@@ -2088,12 +2114,14 @@
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 12px Outfit';
         ctx.textAlign = 'center';
-        ctx.fillText(log.word, log.x + log.w/2, log.y + 20);
+        ctx.fillText(log.word, log.x + log.w/2, log.y + 24);
       });
 
+      // Draw Frog
       ctx.fillStyle = '#2ecc71'; 
       ctx.fillRect(frog.x, frog.y, frog.w, frog.h);
 
+      // Draw Eyes
       ctx.fillStyle = '#000000';
       ctx.fillRect(frog.x + 3, frog.y + 3, 4, 4);
       ctx.fillRect(frog.x + 13, frog.y + 3, 4, 4);
