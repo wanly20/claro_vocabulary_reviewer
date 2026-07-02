@@ -2026,6 +2026,20 @@
       return copy;
     }
 
+    // Global keyboard shortcut to press Check/Continue on Enter key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const overlay = document.getElementById('lesson-overlay');
+        if (overlay && overlay.style.display === 'flex') {
+          if (gameObj) return; // Ignore during Frogger game
+          const checkBtn = document.getElementById('check-btn');
+          if (checkBtn && !checkBtn.disabled && checkBtn.style.display !== 'none') {
+            checkBtn.click();
+          }
+        }
+      }
+    });
+
     window.addEventListener('load', loadProgress);
   </script>
 </body>
