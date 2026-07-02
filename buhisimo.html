@@ -1637,6 +1637,8 @@
             banner.textContent = "🎉 Match Complete!";
             banner.style.display = 'flex';
             
+            session.correctCount++;
+            
             document.getElementById('check-btn').textContent = "Continue";
             document.getElementById('check-btn').hidden = false;
             document.getElementById('check-btn').onclick = () => confirmContinue(true);
