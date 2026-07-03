@@ -2016,6 +2016,14 @@
       }
       state.lastActive = today;
 
+      // General unlock sweep: any lesson completed unlocks all games the student has gold prerequisite bubbles for!
+      if (state.b1_crown === 3) {
+        state.game_unlocked = true;
+      }
+      if (state.b3_crown === 3) {
+        state.game2_unlocked = true;
+      }
+
       saveProgress();
 
       // Populate Completion Screen
