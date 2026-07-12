@@ -139,6 +139,10 @@
             border-color: #0f172a;
             transform: scale(1.1);
         }
+        .away-striped {
+            background-color: #fef2f2 !important;
+            background-image: repeating-linear-gradient(45deg, #fee2e2, #fee2e2 10px, #fef2f2 10px, #fef2f2 20px) !important;
+        }
     </style>
 </head>
 <body class="h-screen w-full flex bg-slate-50 text-slate-800">
@@ -156,32 +160,74 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
-            <!-- Classes List -->
-            <div>
-                <div class="flex items-center justify-between mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                    <span>Classes</span>
-                    <button onclick="openClassModal()" class="hover:text-indigo-600 transition-colors" title="Add Class">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                    </button>
+            <!-- Standard Sidebar Panel Wrapper -->
+            <div id="standardSidebarContent" class="flex flex-col gap-6">
+                <!-- Classes List -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                        <span>Classes</span>
+                        <button onclick="openClassModal()" class="hover:text-indigo-600 transition-colors" title="Add Class">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div id="classList" class="space-y-1">
+                        <!-- Classes injected here -->
+                    </div>
                 </div>
-                <div id="classList" class="space-y-1">
-                    <!-- Classes injected here -->
+
+                <hr class="border-slate-100">
+
+                <!-- Rooms List (Dependent on active class) -->
+                <div id="roomsContainer" class="hidden">
+                    <div class="flex items-center justify-between mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                        <span>Classrooms</span>
+                        <button onclick="addRoom()" class="hover:text-indigo-600 transition-colors" title="Add Room">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div id="roomList" class="space-y-1">
+                        <!-- Rooms injected here -->
+                    </div>
                 </div>
             </div>
 
-            <hr class="border-slate-100">
+            <!-- Cold Calling Panel (Shown only in coldcall mode) -->
+            <div id="coldCallSidebarPanel" class="hidden flex flex-col gap-4">
+                <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Cold Call Setup</div>
+                
+                <!-- Questions box -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Question Bank (1 per line)</label>
+                    <textarea id="coldCallQuestions" class="w-full h-32 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none font-sans" placeholder="E.g. ¿Cómo te llamas?&#10;¿De dónde eres?&#10;¿Cómo estás?"></textarea>
+                </div>
 
-            <!-- Rooms List (Dependent on active class) -->
-            <div id="roomsContainer" class="hidden">
-                <div class="flex items-center justify-between mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                    <span>Classrooms</span>
-                    <button onclick="addRoom()" class="hover:text-indigo-600 transition-colors" title="Add Room">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                    </button>
+                <!-- Call Setup Modes -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Select Student Group</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="1" checked class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">1 Student (Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="2a" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">2 Students (Ask & Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="2b" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">2 Students (Read & Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="3" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">3 Students (Read, Translate, Respond)</span>
+                        </label>
+                    </div>
                 </div>
-                <div id="roomList" class="space-y-1">
-                    <!-- Rooms injected here -->
-                </div>
+
+                <!-- Run Cold Call Button -->
+                <button onclick="triggerColdCall()" class="w-full py-3 px-4 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-2 transition-all shadow-md active:scale-98">
+                    <i data-lucide="target" class="w-5 h-5"></i> Call Student(s)
+                </button>
             </div>
         </div>
 
@@ -217,6 +263,9 @@
                     <button id="btnModeSeating" onclick="setMode('seating')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-500 hover:text-slate-700">
                         <i data-lucide="users" class="w-4 h-4 inline mr-1"></i> Assign Seats
                     </button>
+                    <button id="btnModeColdCall" onclick="setMode('coldcall')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-500 hover:text-slate-700">
+                        <i data-lucide="target" class="w-4 h-4 inline mr-1"></i> Cold Call
+                    </button>
                 </div>
             </div>
 
@@ -249,6 +298,17 @@
                 </a>
             </div>
         </header>
+
+        <!-- Cold Call Active HUD Bar -->
+        <div id="coldCallHUD" class="bg-indigo-900 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between border-b border-indigo-950 hidden shrink-0 shadow-lg">
+            <div class="flex-1 min-w-0">
+                <div class="text-xs uppercase tracking-widest text-indigo-300 font-bold mb-1">Pregunta Activa</div>
+                <div id="hudQuestionText" class="text-base font-bold text-white truncate">No questions loaded. Enter them in the sidebar.</div>
+            </div>
+            <div id="hudSelectedStudents" class="flex gap-4 mt-3 md:mt-0 items-center">
+                <!-- Injected Student Roles & Names -->
+            </div>
+        </div>
 
         <!-- Canvas Wrapper (Handles scrolling and panning) -->
         <div id="canvasWrapper" class="flex-1 overflow-auto relative">
@@ -658,6 +718,8 @@
 
             if (!room) return;
 
+            const ac = getActiveClass();
+
             room.desks.forEach(desk => {
                 const el = document.createElement('div');
                 el.className = `desk ${desk.isTeacher ? 'teacher-desk' : 'student-desk'}`;
@@ -676,7 +738,12 @@
                     `;
                 } else {
                     const hasStudent = !!desk.student;
-                    
+                    const isAway = hasStudent && ac && ac.highlightedStudents && ac.highlightedStudents.includes(desk.student);
+
+                    if (state.mode === 'coldcall' && isAway) {
+                        return; // Hide away desks completely in cold call mode
+                    }
+
                     // The inner content depends on mode and student presence
                     let innerHTML = '';
                     
@@ -687,20 +754,48 @@
                         el.ondrop = (e) => dropOnDesk(e, desk.id);
 
                         if (hasStudent) {
-                            const ac = getActiveClass();
-                            const isHighlighted = ac && ac.highlightedStudents && ac.highlightedStudents.includes(desk.student);
-                            const bgClass = isHighlighted ? 'bg-amber-100 border-2 border-amber-400 text-amber-900' : 'bg-white text-slate-800';
+                            const bgClass = isAway ? 'away-striped border-2 border-red-300 text-red-800' : 'bg-white text-slate-800 border border-slate-200';
 
                             innerHTML = `
-                                <div class="draggable-student w-full h-full flex items-center justify-center rounded-xl transition-colors ${bgClass}" 
+                                <div class="draggable-student w-full h-full flex flex-col items-center justify-center rounded-xl transition-colors ${bgClass}" 
                                      draggable="true" 
                                      onclick="toggleHighlight('${desk.student}')"
                                      ondragstart="dragStart(event, '${desk.student}', '${desk.id}')">
-                                    <span class="text-xs font-medium text-center px-2 truncate w-full" title="${desk.student}">${desk.student}</span>
+                                    <span class="text-xs font-semibold text-center px-2 truncate w-full" title="${desk.student}">${desk.student}</span>
+                                    ${isAway ? `<span class="text-3xs font-extrabold uppercase bg-red-200 text-red-800 px-1.5 py-0.2 mt-0.5 rounded">AWAY</span>` : ''}
                                 </div>
                             `;
                         } else {
                             innerHTML = `<span class="text-xs font-medium text-slate-300">Empty</span>`;
+                        }
+                    } else if (state.mode === 'coldcall') {
+                        const selection = (state.coldCallSelected && hasStudent) 
+                            ? state.coldCallSelected.find(sel => sel.student === desk.student) 
+                            : null;
+
+                        if (selection) {
+                            const roleColor = selection.color;
+                            el.style.border = `5px solid ${roleColor}`;
+                            el.style.boxShadow = `0 0 16px ${roleColor}`;
+                            innerHTML = `
+                                <div class="w-full h-full flex flex-col items-center justify-center p-2 bg-slate-50 text-slate-900 rounded-lg">
+                                    <span class="text-sm font-bold text-center truncate w-full" title="${desk.student}">${desk.student}</span>
+                                    <span class="text-3xs font-extrabold uppercase px-1.5 py-0.5 mt-1 rounded text-white" style="background-color: ${roleColor};">${selection.role}</span>
+                                </div>
+                            `;
+                        } else if (hasStudent) {
+                            // Present but not selected: dim it
+                            el.style.opacity = '0.35';
+                            el.style.border = '1px solid #cbd5e1';
+                            innerHTML = `
+                                <div class="w-full h-full flex items-center justify-center rounded-xl bg-white text-slate-400">
+                                    <span class="text-xs font-medium text-center px-2 truncate w-full" title="${desk.student}">${desk.student}</span>
+                                </div>
+                            `;
+                        } else {
+                            // Empty desk in cold call
+                            el.style.opacity = '0.15';
+                            innerHTML = `<span class="text-xs font-medium text-slate-200">Empty</span>`;
                         }
                     } else {
                         // Layout mode - Just show who sits here statically
@@ -742,9 +837,9 @@
                 listEl.innerHTML = `<div class="text-center p-4 text-sm text-slate-500">All students assigned!</div>`;
             } else {
                 unassigned.forEach(student => {
-                    const isHighlighted = ac.highlightedStudents && ac.highlightedStudents.includes(student);
-                    const bgClass = isHighlighted ? 'bg-amber-100 border-amber-300 text-amber-900' : 'bg-white border-slate-200 text-slate-700 hover:shadow';
-                    const iconBg = isHighlighted ? 'bg-amber-200 text-amber-800' : 'bg-indigo-50 text-indigo-600';
+                    const isAway = ac.highlightedStudents && ac.highlightedStudents.includes(student);
+                    const bgClass = isAway ? 'away-striped border-red-200 text-red-800' : 'bg-white border-slate-200 text-slate-700 hover:shadow';
+                    const iconBg = isAway ? 'bg-red-200 text-red-800' : 'bg-indigo-50 text-indigo-600';
 
                     const el = document.createElement('div');
                     el.className = `draggable-student border p-3 rounded-lg shadow-sm text-sm font-medium flex items-center gap-3 transition-colors ${bgClass}`;
@@ -755,7 +850,8 @@
                         <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${iconBg}">
                             ${student.charAt(0).toUpperCase()}
                         </div>
-                        <span class="truncate">${student}</span>
+                        <span class="truncate flex-1">${student}</span>
+                        ${isAway ? `<span class="text-3xs font-extrabold uppercase bg-red-200 text-red-800 px-1 py-0.5 rounded">AWAY</span>` : ''}
                     `;
                     listEl.appendChild(el);
                 });
@@ -777,16 +873,154 @@
             document.getElementById('btnModeSeating').classList.toggle('shadow-sm', newMode === 'seating');
             document.getElementById('btnModeSeating').classList.toggle('text-slate-500', newMode !== 'seating');
 
+            document.getElementById('btnModeColdCall').classList.toggle('bg-white', newMode === 'coldcall');
+            document.getElementById('btnModeColdCall').classList.toggle('text-slate-800', newMode === 'coldcall');
+            document.getElementById('btnModeColdCall').classList.toggle('shadow-sm', newMode === 'coldcall');
+            document.getElementById('btnModeColdCall').classList.toggle('text-slate-500', newMode !== 'coldcall');
+
             // Toolbar toggle
             document.getElementById('layoutTools').classList.toggle('hidden', newMode !== 'layout');
             document.getElementById('seatingTools').classList.toggle('hidden', newMode !== 'seating');
 
             // Close drawer if exiting seating mode
-            if (newMode === 'layout' && isDrawerOpen) {
+            if (newMode !== 'seating' && isDrawerOpen) {
                 toggleUnassignedDrawer();
             }
 
+            // Toggle sidebar panels
+            const isColdCall = newMode === 'coldcall';
+            document.getElementById('standardSidebarContent').classList.toggle('hidden', isColdCall);
+            document.getElementById('coldCallSidebarPanel').classList.toggle('hidden', !isColdCall);
+            document.getElementById('coldCallHUD').classList.toggle('hidden', !isColdCall);
+
+            if (!isColdCall) {
+                state.coldCallSelected = null;
+            } else {
+                state.coldCallSelected = [];
+                document.getElementById('hudQuestionText').textContent = "Click 'Call Student(s)' to begin.";
+                document.getElementById('hudSelectedStudents').innerHTML = '';
+            }
+
             renderCanvas();
+        }
+
+        function triggerColdCall() {
+            const ac = getActiveClass();
+            const room = getActiveRoom();
+            if (!ac || !room) {
+                alert("Please select a class and classroom first.");
+                return;
+            }
+
+            // Repurpose highlightedStudents to mean 'Away'
+            const awaySet = new Set(ac.highlightedStudents || []);
+            
+            // Gather all present, assigned students in the classroom
+            const presentSeatedStudents = room.desks
+                .filter(d => !d.isTeacher && d.student && !awaySet.has(d.student))
+                .map(d => d.student);
+
+            if (presentSeatedStudents.length === 0) {
+                alert("No present seated students available for cold calling!");
+                return;
+            }
+
+            // Get selected cold call mode
+            const radioMode = document.querySelector('input[name="coldCallMode"]:checked').value;
+            let N = 1;
+            if (radioMode === '2a' || radioMode === '2b') N = 2;
+            else if (radioMode === '3') N = 3;
+
+            if (presentSeatedStudents.length < N) {
+                alert(`Not enough present seated students to allocate ${N} roles! Calling ${presentSeatedStudents.length} student(s) instead.`);
+                N = presentSeatedStudents.length;
+            }
+
+            // Fair-Random Selection Heuristic
+            if (!ac.callCounts) ac.callCounts = {};
+            
+            // Ensure all present students have a callCount entry
+            presentSeatedStudents.forEach(student => {
+                if (ac.callCounts[student] === undefined) {
+                    ac.callCounts[student] = 0;
+                }
+            });
+
+            // Weighted Roulette Wheel selection to choose N unique students
+            const selected = [];
+            const pool = [...presentSeatedStudents];
+
+            for (let step = 0; step < N; step++) {
+                if (pool.length === 0) break;
+
+                // Calculate weights: probability is 1 / (1.8 ^ callCount)
+                const weights = pool.map(student => {
+                    const count = ac.callCounts[student] || 0;
+                    return 1 / Math.pow(1.8, count);
+                });
+
+                const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+                let r = Math.random() * totalWeight;
+                let selectedIdx = 0;
+
+                for (let i = 0; i < pool.length; i++) {
+                    r -= weights[i];
+                    if (r <= 0) {
+                        selectedIdx = i;
+                        break;
+                    }
+                }
+
+                selected.push(pool[selectedIdx]);
+                pool.splice(selectedIdx, 1);
+            }
+
+            // Increment call count for chosen students
+            selected.forEach(student => {
+                ac.callCounts[student] = (ac.callCounts[student] || 0) + 1;
+            });
+
+            // Select random question from question bank
+            const qInput = document.getElementById('coldCallQuestions').value;
+            const questions = qInput.split('\n').map(q => q.trim()).filter(q => q.length > 0);
+            let activeQuestion = "No active question. Enter questions in the sidebar.";
+            if (questions.length > 0) {
+                activeQuestion = questions[Math.floor(Math.random() * questions.length)];
+            }
+            document.getElementById('hudQuestionText').textContent = activeQuestion;
+
+            // Map selected students to roles & colors
+            state.coldCallSelected = [];
+            if (radioMode === '1') {
+                state.coldCallSelected.push({ student: selected[0], role: 'Respond', color: '#10b981' });
+            } else if (radioMode === '2a') {
+                state.coldCallSelected.push({ student: selected[0], role: 'Ask', color: '#10b981' });
+                state.coldCallSelected.push({ student: selected[1], role: 'Respond', color: '#f59e0b' });
+            } else if (radioMode === '2b') {
+                state.coldCallSelected.push({ student: selected[0], role: 'Read', color: '#10b981' });
+                state.coldCallSelected.push({ student: selected[1], role: 'Respond', color: '#f59e0b' });
+            } else if (radioMode === '3') {
+                state.coldCallSelected.push({ student: selected[0], role: 'Read', color: '#10b981' });
+                state.coldCallSelected.push({ student: selected[1], role: 'Translate', color: '#f59e0b' });
+                state.coldCallSelected.push({ student: selected[2], role: 'Respond', color: '#8b5cf6' });
+            }
+
+            // Display in HUD
+            const hudList = document.getElementById('hudSelectedStudents');
+            hudList.innerHTML = '';
+            state.coldCallSelected.forEach(sel => {
+                const badge = document.createElement('div');
+                badge.className = 'flex items-center gap-2 bg-slate-850 border border-slate-700 px-3 py-1.5 rounded-lg text-sm font-semibold shadow-inner';
+                badge.innerHTML = `
+                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${sel.color};"></span>
+                    <span class="text-slate-400 uppercase tracking-wider text-2xs mr-1">${sel.role}:</span>
+                    <span class="text-white">${sel.student}</span>
+                `;
+                hudList.appendChild(badge);
+            });
+
+            renderCanvas();
+            saveState();
         }
 
         function selectClass(id) {
