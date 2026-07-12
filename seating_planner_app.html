@@ -300,13 +300,13 @@
         </header>
 
         <!-- Cold Call Active HUD Bar -->
-        <div id="coldCallHUD" class="bg-indigo-900 text-white px-6 py-4 flex flex-col md:flex-row items-center justify-between border-b border-indigo-950 hidden shrink-0 shadow-lg">
-            <div class="flex-1 min-w-0">
-                <div class="text-xs uppercase tracking-widest text-indigo-300 font-bold mb-1">Pregunta Activa</div>
-                <div id="hudQuestionText" class="text-base font-bold text-white truncate">No questions loaded. Enter them in the sidebar.</div>
+        <div id="coldCallHUD" class="bg-indigo-950 text-white px-8 py-6 flex flex-col items-center text-center justify-center border-b border-indigo-900 hidden shrink-0 shadow-lg">
+            <div class="w-full max-w-4xl">
+                <div class="text-xs uppercase tracking-widest text-indigo-300 font-extrabold mb-1">Pregunta Activa</div>
+                <div id="hudQuestionText" class="text-2xl font-black text-white leading-tight">No questions loaded. Enter them in the sidebar.</div>
             </div>
-            <div id="hudSelectedStudents" class="flex gap-4 mt-3 md:mt-0 items-center">
-                <!-- Injected Student Roles & Names -->
+            <div id="hudSelectedStudents" class="flex flex-col gap-3 mt-4 items-center justify-center w-full">
+                <!-- Injected Student Roles & Names on second and third line centered -->
             </div>
         </div>
 
@@ -1010,10 +1010,10 @@
             hudList.innerHTML = '';
             state.coldCallSelected.forEach(sel => {
                 const badge = document.createElement('div');
-                badge.className = 'flex items-center gap-2 bg-slate-850 border border-slate-700 px-3 py-1.5 rounded-lg text-sm font-semibold shadow-inner';
+                badge.className = 'flex items-center justify-center gap-3 bg-slate-900 border border-slate-700 px-6 py-2 rounded-xl text-lg font-bold shadow-md w-full max-w-md';
                 badge.innerHTML = `
-                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${sel.color};"></span>
-                    <span class="text-slate-400 uppercase tracking-wider text-2xs mr-1">${sel.role}:</span>
+                    <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${sel.color};"></span>
+                    <span class="text-slate-400 uppercase tracking-widest text-xs">${sel.role}:</span>
                     <span class="text-white">${sel.student}</span>
                 `;
                 hudList.appendChild(badge);
