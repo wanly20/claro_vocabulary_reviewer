@@ -564,6 +564,7 @@
 
             state.templates = loadedState && loadedState.templates ? loadedState.templates : [];
             initializeDefaultTemplates();
+            migrateExistingRoomsToTemplates();
             
             saveState();
         }
@@ -760,6 +761,62 @@
                         desks: generateClustersLayout().map(d => ({ x: d.x, y: d.y, isTeacher: d.isTeacher }))
                     }
                 ];
+            }
+        }
+
+        function migrateExistingRoomsToTemplates() {
+            if (!state.classes || state.classes.length === 0) return;
+
+            function getLayoutSignature(desks) {
+                return desks
+                    .map(d => `${d.x},${d.y},${d.isTeacher ? 1 : 0}`)
+                    .sort()
+                    .join('|');
+            }
+
+            const templateSignatures = new Set(
+                state.templates.map(t => getLayoutSignature(t.desks))
+            );
+
+            let migratedAny = false;
+
+            state.classes.forEach(c => {
+                c.rooms.forEach(room => {
+                    if (!room.desks || room.desks.length === 0) return;
+
+                    const sig = getLayoutSignature(room.desks);
+                    if (!templateSignatures.has(sig)) {
+                        let baseName = room.name || "Classroom Layout";
+                        let uniqueName = baseName;
+                        let counter = 1;
+                        
+                        while (state.templates.some(t => t.name.toLowerCase() === uniqueName.toLowerCase())) {
+                            uniqueName = `${baseName}_${counter}`;
+                            counter++;
+                        }
+
+                        const deskTemplates = room.desks.map(d => ({
+                            x: d.x,
+                            y: d.y,
+                            isTeacher: d.isTeacher
+                        }));
+
+                        state.templates.push({
+                            id: uuid(),
+                            name: uniqueName,
+                            isDefault: false,
+                            desks: deskTemplates
+                        });
+
+                        templateSignatures.add(sig);
+                        migratedAny = true;
+                        console.log(`Migrated room layout "${room.name}" as template "${uniqueName}"`);
+                    }
+                });
+            });
+
+            if (migratedAny) {
+                saveState();
             }
         }
 
@@ -991,6 +1048,7 @@
                     listEl.appendChild(el);
                 });
             }
+        }
         function renderTemplates() {
             const listEl = document.getElementById('templateList');
             if (!listEl) return;
