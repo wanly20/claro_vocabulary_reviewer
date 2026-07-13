@@ -178,15 +178,32 @@
                 <hr class="border-slate-100">
 
                 <!-- Rooms List (Dependent on active class) -->
-                <div id="roomsContainer" class="hidden">
-                    <div class="flex items-center justify-between mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                        <span>Classrooms</span>
-                        <button onclick="addRoom()" class="hover:text-indigo-600 transition-colors" title="Add Room">
-                            <i data-lucide="plus" class="w-5 h-5"></i>
-                        </button>
+                <div id="roomsContainer" class="hidden flex flex-col gap-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                            <span>Classrooms</span>
+                            <button onclick="addRoom()" class="hover:text-indigo-600 transition-colors" title="Add Room">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div id="roomList" class="space-y-1">
+                            <!-- Rooms injected here -->
+                        </div>
                     </div>
-                    <div id="roomList" class="space-y-1">
-                        <!-- Rooms injected here -->
+
+                    <hr class="border-slate-100">
+
+                    <!-- Room Layout Templates -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                            <span>Room Layouts</span>
+                            <button onclick="saveCurrentAsTemplate()" class="hover:text-indigo-600 transition-colors" title="Save Current Layout as Template">
+                                <i data-lucide="save" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div id="templateList" class="space-y-1">
+                            <!-- Templates injected here -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -400,7 +417,8 @@
             classes: [],
             activeClassId: null,
             activeRoomId: null,
-            mode: 'layout' // 'layout' or 'seating'
+            mode: 'layout', // 'layout' or 'seating'
+            templates: []
         };
 
         // UI State
@@ -543,6 +561,9 @@
                 state.activeClassId = initialClass.id;
                 state.activeRoomId = initialClass.rooms[0].id;
             }
+
+            state.templates = loadedState && loadedState.templates ? loadedState.templates : [];
+            initializeDefaultTemplates();
             
             saveState();
         }
@@ -628,6 +649,119 @@
             }
             return desks;
         }
+        function generateUShapeLayout() {
+            const desks = [];
+            const startX = 800;
+            const startY = 800;
+
+            desks.push({
+                id: uuid(),
+                x: startX + 450 - 90,
+                y: startY,
+                isTeacher: true,
+                student: null
+            });
+
+            for (let r = 0; r < 10; r++) {
+                desks.push({
+                    id: uuid(),
+                    x: startX,
+                    y: startY + 130 + r * 100,
+                    isTeacher: false,
+                    student: null
+                });
+            }
+
+            for (let r = 0; r < 10; r++) {
+                desks.push({
+                    id: uuid(),
+                    x: startX + 900,
+                    y: startY + 130 + r * 100,
+                    isTeacher: false,
+                    student: null
+                });
+            }
+
+            for (let c = 0; c < 6; c++) {
+                desks.push({
+                    id: uuid(),
+                    x: startX + 135 + c * 125,
+                    y: startY + 130 + 9 * 100,
+                    isTeacher: false,
+                    student: null
+                });
+            }
+
+            return desks;
+        }
+
+        function generateClustersLayout() {
+            const desks = [];
+            const startX = 850;
+            const startY = 800;
+
+            desks.push({
+                id: uuid(),
+                x: startX + 390 - 90,
+                y: startY,
+                isTeacher: true,
+                student: null
+            });
+
+            for (let r = 0; r < 2; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const cx = startX + c * 380;
+                    const cy = startY + 140 + r * 280;
+
+                    desks.push({ id: uuid(), x: cx, y: cy, isTeacher: false, student: null });
+                    desks.push({ id: uuid(), x: cx + 140, y: cy, isTeacher: false, student: null });
+                    desks.push({ id: uuid(), x: cx, y: cy + 90, isTeacher: false, student: null });
+                    desks.push({ id: uuid(), x: cx + 140, y: cy + 90, isTeacher: false, student: null });
+                }
+            }
+
+            desks.push({
+                id: uuid(),
+                x: startX + 390 - 90 - 150,
+                y: startY,
+                isTeacher: false,
+                student: null
+            });
+            desks.push({
+                id: uuid(),
+                x: startX + 390 - 90 + 200,
+                y: startY,
+                isTeacher: false,
+                student: null
+            });
+
+            return desks;
+        }
+
+        function initializeDefaultTemplates() {
+            if (!state.templates || state.templates.length === 0) {
+                state.templates = [
+                    {
+                        id: 'tpl-rows',
+                        name: 'Standard Rows',
+                        isDefault: true,
+                        desks: generateStandardLayout().map(d => ({ x: d.x, y: d.y, isTeacher: d.isTeacher }))
+                    },
+                    {
+                        id: 'tpl-ushape',
+                        name: 'U-Shape Wall',
+                        isDefault: true,
+                        desks: generateUShapeLayout().map(d => ({ x: d.x, y: d.y, isTeacher: d.isTeacher }))
+                    },
+                    {
+                        id: 'tpl-clusters',
+                        name: 'Group Clusters',
+                        isDefault: true,
+                        desks: generateClustersLayout().map(d => ({ x: d.x, y: d.y, isTeacher: d.isTeacher }))
+                    }
+                ];
+            }
+        }
 
         function centerCanvas() {
             const wrapper = document.getElementById('canvasWrapper');
@@ -649,6 +783,7 @@
         function renderAll() {
             renderSidebarClasses();
             renderSidebarRooms();
+            renderTemplates();
             renderCanvas();
             renderUnassigned();
             updateAppColor();
@@ -855,6 +990,97 @@
                     `;
                     listEl.appendChild(el);
                 });
+            }
+        function renderTemplates() {
+            const listEl = document.getElementById('templateList');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            state.templates.forEach(t => {
+                const el = document.createElement('div');
+                el.className = 'group flex items-center justify-between p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm';
+                el.onclick = () => applyTemplate(t.id);
+                el.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                            <i data-lucide="layout" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm font-semibold text-slate-700 truncate" title="${t.name}">${t.name}</span>
+                    </div>
+                    ${!t.isDefault ? `<button onclick="event.stopPropagation(); deleteTemplate('${t.id}')" class="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                `;
+                listEl.appendChild(el);
+            });
+        }
+
+        function saveCurrentAsTemplate() {
+            const room = getActiveRoom();
+            if (!room) {
+                alert("Please select a class and room first.");
+                return;
+            }
+
+            const name = prompt("Enter a name for this classroom layout template:");
+            if (!name || name.trim().length === 0) return;
+
+            // Extract relative coordinates of all desks, stripping out student assignments
+            const deskTemplates = room.desks.map(d => ({
+                x: d.x,
+                y: d.y,
+                isTeacher: d.isTeacher
+            }));
+
+            const newTpl = {
+                id: uuid(),
+                name: name.trim(),
+                isDefault: false,
+                desks: deskTemplates
+            };
+
+            state.templates.push(newTpl);
+            saveState();
+            renderTemplates();
+            lucide.createIcons();
+            alert(`Template "${newTpl.name}" saved successfully!`);
+        }
+
+        function applyTemplate(id) {
+            const room = getActiveRoom();
+            if (!room) {
+                alert("Please select a class and room first.");
+                return;
+            }
+
+            const tpl = state.templates.find(t => t.id === id);
+            if (!tpl) return;
+
+            if (confirm(`Are you sure you want to apply the layout template "${tpl.name}"? This will move all students in this room to the unassigned list.`)) {
+                // Rebuild desks array from template
+                room.desks = tpl.desks.map(d => ({
+                    id: uuid(),
+                    x: d.x,
+                    y: d.y,
+                    isTeacher: d.isTeacher,
+                    student: null
+                }));
+
+                saveState();
+                renderAll();
+            }
+        }
+
+        function deleteTemplate(id) {
+            const tplIndex = state.templates.findIndex(t => t.id === id);
+            if (tplIndex === -1) return;
+
+            const tpl = state.templates[tplIndex];
+            if (tpl.isDefault) return; // Prevent deleting default templates
+
+            if (confirm(`Are you sure you want to delete the layout template "${tpl.name}"?`)) {
+                state.templates.splice(tplIndex, 1);
+                saveState();
+                renderTemplates();
+                lucide.createIcons();
             }
         }
 
