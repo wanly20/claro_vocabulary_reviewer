@@ -1,7 +1,7 @@
 /* Space Invaders Game Engine Module */
 
 const SpaceInvadersGame = (function() {
-  const GAME_WORDS = ["el mapa", "el país", "el world", "la capital", "tú", "eres", "¿de dónde eres?", "de dónde", "famoso", "histórico", "la lengua", "hispanohablante"];
+  const GAME_WORDS = ["el mapa", "el país", "el mundo", "la capital", "tú", "eres", "¿de dónde eres?", "de dónde", "famoso", "histórico", "la lengua", "hispanohablante"];
 
   let gameLoop = null;
   let canvas = null;
@@ -43,18 +43,15 @@ const SpaceInvadersGame = (function() {
       messageText: "",
       messageColor: "",
       messageTimer: 0,
-      targetWord: "",
-      correctAnswer: "",
       score: 0,
       lives: 4,
       ship: { x: 185, y: 310, w: 30, h: 20 },
-      aliens: [
-        { x: 10, y: 40, w: 110, h: 35, word: "" },
-        { x: 145, y: 40, w: 110, h: 35, word: "" },
-        { x: 280, y: 40, w: 110, h: 35, word: "" }
-      ],
+      waves: [],
       lasers: [],
-      stars: []
+      stars: [],
+      waveSpawnTimer: 0, // spawn immediately on start
+      spawnInterval: 240, // 8 seconds at 30fps
+      baseSpeed: 0.6
     };
 
     // Create random star field decoration
@@ -66,7 +63,7 @@ const SpaceInvadersGame = (function() {
       });
     }
 
-    rollRound();
+    spawnWave();
     
     document.addEventListener('keydown', handleGameKeys);
 
@@ -74,27 +71,36 @@ const SpaceInvadersGame = (function() {
     gameLoop = setInterval(update, 1000 / 30);
   }
 
-  function rollRound() {
+  function spawnWave() {
     const target = GAME_WORDS[Math.floor(Math.random() * GAME_WORDS.length)];
-    // Fallback if target word is not yet mapped in VOCAB_DATABASE
     const wordData = VOCAB_DATABASE[target];
-    gameObj.targetWord = wordData ? wordData.english : target;
-    gameObj.correctAnswer = target;
-
-    document.getElementById('game-prompt-title').textContent = `Shoot the correct alien for: "${gameObj.targetWord}"`;
+    const targetWord = wordData ? wordData.english : target;
+    const correctAnswer = target;
 
     const distractors = shuffle(GAME_WORDS.filter(w => w !== target));
-
-    // Choose 3 words (1 correct + 2 distractors)
     const roundWords = shuffle([target, distractors[0], distractors[1]]);
-    
-    // Reset alien positions to top and assign words
-    gameObj.aliens.forEach((alien, idx) => {
-      alien.y = 40;
-      alien.word = roundWords[idx];
+
+    const aliens = [
+      { x: 10, w: 110, h: 30, word: roundWords[0] },
+      { x: 145, w: 110, h: 30, word: roundWords[1] },
+      { x: 280, w: 110, h: 30, word: roundWords[2] }
+    ];
+
+    gameObj.waves.push({
+      y: -35,
+      targetWord: targetWord,
+      correctAnswer: correctAnswer,
+      aliens: aliens
     });
 
-    gameObj.lasers = [];
+    updatePrompt();
+  }
+
+  function updatePrompt() {
+    const lowestWave = gameObj.waves[0];
+    if (lowestWave) {
+      document.getElementById('game-prompt-title').textContent = `Shoot the correct alien for: "${lowestWave.targetWord}"`;
+    }
   }
 
   function handleGameKeys(e) {
@@ -133,8 +139,8 @@ const SpaceInvadersGame = (function() {
 
   function shootLaser() {
     if (!gameObj || gameObj.gameState !== 'playing') return;
-    // Cap laser firing frequency to prevent spamming
-    if (gameObj.lasers.length < 3) {
+    // Cap laser to 1 bullet at a time
+    if (gameObj.lasers.length === 0) {
       gameObj.lasers.push({
         x: gameObj.ship.x + gameObj.ship.w / 2,
         y: gameObj.ship.y,
@@ -161,23 +167,36 @@ const SpaceInvadersGame = (function() {
         } else if (gameObj.score >= 10) {
           gameObj.gameState = 'won';
         } else {
-          rollRound();
+          // If all waves were cleared (e.g. after life loss), spawn a new one
+          if (gameObj.waves.length === 0) {
+            spawnWave();
+          }
+          updatePrompt();
           gameObj.gameState = 'playing';
         }
       }
     } else if (gameObj.gameState === 'playing') {
-      // 1. Move Aliens downward
-      const speed = 0.5 + (gameObj.score * 0.05); // Speed increases slightly with score
-      gameObj.aliens.forEach(alien => {
-        alien.y += speed;
+      // Calculate current speed & spawn interval based on score
+      const currentSpeed = gameObj.baseSpeed + (gameObj.score * 0.08);
+      const currentSpawnInterval = Math.max(110, 240 - (gameObj.score * 13));
+
+      // Spawn waves by timer
+      gameObj.waveSpawnTimer--;
+      if (gameObj.waveSpawnTimer <= 0) {
+        spawnWave();
+        gameObj.waveSpawnTimer = currentSpawnInterval;
+      }
+
+      // Move Waves downward
+      gameObj.waves.forEach(wave => {
+        wave.y += currentSpeed;
       });
 
-      // Check if aliens reach the spaceship line
-      const reachedBottom = gameObj.aliens.some(alien => alien.y + alien.h >= gameObj.ship.y);
-      if (reachedBottom) {
-        resetLoss("Spaceship invaded!");
+      // Check if lowest wave reached the danger line (y = 280)
+      if (gameObj.waves.length > 0 && gameObj.waves[0].y + 30 >= 280) {
+        resetLoss("Aliens invaded!");
       } else {
-        // 2. Move Lasers
+        // Move Lasers
         gameObj.lasers.forEach(laser => {
           laser.y += laser.speed;
         });
@@ -185,29 +204,34 @@ const SpaceInvadersGame = (function() {
         // Filter out lasers that left the screen
         gameObj.lasers = gameObj.lasers.filter(laser => laser.y > 0);
 
-        // 3. Collision Checks (Backwards loop to safely splice without index skipping)
+        // Collision Checks
         let hitDetected = false;
         let hitCorrect = false;
         let hitWord = "";
 
         for (let l = gameObj.lasers.length - 1; l >= 0; l--) {
           const laser = gameObj.lasers[l];
-          let laserRemoved = false;
-          for (let a = 0; a < gameObj.aliens.length; a++) {
-            const alien = gameObj.aliens[a];
-            if (laser.y <= alien.y + alien.h && laser.y >= alien.y) {
-              if (laser.x >= alien.x && laser.x <= alien.x + alien.w) {
-                hitDetected = true;
-                hitWord = alien.word;
-                gameObj.lasers.splice(l, 1);
-                laserRemoved = true;
+          for (let wIdx = 0; wIdx < gameObj.waves.length; wIdx++) {
+            const wave = gameObj.waves[wIdx];
+            for (let a = 0; a < wave.aliens.length; a++) {
+              const alien = wave.aliens[a];
+              const alienY = wave.y;
+              if (laser.y <= alienY + alien.h && laser.y >= alienY) {
+                if (laser.x >= alien.x && laser.x <= alien.x + alien.w) {
+                  hitDetected = true;
+                  hitWord = alien.word;
+                  gameObj.lasers.splice(l, 1); // remove laser
 
-                if (alien.word === gameObj.correctAnswer) {
-                  hitCorrect = true;
+                  // ONLY allow hitting the correct alien in the LOWEST wave
+                  if (wIdx === 0 && alien.word === wave.correctAnswer) {
+                    hitCorrect = true;
+                    gameObj.waves.shift(); // remove completed wave
+                  }
+                  break;
                 }
-                break; // stop checking this laser
               }
             }
+            if (hitDetected) break;
           }
         }
 
@@ -215,14 +239,13 @@ const SpaceInvadersGame = (function() {
           if (hitCorrect) {
             gameObj.score++;
             triggerMessage("🎉 CORRECT!", "#10b981", 45);
-          } else {
-            resetLoss(`You shot "${hitWord}"!`);
           }
+          // Note: If they hit the wrong alien, nothing happens. The bullet is absorbed but no penalty.
         }
       }
     }
 
-    // 4. Drawing Canvas
+    // Drawing Canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw Space Background stars
@@ -231,19 +254,33 @@ const SpaceInvadersGame = (function() {
       ctx.fillRect(star.x, star.y, star.size, star.size);
     });
 
-    // Draw Aliens
-    gameObj.aliens.forEach(alien => {
-      ctx.fillStyle = '#8b5cf6'; // Violet glowing aliens
-      ctx.strokeStyle = '#a78bfa';
-      ctx.lineWidth = 2;
-      ctx.fillRect(alien.x, alien.y, alien.w, alien.h);
-      ctx.strokeRect(alien.x, alien.y, alien.w, alien.h);
+    // Draw Danger Zone line
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(0, 280);
+    ctx.lineTo(canvas.width, 280);
+    ctx.stroke();
+    ctx.setLineDash([]); // reset
 
-      // Text labels
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 12px Outfit';
-      ctx.textAlign = 'center';
-      ctx.fillText(alien.word, alien.x + alien.w/2, alien.y + 22);
+    // Draw Waves of Aliens
+    gameObj.waves.forEach((wave, wIdx) => {
+      const isLowest = (wIdx === 0);
+      wave.aliens.forEach(alien => {
+        // Highlight active wave (lowest) in Violet, upper waves in Grey
+        ctx.fillStyle = isLowest ? '#7c3aed' : '#4b5563'; 
+        ctx.strokeStyle = isLowest ? '#a78bfa' : '#6b7280';
+        ctx.lineWidth = 2;
+        ctx.fillRect(alien.x, wave.y, alien.w, alien.h);
+        ctx.strokeRect(alien.x, wave.y, alien.w, alien.h);
+
+        // Text labels
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px Outfit';
+        ctx.textAlign = 'center';
+        ctx.fillText(alien.word, alien.x + alien.w/2, wave.y + 19);
+      });
     });
 
     // Draw Spaceship
@@ -305,7 +342,7 @@ const SpaceInvadersGame = (function() {
     
     ctx.fillStyle = '#94a3b8';
     ctx.font = '500 12px Outfit';
-    ctx.fillText("Next round starting...", canvas.width / 2, by + 75);
+    ctx.fillText("Resuming game...", canvas.width / 2, by + 75);
   }
 
   function drawEndScreen(title, subtitle1, subtitle2, titleColor) {
@@ -328,10 +365,13 @@ const SpaceInvadersGame = (function() {
 
   function resetLoss(msg) {
     gameObj.lives--;
+    gameObj.waves = []; // Clear on screen invaders so player isn't immediately overrun
+    gameObj.lasers = [];
     if (gameObj.lives <= 0) {
       triggerMessage("😭 GAME OVER", "#ef4444", 60);
     } else {
-      triggerMessage(`❌ OUCH! ${msg}`, "#f59e0b", 60);
+      triggerMessage(`❌ ${msg} -1 Life`, "#ef4444", 60);
+      gameObj.waveSpawnTimer = 30; // spawn soon
     }
   }
 
