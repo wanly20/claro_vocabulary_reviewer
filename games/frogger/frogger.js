@@ -57,6 +57,9 @@ const FroggerGame = (function() {
     canvas = document.getElementById('frogger-canvas');
     ctx = canvas.getContext('2d');
 
+    // Reset progress bar in header to 0%
+    document.getElementById('lesson-progress-fill').style.width = '0%';
+
     const gameWords = ["¡hola!", "Buenos días", "¡Adiós!", "¿Qué tal?", "soy de", "España", "Estados Unidos", "Argentina", "él", "ella", "es de", "Cuba"];
 
     gameObj = {
@@ -228,6 +231,11 @@ const FroggerGame = (function() {
 
       if (frog.y <= 50) {
         gameObj.score++;
+        
+        // Move progress bar in header forward
+        const progressPercent = Math.min(100, (gameObj.score / 5) * 100);
+        document.getElementById('lesson-progress-fill').style.width = `${progressPercent}%`;
+
         if (gameObj.score >= 5) {
           triggerMessage("🏆 ALL CROSSINGS DONE!", "#10b981", 60);
         } else {
@@ -334,9 +342,17 @@ const FroggerGame = (function() {
     }
   }
 
+  // Expose clean quit
   function quit() {
     clearInterval(gameLoop);
     gameLoop = null;
+
+    // If the game ends because they lost all lives, lock the game!
+    if (gameObj && gameObj.lives <= 0) {
+      state.game_unlocked = false;
+      saveProgress();
+    }
+
     gameObj = null;
     document.removeEventListener('keydown', handleGameKeys);
     document.getElementById('lesson-overlay').style.display = 'none';

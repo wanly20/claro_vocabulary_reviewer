@@ -38,6 +38,9 @@ const SpaceInvadersGame = (function() {
     canvas = document.getElementById('space-canvas');
     ctx = canvas.getContext('2d');
 
+    // Reset progress bar in header to 0%
+    document.getElementById('lesson-progress-fill').style.width = '0%';
+
     gameObj = {
       gameState: 'playing', // 'playing', 'message', 'gameover', 'won'
       messageText: "",
@@ -49,7 +52,7 @@ const SpaceInvadersGame = (function() {
       waves: [],
       lasers: [],
       stars: [],
-      waveSpawnTimer: 0, // spawn immediately on start
+      waveSpawnTimer: 240, // Initialize to spawnInterval (240) to prevent double wave spawning on first frame!
       spawnInterval: 240, // 8 seconds at 30fps
       baseSpeed: 0.6
     };
@@ -231,7 +234,6 @@ const SpaceInvadersGame = (function() {
                     // Find next living alien in this wave
                     const livingAliens = wave.aliens.filter(al => !al.isDead);
                     if (livingAliens.length > 0) {
-                      // Pick a random one from the living ones
                       const nextTarget = livingAliens[Math.floor(Math.random() * livingAliens.length)];
                       wave.correctAnswer = nextTarget.word;
                       const nextData = VOCAB_DATABASE[nextTarget.word];
@@ -253,9 +255,13 @@ const SpaceInvadersGame = (function() {
         if (hitDetected) {
           if (hitCorrect) {
             gameObj.score++;
+            
+            // Move progress bar in header forward
+            const progressPercent = Math.min(100, (gameObj.score / 10) * 100);
+            document.getElementById('lesson-progress-fill').style.width = `${progressPercent}%`;
+
             triggerMessage("🎉 CORRECT!", "#10b981", 45);
           }
-          // Note: If they hit the wrong alien, nothing happens. The bullet is absorbed but no penalty.
         }
       }
     }
@@ -396,6 +402,13 @@ const SpaceInvadersGame = (function() {
   function quit() {
     clearInterval(gameLoop);
     gameLoop = null;
+    
+    // If the game ends because they lost all lives, lock the game!
+    if (gameObj && gameObj.lives <= 0) {
+      state.game2_unlocked = false;
+      saveProgress();
+    }
+
     gameObj = null;
     document.removeEventListener('keydown', handleGameKeys);
     document.getElementById('lesson-overlay').style.display = 'none';
