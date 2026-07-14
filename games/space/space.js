@@ -81,13 +81,14 @@ const SpaceInvadersGame = (function() {
       { x: 280, w: 110, h: 30, word: roundWords[2], isDead: false }
     ];
 
-    const initialTarget = roundWords[0];
-    const wordData = VOCAB_DATABASE[initialTarget];
+    // Pick a random alien in the wave as the initial target
+    const targetAlien = aliens[Math.floor(Math.random() * aliens.length)];
+    const wordData = VOCAB_DATABASE[targetAlien.word];
 
     gameObj.waves.push({
       y: -35,
-      correctAnswer: initialTarget,
-      targetWord: wordData ? wordData.english : initialTarget,
+      correctAnswer: targetAlien.word,
+      targetWord: wordData ? wordData.english : targetAlien.word,
       aliens: aliens
     });
 
@@ -228,15 +229,18 @@ const SpaceInvadersGame = (function() {
                     alien.isDead = true;
 
                     // Find next living alien in this wave
-                    const nextLiving = wave.aliens.find(al => !al.isDead);
-                    if (nextLiving) {
-                      wave.correctAnswer = nextLiving.word;
-                      const nextData = VOCAB_DATABASE[nextLiving.word];
-                      wave.targetWord = nextData ? nextData.english : nextLiving.word;
+                    const livingAliens = wave.aliens.filter(al => !al.isDead);
+                    if (livingAliens.length > 0) {
+                      // Pick a random one from the living ones
+                      const nextTarget = livingAliens[Math.floor(Math.random() * livingAliens.length)];
+                      wave.correctAnswer = nextTarget.word;
+                      const nextData = VOCAB_DATABASE[nextTarget.word];
+                      wave.targetWord = nextData ? nextData.english : nextTarget.word;
                     } else {
                       // All dead! Remove the wave
                       gameObj.waves.shift();
                     }
+                    updatePrompt(); // Update the prompt instantly on correct hit!
                   }
                   break;
                 }
