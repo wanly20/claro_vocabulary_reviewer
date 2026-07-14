@@ -474,6 +474,15 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    /* Disables hover inspections during Checkpoint exams */
+    body.checkpoint-mode .word-inspect {
+      border-bottom: none !important;
+      cursor: default !important;
+    }
+    body.checkpoint-mode .word-inspect::after {
+      display: none !important;
+    }
+
     /* Question Layout Containers */
     .options-grid {
       width: 100%;
@@ -703,6 +712,36 @@
       color: white;
     }
 
+    .btn-red {
+      background: var(--danger-color);
+      color: white;
+      box-shadow: 0 4px 0 #b91c1c;
+    }
+    .btn-red:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #b91c1c;
+    }
+
+    .btn-blue {
+      background: #3b82f6;
+      color: white;
+      box-shadow: 0 4px 0 #1d4ed8;
+    }
+    .btn-blue:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #1d4ed8;
+    }
+
+    .btn-indigo {
+      background: #6366f1;
+      color: white;
+      box-shadow: 0 4px 0 #4338ca;
+    }
+    .btn-indigo:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #4338ca;
+    }
+
     .btn-grey {
       background: var(--border-color);
       color: var(--text-secondary);
@@ -857,9 +896,9 @@
           <button class="btn btn-green" onclick="openStrengthModal()" style="grid-column: span 2; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
             📊 My Vocabulary
           </button>
-          <button class="btn btn-grey" onclick="resetBuhisimoData()">Reset Data</button>
-          <button class="btn btn-grey" onclick="exportBuhisimoData()">Save Data</button>
-          <button class="btn btn-grey" onclick="importBuhisimoData()" style="grid-column: span 2; margin-top: 8px;">Transfer In (Load)</button>
+          <button class="btn btn-red" onclick="resetBuhisimoData()">Reset Data</button>
+          <button class="btn btn-blue" onclick="exportBuhisimoData()">Save Data</button>
+          <button class="btn btn-indigo" onclick="importBuhisimoData()" style="grid-column: span 2; margin-top: 8px;">Transfer In (Load)</button>
         </div>
       </div>
     </aside>
@@ -914,6 +953,30 @@
           <span class="bubble-emoji">👾</span>
         </button>
         <div class="bubble-label">Invasores del Espacio</div>
+      </div>
+
+      <!-- Bubble 5: Curiosidades e Islas -->
+      <div class="bubble-wrapper bubble-right">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b5-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b5-btn" onclick="startStudySession(5)">
+            <span class="bubble-emoji">🌸</span>
+          </button>
+          <div class="bubble-crown-badge" id="b5-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Curiosidades e Islas</div>
+      </div>
+
+      <!-- Bubble 6: Examen del Capítulo -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b6-btn" onclick="startCheckpointTest()">
+          <span class="bubble-emoji">🏆</span>
+        </button>
+        <div class="bubble-label">Examen del Capítulo</div>
       </div>
     </main>
   </div>
@@ -1022,7 +1085,20 @@
       "famoso": { english: "famous", theme: "Países" },
       "histórico": { english: "historic", theme: "Países" },
       "la lengua": { english: "the language", theme: "Países" },
-      "hispanohablante": { english: "Spanish-speaking", theme: "Países" }
+      "hispanohablante": { english: "Spanish-speaking", theme: "Países" },
+      // Bubble 5 Words (Theme: Países y Geografía)
+      "la Isla de Pascua": { english: "Easter Island", theme: "Países" },
+      "las Islas Canarias": { english: "Canary Islands", theme: "Países" },
+      "las Islas Baleares": { english: "Balearic Islands", theme: "Países" },
+      "Guinea Ecuatorial": { english: "Equatorial Guinea", theme: "Países" },
+      "las Islas Filipinas": { english: "Philippines", theme: "Países" },
+      "¿De dónde es?": { english: "Where is he/she from?", theme: "Identidad Personal" },
+      "el destino": { english: "the destination", theme: "Países" },
+      "el monumento": { english: "the monument", theme: "Países" },
+      "Chile": { english: "Chile", theme: "Países" },
+      "Colombia": { english: "Colombia", theme: "Países" },
+      "Perú": { english: "Peru", theme: "Países" },
+      "República Dominicana": { english: "Dominican Republic", theme: "Países" }
     };
 
     // Bubble 1 Crowns vocabulary scope mapping
@@ -1039,6 +1115,13 @@
       ["famoso", "histórico", "la lengua", "hispanohablante"] // Level 3 (Descriptions)
     ];
 
+    // Bubble 5 Crowns vocabulary scope mapping
+    const BUBBLE_5_LEVELS = [
+      ["la Isla de Pascua", "las Islas Canarias", "las Islas Baleares", "Guinea Ecuatorial"], // Level 1 (Islas y África)
+      ["las Islas Filipinas", "¿De dónde es?", "el destino", "el monumento"], // Level 2 (Filipinas/Destinos)
+      ["Chile", "Colombia", "Perú", "República Dominicana"] // Level 3 (South America)
+    ];
+
     // Theme references matching database
     const THEME_LABELS = {
       "Saludos y Sentimientos": "💬 Saludos",
@@ -1049,8 +1132,8 @@
     // Total words per theme in Chapter 1.1 (active unit)
     const THEME_TOTAL_COUNTS_1_1 = {
       "Saludos y Sentimientos": 17,
-      "Países": 24,
-      "Identidad Personal": 7
+      "Países": 36, // Updated count including islands
+      "Identidad Personal": 8  // Updated count including ¿De dónde es?
     };
 
     // ── GLOBAL APPLICATION STATE ──────────────────────────────────────
@@ -1062,6 +1145,8 @@
       lastActive: "",
       b1_crown: 0, // 0 to 3
       b3_crown: 0, // 0 to 3
+      b5_crown: 0, // 0 to 3
+      b6_completed: false,
       game_unlocked: false,
       game2_unlocked: false,
       word_strengths: {}, // wordKey -> { strength: float, last_practiced: timestamp }
@@ -1098,6 +1183,12 @@
       }
       if (state.game2_unlocked === undefined) {
         state.game2_unlocked = false;
+      }
+      if (state.b5_crown === undefined) {
+        state.b5_crown = 0;
+      }
+      if (state.b6_completed === undefined) {
+        state.b6_completed = false;
       }
       
       // Initialize strengths if missing
@@ -1228,6 +1319,44 @@
         b4.className = 'bubble-btn locked';
         b4.disabled = true;
       }
+
+      // Render Bubble 5 (Islands study node)
+      const b5 = document.getElementById('b5-btn');
+      const circle5 = document.getElementById('b5-progress-circle');
+      document.getElementById('b5-crown-badge').textContent = state.b5_crown;
+
+      b5.className = 'bubble-btn';
+      if (state.b3_crown === 3) {
+        b5.disabled = false;
+        if (state.b5_crown === 3) {
+          b5.classList.add('bubble-gold');
+        } else {
+          b5.classList.add('bubble-active');
+        }
+      } else {
+        b5.classList.add('locked');
+        b5.disabled = true;
+      }
+
+      // Update circular progress ring 5
+      const progressRatio5 = state.b5_crown / 3;
+      const offset5 = circumference * (1 - progressRatio5);
+      circle5.style.strokeDashoffset = offset5;
+      circle5.style.stroke = (state.b5_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-orange)';
+
+      // Render Bubble 6 (Checkpoint Exam Node)
+      const b6 = document.getElementById('b6-btn');
+      if (state.b5_crown === 3) {
+        b6.disabled = false;
+        if (state.b6_completed) {
+          b6.className = 'bubble-btn bubble-gold';
+        } else {
+          b6.className = 'bubble-btn bubble-active';
+        }
+      } else {
+        b6.className = 'bubble-btn locked';
+        b6.disabled = true;
+      }
     }
 
     // ── EXPORT / IMPORT CONTROLS ───────────────────────────────────────
@@ -1243,6 +1372,8 @@
           lastActive: "",
           b1_crown: 0,
           b3_crown: 0,
+          b5_crown: 0,
+          b6_completed: false,
           game_unlocked: false,
           game2_unlocked: false,
           word_strengths: {},
@@ -1421,9 +1552,18 @@
     function startStudySession(bubbleNum = 1) {
       decayStrengths();
       
-      const isB1 = bubbleNum === 1;
-      const crownLevel = isB1 ? state.b1_crown : state.b3_crown;
-      const levelsPool = isB1 ? BUBBLE_1_LEVELS : BUBBLE_3_LEVELS;
+      let crownLevel = 0;
+      let levelsPool = [];
+      if (bubbleNum === 1) {
+        crownLevel = state.b1_crown;
+        levelsPool = BUBBLE_1_LEVELS;
+      } else if (bubbleNum === 3) {
+        crownLevel = state.b3_crown;
+        levelsPool = BUBBLE_3_LEVELS;
+      } else if (bubbleNum === 5) {
+        crownLevel = state.b5_crown;
+        levelsPool = BUBBLE_5_LEVELS;
+      }
       
       const isGold = crownLevel === 3;
       const targetCount = isGold ? 10 : 12;
@@ -1474,11 +1614,13 @@
       loadNextQuestion();
     }
 
-    function generateRandomQuestion(pool) {
+    function generateRandomQuestion(pool, targetWord = null) {
       const qStyles = ["mc", "match", "dialogue", "bank"];
       const style = qStyles[Math.floor(Math.random() * qStyles.length)];
       
-      const targetWord = pool[Math.floor(Math.random() * pool.length)];
+      if (!targetWord) {
+        targetWord = pool[Math.floor(Math.random() * pool.length)];
+      }
 
       if (style === "match" && pool.length >= 3) {
         const pairs = shuffle([...pool]).slice(0, 4);
@@ -1571,8 +1713,15 @@
       checkBtn.disabled = false;
       checkBtn.textContent = "Check";
       checkBtn.onclick = submitAnswer;
-      document.getElementById('forgot-btn').hidden = true;
-      document.getElementById('skip-btn').hidden = true;
+      if (session.isCheckpoint) {
+        document.getElementById('forgot-btn').hidden = true;
+        const skipBtn = document.getElementById('skip-btn');
+        skipBtn.hidden = false;
+        skipBtn.onclick = skipQuestion;
+      } else {
+        document.getElementById('forgot-btn').hidden = true;
+        document.getElementById('skip-btn').hidden = true;
+      }
 
       const area = document.getElementById('question-area');
       area.innerHTML = '';
@@ -1674,7 +1823,9 @@
         area.appendChild(selectedBox);
         area.appendChild(poolBox);
 
-        document.getElementById('forgot-btn').hidden = false;
+        if (!session.isCheckpoint) {
+          document.getElementById('forgot-btn').hidden = false;
+        }
       }
       else if (q.type === "match") {
         const lbl = document.createElement('span');
@@ -1897,11 +2048,20 @@
       } else {
         banner.className = 'feedback-banner incorrect';
         banner.innerHTML = `❌ Incorrect. Correct answer: <strong>${q.correct}</strong>`;
-        session.mistakesQueue.push(q);
+        
+        if (session.isCheckpoint) {
+          session.lives--;
+          drawHeartsHUD();
+        } else {
+          session.mistakesQueue.push(q);
+        }
       }
 
       banner.style.display = 'flex';
       document.getElementById('forgot-btn').hidden = true;
+      if (session.isCheckpoint) {
+        document.getElementById('skip-btn').hidden = true;
+      }
 
       checkBtn.textContent = "Continue";
       checkBtn.onclick = () => confirmContinue(isCorrect);
@@ -1927,6 +2087,11 @@
           const theme = VOCAB_DATABASE[w].theme;
           state.theme_strengths[theme] = { strength: 1.0, last_practiced: new Date().toISOString() };
         });
+      } else {
+        if (session && session.isCheckpoint && session.lives <= 0) {
+          handleCheckpointGameOver();
+          return;
+        }
       }
 
       chosenVal = null;
@@ -1951,6 +2116,8 @@
         if (typeof SpaceInvadersGame !== 'undefined' && SpaceInvadersGame.isActive()) {
           SpaceInvadersGame.quit();
         }
+        document.body.classList.remove('checkpoint-mode');
+        document.getElementById('lesson-lives-box').style.display = 'none';
         document.getElementById('lesson-overlay').style.display = 'none';
         session = null;
       }
@@ -2010,6 +2177,29 @@
           emoji = "💪";
           state.game2_unlocked = true; 
         }
+      } else if (bNum === 5) {
+        if (state.b5_crown < 3) {
+          state.b5_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Curiosidades e Islas is now Level ${state.b5_crown}/3`;
+          if (state.b5_crown === 3) {
+            state.crowns++;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 5! Final Checkpoint unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Curiosities & Islands!";
+          emoji = "💪";
+        }
+      } else if (bNum === 6) {
+        state.b6_completed = true;
+        rewardXP += 20; // +40 XP total for Checkpoint Exam!
+        title = "Chapter Exam Cleared!";
+        subtitle = "Incredible! You have mastered Chapter 1.1: El Español Global!";
+        emoji = "🏆";
       }
 
       state.xp += rewardXP;
@@ -2049,10 +2239,145 @@
     }
 
     function finishLessonAndExit() {
+      document.body.classList.remove('checkpoint-mode');
+      document.getElementById('lesson-lives-box').style.display = 'none';
       document.getElementById('completion-screen').style.display = 'none';
       document.getElementById('question-area').style.display = 'flex';
       document.getElementById('lesson-overlay').style.display = 'none';
       session = null;
+    }
+
+    function startCheckpointTest() {
+      decayStrengths();
+
+      const fullPool = [
+        ...BUBBLE_1_LEVELS[0], ...BUBBLE_1_LEVELS[1], ...BUBBLE_1_LEVELS[2],
+        ...BUBBLE_3_LEVELS[0], ...BUBBLE_3_LEVELS[1], ...BUBBLE_3_LEVELS[2],
+        ...BUBBLE_5_LEVELS[0], ...BUBBLE_5_LEVELS[1], ...BUBBLE_5_LEVELS[2]
+      ];
+
+      const checkpointWords = shuffle(fullPool).slice(0, 15);
+      const queue = [];
+
+      checkpointWords.forEach(w => {
+        queue.push(generateRandomQuestion(fullPool, w));
+      });
+
+      session = {
+        bubbleNum: 6,
+        isCheckpoint: true,
+        isBossChallenge: false,
+        lives: 4,
+        activePool: fullPool,
+        newWords: [],
+        queue: queue,
+        currentCard: null,
+        correctCount: 0,
+        totalTarget: 15,
+        mistakesQueue: []
+      };
+
+      document.body.classList.add('checkpoint-mode');
+
+      document.getElementById('question-area').style.display = 'flex';
+      document.getElementById('completion-screen').style.display = 'none';
+      document.getElementById('lesson-overlay').style.display = 'flex';
+
+      drawHeartsHUD();
+      updateProgressFill();
+      loadNextQuestion();
+    }
+
+    function drawHeartsHUD() {
+      const box = document.getElementById('lesson-lives-box');
+      if (session && session.lives !== undefined) {
+        box.innerHTML = "❤️".repeat(session.lives) + "🖤".repeat(4 - session.lives);
+        box.style.display = 'flex';
+      } else {
+        box.style.display = 'none';
+      }
+    }
+
+    function skipQuestion() {
+      if (!session || !session.isCheckpoint) return;
+
+      session.lives--;
+      drawHeartsHUD();
+
+      if (session.lives <= 0) {
+        handleCheckpointGameOver();
+      } else {
+        chosenVal = null;
+        chosenBtn = null;
+        activeBank.length = 0;
+        matchSuccessCount = 0;
+        loadNextQuestion();
+      }
+    }
+
+    function handleCheckpointGameOver() {
+      const questionNum = 15 - session.queue.length;
+      if (questionNum >= 13 && !session.isBossChallenge) {
+        triggerLastChanceChallenge();
+      } else {
+        showCheckpointFailScreen();
+      }
+    }
+
+    function triggerLastChanceChallenge() {
+      session.isBossChallenge = true;
+      session.lives = 0;
+      drawHeartsHUD();
+
+      const bossCard = {
+        type: "bank",
+        isBoss: true,
+        prompt: "Chile is a Spanish-speaking country.",
+        correct: "Chile es un país hispanohablante",
+        wordsPool: shuffle(["Chile", "es", "un", "país", "hispanohablante", "el", "monumento", "tú", "famoso", "España"])
+      };
+
+      session.queue = [bossCard];
+      session.mistakesQueue = []; 
+
+      loadNextQuestion();
+      
+      const label = document.querySelector('#question-area .prompt-label');
+      if (label) {
+        label.innerHTML = "<strong>🚨 LAST CHANCE BOSS CHALLENGE! Translate this correctly or fail the chapter exam:</strong>";
+        label.style.color = "var(--danger-color)";
+      }
+    }
+
+    function showCheckpointFailScreen() {
+      document.getElementById('question-area').style.display = 'none';
+      document.getElementById('skip-btn').style.display = 'none';
+      document.getElementById('forgot-btn').style.display = 'none';
+      document.getElementById('feedback-banner').style.display = 'none';
+      document.getElementById('check-btn').hidden = true;
+
+      const compScreen = document.getElementById('completion-screen');
+      compScreen.style.display = 'flex';
+      compScreen.style.flexDirection = 'column';
+
+      document.getElementById('completion-emoji').textContent = "😭";
+      document.getElementById('complete-title').textContent = "Exam Failed!";
+      document.getElementById('complete-subtitle').textContent = "You ran out of hearts. Review the vocabulary and try again!";
+      document.getElementById('earned-xp').textContent = "+0⚡";
+      document.getElementById('current-streak').textContent = `🔥 ${state.streak}`;
+
+      const checkBtn = document.getElementById('check-btn');
+      checkBtn.hidden = false;
+      checkBtn.textContent = "Close Exam";
+      checkBtn.onclick = () => {
+        document.body.classList.remove('checkpoint-mode');
+        document.getElementById('lesson-lives-box').style.display = 'none';
+        document.getElementById('completion-screen').style.display = 'none';
+        document.getElementById('question-area').style.display = 'flex';
+        document.getElementById('lesson-overlay').style.display = 'none';
+        session = null;
+        renderMap();
+      };
     }
 
     // ── FROGGER CROSSING GAME ENGINE ──────────────────────────────────
