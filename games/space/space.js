@@ -1,7 +1,7 @@
 /* Space Invaders Game Engine Module */
 
 const SpaceInvadersGame = (function() {
-  const GAME_WORDS = ["el mapa", "el país", "el mundo", "la capital", "tú", "eres", "¿de dónde eres?", "de dónde", "famoso", "histórico", "la lengua", "hispanohablante"];
+  const GAME_WORDS = ["el mapa", "el país", "el world", "la capital", "tú", "eres", "¿de dónde eres?", "de dónde", "famoso", "histórico", "la lengua", "hispanohablante"];
 
   let gameLoop = null;
   let canvas = null;
@@ -39,6 +39,10 @@ const SpaceInvadersGame = (function() {
     ctx = canvas.getContext('2d');
 
     gameObj = {
+      gameState: 'playing', // 'playing', 'message', 'gameover', 'won'
+      messageText: "",
+      messageColor: "",
+      messageTimer: 0,
       targetWord: "",
       correctAnswer: "",
       score: 0,
@@ -72,7 +76,9 @@ const SpaceInvadersGame = (function() {
 
   function rollRound() {
     const target = GAME_WORDS[Math.floor(Math.random() * GAME_WORDS.length)];
-    gameObj.targetWord = VOCAB_DATABASE[target].english;
+    // Fallback if target word is not yet mapped in VOCAB_DATABASE
+    const wordData = VOCAB_DATABASE[target];
+    gameObj.targetWord = wordData ? wordData.english : target;
     gameObj.correctAnswer = target;
 
     document.getElementById('game-prompt-title').textContent = `Shoot the correct alien for: "${gameObj.targetWord}"`;
@@ -94,6 +100,21 @@ const SpaceInvadersGame = (function() {
   function handleGameKeys(e) {
     if (!gameObj) return;
     const key = e.key.toLowerCase();
+
+    // End screens exits
+    if (gameObj.gameState === 'gameover') {
+      if (e.key === 'Enter') {
+        quit();
+      }
+      return;
+    }
+    if (gameObj.gameState === 'won') {
+      if (e.key === 'Enter') {
+        complete();
+      }
+      return;
+    }
+
     if (e.key === 'ArrowLeft' || key === 'h') {
       moveShip(-1);
     } else if (e.key === 'ArrowRight' || key === 'l') {
@@ -105,13 +126,13 @@ const SpaceInvadersGame = (function() {
   }
 
   function moveShip(dir) {
-    if (!gameObj) return;
+    if (!gameObj || gameObj.gameState !== 'playing') return;
     const step = 20;
     gameObj.ship.x = Math.max(10, Math.min(360, gameObj.ship.x + dir * step));
   }
 
   function shootLaser() {
-    if (!gameObj) return;
+    if (!gameObj || gameObj.gameState !== 'playing') return;
     // Cap laser firing frequency to prevent spamming
     if (gameObj.lasers.length < 3) {
       gameObj.lasers.push({
@@ -122,65 +143,83 @@ const SpaceInvadersGame = (function() {
     }
   }
 
+  function triggerMessage(text, color, duration = 45) {
+    gameObj.gameState = 'message';
+    gameObj.messageText = text;
+    gameObj.messageColor = color;
+    gameObj.messageTimer = duration;
+  }
+
   function update() {
     if (!gameObj) return;
 
-    // 1. Move Aliens downward
-    const speed = 0.5 + (gameObj.score * 0.05); // Speed increases slightly with score
-    gameObj.aliens.forEach(alien => {
-      alien.y += speed;
-    });
-
-    // Check if aliens reach the spaceship line
-    const reachedBottom = gameObj.aliens.some(alien => alien.y + alien.h >= gameObj.ship.y);
-    if (reachedBottom) {
-      resetLoss("Aliens reached the bottom! Spaceship invaded.");
-      return;
-    }
-
-    // 2. Move Lasers
-    gameObj.lasers.forEach((laser, idx) => {
-      laser.y += laser.speed;
-    });
-
-    // Filter out lasers that left the screen
-    gameObj.lasers = gameObj.lasers.filter(laser => laser.y > 0);
-
-    // 3. Collision Checks
-    let hitDetected = false;
-    let hitCorrect = false;
-    let hitWord = "";
-
-    gameObj.lasers.forEach((laser, lIdx) => {
+    if (gameObj.gameState === 'message') {
+      gameObj.messageTimer--;
+      if (gameObj.messageTimer <= 0) {
+        if (gameObj.lives <= 0) {
+          gameObj.gameState = 'gameover';
+        } else if (gameObj.score >= 10) {
+          gameObj.gameState = 'won';
+        } else {
+          rollRound();
+          gameObj.gameState = 'playing';
+        }
+      }
+    } else if (gameObj.gameState === 'playing') {
+      // 1. Move Aliens downward
+      const speed = 0.5 + (gameObj.score * 0.05); // Speed increases slightly with score
       gameObj.aliens.forEach(alien => {
-        if (laser.y <= alien.y + alien.h && laser.y >= alien.y) {
-          if (laser.x >= alien.x && laser.x <= alien.x + alien.w) {
-            // Collision detected!
-            hitDetected = true;
-            hitWord = alien.word;
-            gameObj.lasers.splice(lIdx, 1); // remove laser
-            
-            if (alien.word === gameObj.correctAnswer) {
-              hitCorrect = true;
+        alien.y += speed;
+      });
+
+      // Check if aliens reach the spaceship line
+      const reachedBottom = gameObj.aliens.some(alien => alien.y + alien.h >= gameObj.ship.y);
+      if (reachedBottom) {
+        resetLoss("Spaceship invaded!");
+      } else {
+        // 2. Move Lasers
+        gameObj.lasers.forEach(laser => {
+          laser.y += laser.speed;
+        });
+
+        // Filter out lasers that left the screen
+        gameObj.lasers = gameObj.lasers.filter(laser => laser.y > 0);
+
+        // 3. Collision Checks (Backwards loop to safely splice without index skipping)
+        let hitDetected = false;
+        let hitCorrect = false;
+        let hitWord = "";
+
+        for (let l = gameObj.lasers.length - 1; l >= 0; l--) {
+          const laser = gameObj.lasers[l];
+          let laserRemoved = false;
+          for (let a = 0; a < gameObj.aliens.length; a++) {
+            const alien = gameObj.aliens[a];
+            if (laser.y <= alien.y + alien.h && laser.y >= alien.y) {
+              if (laser.x >= alien.x && laser.x <= alien.x + alien.w) {
+                hitDetected = true;
+                hitWord = alien.word;
+                gameObj.lasers.splice(l, 1);
+                laserRemoved = true;
+
+                if (alien.word === gameObj.correctAnswer) {
+                  hitCorrect = true;
+                }
+                break; // stop checking this laser
+              }
             }
           }
         }
-      });
-    });
 
-    if (hitDetected) {
-      if (hitCorrect) {
-        gameObj.score++;
-        if (gameObj.score >= 10) {
-          complete();
-        } else {
-          alert(`🎉 Correct! Score: ${gameObj.score} / 10`);
-          rollRound();
+        if (hitDetected) {
+          if (hitCorrect) {
+            gameObj.score++;
+            triggerMessage("🎉 CORRECT!", "#10b981", 45);
+          } else {
+            resetLoss(`You shot "${hitWord}"!`);
+          }
         }
-      } else {
-        resetLoss(`Incorrect! You shot "${hitWord}" instead of "${gameObj.correctAnswer}".`);
       }
-      return;
     }
 
     // 4. Drawing Canvas
@@ -235,16 +274,64 @@ const SpaceInvadersGame = (function() {
     let heartsStr = "❤️".repeat(gameObj.lives);
     ctx.textAlign = 'right';
     ctx.fillText(`LIVES: ${heartsStr}`, canvas.width - 10, 20);
+
+    // Overlay drawing for messages and ending screens
+    if (gameObj.gameState === 'message') {
+      drawOverlayBanner(gameObj.messageText, gameObj.messageColor);
+    } else if (gameObj.gameState === 'gameover') {
+      drawEndScreen("😭 GAME OVER", `Final Score: ${gameObj.score} / 10`, "Press ENTER / click modal '✕' to exit", "#ef4444");
+    } else if (gameObj.gameState === 'won') {
+      drawEndScreen("🏆 VICTORY!", "You defeated the space invaders!", "Earnings: +25⚡ XP. Press ENTER to close.", "#10b981");
+    }
+  }
+
+  function drawOverlayBanner(text, color) {
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 3;
+    
+    const bx = 30;
+    const by = 110;
+    const bw = canvas.width - 60;
+    const bh = 100;
+    
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.strokeRect(bx, by, bw, bh);
+    
+    ctx.fillStyle = color;
+    ctx.font = '700 20px Outfit';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, canvas.width / 2, by + 45);
+    
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '500 12px Outfit';
+    ctx.fillText("Next round starting...", canvas.width / 2, by + 75);
+  }
+
+  function drawEndScreen(title, subtitle1, subtitle2, titleColor) {
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = titleColor;
+    ctx.font = '900 28px Outfit';
+    ctx.textAlign = 'center';
+    ctx.fillText(title, canvas.width / 2, 130);
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 16px Outfit';
+    ctx.fillText(subtitle1, canvas.width / 2, 180);
+    
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '500 13px Outfit';
+    ctx.fillText(subtitle2, canvas.width / 2, 230);
   }
 
   function resetLoss(msg) {
     gameObj.lives--;
     if (gameObj.lives <= 0) {
-      alert(`😭 Game Over! ${msg}`);
-      quit();
+      triggerMessage("😭 GAME OVER", "#ef4444", 60);
     } else {
-      alert(`❌ ${msg} Lives remaining: ${gameObj.lives}`);
-      rollRound();
+      triggerMessage(`❌ OUCH! ${msg}`, "#f59e0b", 60);
     }
   }
 
@@ -266,14 +353,13 @@ const SpaceInvadersGame = (function() {
     state.game2_unlocked = false;
     state.xp += 25;
     saveProgress();
-
-    alert("🏆 Congratulations! You successfully defeated the invaders and won the game!\n\nEarnings: +25⚡ XP\n\n🔒 Note: The game is now locked. Complete a practice session on a study node to unlock it again.");
   }
 
   return {
     start: start,
     moveShip: moveShip,
     shootLaser: shootLaser,
+    quit: quit,
     isActive: function() { return gameObj !== null; }
   };
 })();
