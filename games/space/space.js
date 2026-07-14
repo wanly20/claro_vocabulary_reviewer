@@ -72,24 +72,22 @@ const SpaceInvadersGame = (function() {
   }
 
   function spawnWave() {
-    const target = GAME_WORDS[Math.floor(Math.random() * GAME_WORDS.length)];
-    const wordData = VOCAB_DATABASE[target];
-    const targetWord = wordData ? wordData.english : target;
-    const correctAnswer = target;
-
-    const distractors = shuffle(GAME_WORDS.filter(w => w !== target));
-    const roundWords = shuffle([target, distractors[0], distractors[1]]);
+    // Choose 3 unique words from GAME_WORDS
+    const roundWords = shuffle([...GAME_WORDS]).slice(0, 3);
 
     const aliens = [
-      { x: 10, w: 110, h: 30, word: roundWords[0] },
-      { x: 145, w: 110, h: 30, word: roundWords[1] },
-      { x: 280, w: 110, h: 30, word: roundWords[2] }
+      { x: 10, w: 110, h: 30, word: roundWords[0], isDead: false },
+      { x: 145, w: 110, h: 30, word: roundWords[1], isDead: false },
+      { x: 280, w: 110, h: 30, word: roundWords[2], isDead: false }
     ];
+
+    const initialTarget = roundWords[0];
+    const wordData = VOCAB_DATABASE[initialTarget];
 
     gameObj.waves.push({
       y: -35,
-      targetWord: targetWord,
-      correctAnswer: correctAnswer,
+      correctAnswer: initialTarget,
+      targetWord: wordData ? wordData.english : initialTarget,
       aliens: aliens
     });
 
@@ -215,6 +213,8 @@ const SpaceInvadersGame = (function() {
             const wave = gameObj.waves[wIdx];
             for (let a = 0; a < wave.aliens.length; a++) {
               const alien = wave.aliens[a];
+              if (alien.isDead) continue; // skip dead aliens
+
               const alienY = wave.y;
               if (laser.y <= alienY + alien.h && laser.y >= alienY) {
                 if (laser.x >= alien.x && laser.x <= alien.x + alien.w) {
@@ -225,7 +225,18 @@ const SpaceInvadersGame = (function() {
                   // ONLY allow hitting the correct alien in the LOWEST wave
                   if (wIdx === 0 && alien.word === wave.correctAnswer) {
                     hitCorrect = true;
-                    gameObj.waves.shift(); // remove completed wave
+                    alien.isDead = true;
+
+                    // Find next living alien in this wave
+                    const nextLiving = wave.aliens.find(al => !al.isDead);
+                    if (nextLiving) {
+                      wave.correctAnswer = nextLiving.word;
+                      const nextData = VOCAB_DATABASE[nextLiving.word];
+                      wave.targetWord = nextData ? nextData.english : nextLiving.word;
+                    } else {
+                      // All dead! Remove the wave
+                      gameObj.waves.shift();
+                    }
                   }
                   break;
                 }
@@ -268,6 +279,8 @@ const SpaceInvadersGame = (function() {
     gameObj.waves.forEach((wave, wIdx) => {
       const isLowest = (wIdx === 0);
       wave.aliens.forEach(alien => {
+        if (alien.isDead) return; // Skip dead ones
+
         // Highlight active wave (lowest) in Violet, upper waves in Grey
         ctx.fillStyle = isLowest ? '#7c3aed' : '#4b5563'; 
         ctx.strokeStyle = isLowest ? '#a78bfa' : '#6b7280';
@@ -375,6 +388,7 @@ const SpaceInvadersGame = (function() {
     }
   }
 
+  // Expose clean quit
   function quit() {
     clearInterval(gameLoop);
     gameLoop = null;
