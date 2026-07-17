@@ -260,7 +260,7 @@ const SpaceInvadersGame = (function() {
             const progressPercent = Math.min(100, (gameObj.score / 10) * 100);
             document.getElementById('lesson-progress-fill').style.width = `${progressPercent}%`;
 
-            triggerMessage("🎉 CORRECT!", "#10b981", 45);
+            triggerMessage("🎉 CORRECT!", "#10b981", 10);
           }
         }
       }
@@ -393,7 +393,7 @@ const SpaceInvadersGame = (function() {
     if (gameObj.lives <= 0) {
       triggerMessage("😭 GAME OVER", "#ef4444", 60);
     } else {
-      triggerMessage(`❌ ${msg} -1 Life`, "#ef4444", 60);
+      triggerMessage(`❌ ${msg} -1 Life`, "#ef4444", 30);
       gameObj.waveSpawnTimer = 30; // spawn soon
     }
   }

@@ -239,7 +239,7 @@ const FroggerGame = (function() {
         if (gameObj.score >= 5) {
           triggerMessage("🏆 ALL CROSSINGS DONE!", "#10b981", 60);
         } else {
-          triggerMessage(`🎉 CORRECT! Crossing ${gameObj.score}/5 complete!`, "#10b981", 60);
+          triggerMessage(`🎉 CORRECT! Crossing ${gameObj.score}/5 complete!`, "#10b981", 20);
         }
         return;
       }
@@ -338,7 +338,7 @@ const FroggerGame = (function() {
     if (gameObj.lives <= 0) {
       triggerMessage("😭 GAME OVER", "#ef4444", 60);
     } else {
-      triggerMessage(`❌ Splash! ${msg}`, "#f59e0b", 60);
+      triggerMessage(`❌ Splash! ${msg}`, "#f59e0b", 30);
     }
   }
 
