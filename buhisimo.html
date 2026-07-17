@@ -860,6 +860,40 @@
     .strength-tag.medium { background: var(--brand-gold); }
     .strength-tag.strong { background: var(--brand-green); }
 
+    /* Theme toggle button styles */
+    .theme-toggle-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .theme-toggle-btn:hover {
+      background: var(--bg-color);
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+      transform: scale(1.05);
+    }
+    .theme-toggle-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Locked bubble button styles override */
+    .bubble-btn.locked {
+      background: #bdc3c7 !important;
+      box-shadow: 0 6px 0 #95a5a6 !important;
+      color: #7f8c8d !important;
+      opacity: 0.65;
+      cursor: not-allowed !important;
+    }
+
     /* Frogger Canvas styles are loaded dynamically from games/frogger/frogger.css */
   </style>
 </head>
@@ -874,10 +908,22 @@
         🦉 Buhísimo
       </div>
     </div>
-    <div class="stats-bar">
-      <div class="stat-badge" title="Daily Streak">🔥 <span id="header-streak">0</span></div>
-      <div class="stat-badge" title="Crowns Completed">👑 <span id="header-crowns">0</span></div>
-      <div class="stat-badge" title="Experience Points">⚡ <span id="header-xp">0</span></div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+        <!-- Sun icon (shown in dark theme) -->
+        <svg class="sun-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <!-- Moon icon (shown in light theme) -->
+        <svg class="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+      <div class="stats-bar">
+        <div class="stat-badge" title="Daily Streak">🔥 <span id="header-streak">0</span></div>
+        <div class="stat-badge" title="Crowns Completed">👑 <span id="header-crowns">0</span></div>
+        <div class="stat-badge" title="Experience Points">⚡ <span id="header-xp">0</span></div>
+      </div>
     </div>
   </header>
 
@@ -1155,10 +1201,40 @@
 
     let session = null; // Holds active quiz details
 
-    // Load active light/dark mode theme from localStorage
+    // Load active light/dark mode theme from localStorage and bind toggle button
     function applyParentTheme() {
       const savedTheme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
+      setTheme(savedTheme);
+
+      const toggleBtn = document.getElementById('theme-toggle');
+      if (toggleBtn && !toggleBtn.dataset.bound) {
+        toggleBtn.dataset.bound = "true";
+        toggleBtn.onclick = () => {
+          const currentTheme = document.documentElement.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          setTheme(newTheme);
+        };
+      }
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      
+      const toggleBtn = document.getElementById('theme-toggle');
+      if (toggleBtn) {
+        const sunIcon = toggleBtn.querySelector('.sun-icon');
+        const moonIcon = toggleBtn.querySelector('.moon-icon');
+        if (sunIcon && moonIcon) {
+          if (theme === 'dark') {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+          } else {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+          }
+        }
+      }
     }
 
     // ── DATA ENGINE (SPACED REPETITION & LOADERS) ────────────────────────
@@ -1280,11 +1356,10 @@
       const b2 = document.getElementById('b2-btn');
       if (state.b1_crown === 3 && state.game_unlocked) {
         b2.className = 'bubble-btn bubble-game';
-        b2.disabled = false;
       } else {
-        b2.className = 'bubble-btn locked';
-        b2.disabled = true;
+        b2.className = 'bubble-btn locked bubble-game';
       }
+      b2.disabled = false;
 
       // Render Bubble 3 (Geography study node)
       const b3 = document.getElementById('b3-btn');
@@ -1293,7 +1368,6 @@
 
       b3.className = 'bubble-btn';
       if (state.b1_crown === 3) {
-        b3.disabled = false;
         if (state.b3_crown === 3) {
           b3.classList.add('bubble-gold');
         } else {
@@ -1301,8 +1375,8 @@
         }
       } else {
         b3.classList.add('locked');
-        b3.disabled = true;
       }
+      b3.disabled = false;
 
       // Update circular progress ring 3
       const progressRatio3 = state.b3_crown / 3;
@@ -1314,11 +1388,10 @@
       const b4 = document.getElementById('b4-btn');
       if (state.b3_crown === 3 && state.game2_unlocked) {
         b4.className = 'bubble-btn bubble-game';
-        b4.disabled = false;
       } else {
-        b4.className = 'bubble-btn locked';
-        b4.disabled = true;
+        b4.className = 'bubble-btn locked bubble-game';
       }
+      b4.disabled = false;
 
       // Render Bubble 5 (Islands study node)
       const b5 = document.getElementById('b5-btn');
@@ -1327,7 +1400,6 @@
 
       b5.className = 'bubble-btn';
       if (state.b3_crown === 3) {
-        b5.disabled = false;
         if (state.b5_crown === 3) {
           b5.classList.add('bubble-gold');
         } else {
@@ -1335,8 +1407,8 @@
         }
       } else {
         b5.classList.add('locked');
-        b5.disabled = true;
       }
+      b5.disabled = false;
 
       // Update circular progress ring 5
       const progressRatio5 = state.b5_crown / 3;
@@ -1346,17 +1418,17 @@
 
       // Render Bubble 6 (Checkpoint Exam Node)
       const b6 = document.getElementById('b6-btn');
+      b6.className = 'bubble-btn';
       if (state.b5_crown === 3) {
-        b6.disabled = false;
         if (state.b6_completed) {
-          b6.className = 'bubble-btn bubble-gold';
+          b6.classList.add('bubble-gold');
         } else {
-          b6.className = 'bubble-btn bubble-active';
+          b6.classList.add('bubble-active');
         }
       } else {
-        b6.className = 'bubble-btn locked';
-        b6.disabled = true;
+        b6.classList.add('locked');
       }
+      b6.disabled = false;
     }
 
     // ── EXPORT / IMPORT CONTROLS ───────────────────────────────────────
@@ -1405,7 +1477,8 @@
             
             if (confirm(confirmMsg)) {
               state = parsed;
-              saveProgress();
+              localStorage.setItem('buhisimo_progress', JSON.stringify(state));
+              loadProgress();
               alert("🎉 Progress imported successfully!");
             }
           } else {
@@ -1550,6 +1623,15 @@
     // ── LESSON PLAY LOOP ───────────────────────────────────────────────
     
     function startStudySession(bubbleNum = 1) {
+      if (bubbleNum === 3 && state.b1_crown < 3) {
+        alert("🔒 Geografía y Ciudades is locked! You must first complete Bubble 1 (Saludos y Países) to 3 crowns.");
+        return;
+      }
+      if (bubbleNum === 5 && state.b3_crown < 3) {
+        alert("🔒 Curiosidades e Islas is locked! You must first complete Bubble 3 (Geografía y Ciudades) to 3 crowns.");
+        return;
+      }
+
       decayStrengths();
       
       let crownLevel = 0;
@@ -2248,6 +2330,11 @@
     }
 
     function startCheckpointTest() {
+      if (state.b5_crown < 3) {
+        alert("🔒 Examen del Capítulo is locked! You must first complete Bubble 5 (Curiosidades e Islas) to 3 crowns.");
+        return;
+      }
+
       decayStrengths();
 
       const fullPool = [
