@@ -6,6 +6,7 @@
   <title>Buhísimo — Camino de Aprendizaje</title>
   <link rel="stylesheet" href="games/frogger/frogger.css">
   <link rel="stylesheet" href="games/space/space.css">
+  <link rel="stylesheet" href="games/globo/globo.css">
   
   <style>
     /* Styling System matching the Claro Vocab app */
@@ -860,6 +861,52 @@
     .strength-tag.medium { background: var(--brand-gold); }
     .strength-tag.strong { background: var(--brand-green); }
 
+    /* Chapter Dividers in Buhisimo map */
+    .chapter-header-divider {
+      width: 100%;
+      padding: 16px 24px;
+      margin: 10px 0;
+      border-left: 5px solid var(--brand-green);
+      background: var(--bg-color);
+      border-radius: 4px 12px 12px 4px;
+      box-sizing: border-box;
+      align-self: stretch;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+      text-align: left;
+    }
+    .chapter-header-divider .chapter-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      background: var(--brand-green-light-solid);
+      color: var(--brand-green);
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+    .chapter-header-divider.chapter-2 {
+      border-left-color: var(--brand-orange);
+    }
+    .chapter-header-divider.chapter-2 .chapter-badge {
+      background: rgba(230, 126, 34, 0.15);
+      color: var(--brand-orange);
+    }
+    .chapter-header-divider .chapter-title {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0 0 4px 0;
+      color: var(--text-primary);
+    }
+    .chapter-header-divider .chapter-subtitle {
+      font-size: 0.85rem;
+      margin: 0;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
     /* Theme toggle button styles */
     .theme-toggle-btn {
       width: 40px;
@@ -953,6 +1000,13 @@
     <main class="map-container">
       <div class="path-connector"></div>
       
+      <!-- Chapter 1.1 Header -->
+      <div class="chapter-header-divider">
+        <div class="chapter-badge">Chapter 1.1</div>
+        <h2 class="chapter-title">El Español Global</h2>
+        <p class="chapter-subtitle">Learn basic greetings, Spanish-speaking countries, and islands.</p>
+      </div>
+
       <!-- Bubble 1: Greetings & Countries -->
       <div class="bubble-wrapper">
         <div class="bubble-btn-container">
@@ -1019,10 +1073,73 @@
 
       <!-- Bubble 6: Examen del Capítulo -->
       <div class="bubble-wrapper">
-        <button class="bubble-btn locked" id="b6-btn" onclick="startCheckpointTest()">
+        <button class="bubble-btn locked" id="b6-btn" onclick="startCheckpointTest(1)">
           <span class="bubble-emoji">🏆</span>
         </button>
         <div class="bubble-label">Examen del Capítulo</div>
+      </div>
+
+      <!-- Chapter 1.2 Header -->
+      <div class="chapter-header-divider chapter-2">
+        <div class="chapter-badge">Chapter 1.2</div>
+        <h2 class="chapter-title">¿Qué tal?</h2>
+        <p class="chapter-subtitle">Introduce yourself, express feelings, and master names & spelling.</p>
+      </div>
+
+      <!-- Bubble 7: Saludos y Sentimientos -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b7-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b7-btn" onclick="startStudySession(7)">
+            <span class="bubble-emoji">🎭</span>
+          </button>
+          <div class="bubble-crown-badge" id="b7-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Saludos y Sentimientos</div>
+      </div>
+
+      <!-- Bubble 8: Globo Pop Game -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b8-btn" onclick="GloboPopGame.start()">
+          <span class="bubble-emoji">🎈</span>
+        </button>
+        <div class="bubble-label">Globo Pop</div>
+      </div>
+
+      <!-- Bubble 9: Presentaciones y Alfabeto -->
+      <div class="bubble-wrapper bubble-right">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b9-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b9-btn" onclick="startStudySession(9)">
+            <span class="bubble-emoji">🔤</span>
+          </button>
+          <div class="bubble-crown-badge" id="b9-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Presentaciones y Alfabeto</div>
+      </div>
+
+      <!-- Bubble 10: Cruce del Río (1.2) -->
+      <div class="bubble-wrapper bubble-left">
+        <button class="bubble-btn locked" id="b10-btn" onclick="FroggerGame.start(2)">
+          <span class="bubble-emoji">🐸</span>
+        </button>
+        <div class="bubble-label">Cruce del Río (1.2)</div>
+      </div>
+
+      <!-- Bubble 11: Examen del Capítulo 1.2 -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b11-btn" onclick="startCheckpointTest(2)">
+          <span class="bubble-emoji">🏆</span>
+        </button>
+        <div class="bubble-label">Examen del Capítulo 1.2</div>
       </div>
     </main>
   </div>
@@ -1099,6 +1216,7 @@
 
   <script src="games/frogger/frogger.js"></script>
   <script src="games/space/space.js"></script>
+  <script src="games/globo/globo.js"></script>
   <script>
     // ── DATABASE & CURRICULUM DEFINITIONS ──────────────────────────────
     
@@ -1144,7 +1262,30 @@
       "Chile": { english: "Chile", theme: "Países" },
       "Colombia": { english: "Colombia", theme: "Países" },
       "Perú": { english: "Peru", theme: "Países" },
-      "República Dominicana": { english: "Dominican Republic", theme: "Países" }
+      "República Dominicana": { english: "Dominican Republic", theme: "Países" },
+      // Bubble 7 Words (Theme: Saludos y Sentimientos)
+      "Buenas tardes": { english: "Good afternoon", theme: "Saludos y Sentimientos" },
+      "¡Hasta luego!": { english: "See you later!", theme: "Saludos y Sentimientos" },
+      "¿Cómo estás?": { english: "How are you?", theme: "Saludos y Sentimientos" },
+      "¿Y tú?": { english: "And you?", theme: "Saludos y Sentimientos" },
+      "bien": { english: "well", theme: "Saludos y Sentimientos" },
+      "mal": { english: "bad", theme: "Saludos y Sentimientos" },
+      "regular": { english: "so-so", theme: "Saludos y Sentimientos" },
+      "fatal": { english: "awful", theme: "Saludos y Sentimientos" },
+      "fantástico": { english: "fantastic", theme: "Saludos y Sentimientos" },
+      "fantástica": { english: "fantastic", theme: "Saludos y Sentimientos" },
+      "fenomenal": { english: "great", theme: "Saludos y Sentimientos" },
+      "bien, gracias": { english: "well, thank you", theme: "Saludos y Sentimientos" },
+      "muy bien": { english: "very well", theme: "Saludos y Sentimientos" },
+      // Bubble 9 Words (Theme: Identidad Personal)
+      "el alfabeto": { english: "the alphabet", theme: "Identidad Personal" },
+      "escribir": { english: "to write", theme: "Identidad Personal" },
+      "llamarse": { english: "to be called", theme: "Identidad Personal" },
+      "¿cómo se escribe?": { english: "how do you write?", theme: "Identidad Personal" },
+      "me llamo": { english: "I am called", theme: "Identidad Personal" },
+      "te llamas": { english: "you are called", theme: "Identidad Personal" },
+      "se llama": { english: "he/she is called", theme: "Identidad Personal" },
+      "¿cómo te llamas?": { english: "what is your name?", theme: "Identidad Personal" }
     };
 
     // Bubble 1 Crowns vocabulary scope mapping
@@ -1168,6 +1309,19 @@
       ["Chile", "Colombia", "Perú", "República Dominicana"] // Level 3 (South America)
     ];
 
+    // Bubble 7 Crowns vocabulary scope mapping
+    const BUBBLE_7_LEVELS = [
+      ["Buenas tardes", "¡Hasta luego!", "¿Cómo estás?", "¿Y tú?"], // Level 1 (Greetings & Social)
+      ["bien", "mal", "regular", "fatal"], // Level 2 (Feelings)
+      ["fantástico", "fenomenal", "bien, gracias", "muy bien"] // Level 3 (Great Feelings)
+    ];
+
+    // Bubble 9 Crowns vocabulary scope mapping
+    const BUBBLE_9_LEVELS = [
+      ["el alfabeto", "escribir", "llamarse", "¿cómo se escribe?"], // Level 1 (Intro/spelling)
+      ["me llamo", "te llamas", "se llama", "¿cómo te llamas?"] // Level 2 (Names/Conjugations)
+    ];
+
     // Theme references matching database
     const THEME_LABELS = {
       "Saludos y Sentimientos": "💬 Saludos",
@@ -1179,7 +1333,7 @@
     const THEME_TOTAL_COUNTS_1_1 = {
       "Saludos y Sentimientos": 17,
       "Países": 36, // Updated count including islands
-      "Identidad Personal": 8  // Updated count including ¿De dónde es?
+      "Identidad Personal": 16
     };
 
     // ── GLOBAL APPLICATION STATE ──────────────────────────────────────
@@ -1193,8 +1347,13 @@
       b3_crown: 0, // 0 to 3
       b5_crown: 0, // 0 to 3
       b6_completed: false,
+      b7_crown: 0, // 0 to 3
+      b9_crown: 0, // 0 to 2
+      b11_completed: false,
       game_unlocked: false,
       game2_unlocked: false,
+      game_unlocked_1_2: false,
+      game2_unlocked_1_2: false,
       word_strengths: {}, // wordKey -> { strength: float, last_practiced: timestamp }
       theme_strengths: {}  // themeKey -> { strength: float, last_practiced: timestamp }
     };
@@ -1265,6 +1424,21 @@
       }
       if (state.b6_completed === undefined) {
         state.b6_completed = false;
+      }
+      if (state.b7_crown === undefined) {
+        state.b7_crown = 0;
+      }
+      if (state.b9_crown === undefined) {
+        state.b9_crown = 0;
+      }
+      if (state.b11_completed === undefined) {
+        state.b11_completed = false;
+      }
+      if (state.game_unlocked_1_2 === undefined) {
+        state.game_unlocked_1_2 = false;
+      }
+      if (state.game2_unlocked_1_2 === undefined) {
+        state.game2_unlocked_1_2 = false;
       }
       
       // Initialize strengths if missing
@@ -1429,6 +1603,84 @@
         b6.classList.add('locked');
       }
       b6.disabled = false;
+
+      // Render Bubble 7 (Saludos y Sentimientos study node)
+      const b7 = document.getElementById('b7-btn');
+      const circle7 = document.getElementById('b7-progress-circle');
+      document.getElementById('b7-crown-badge').textContent = state.b7_crown;
+
+      b7.className = 'bubble-btn';
+      if (state.b6_completed) {
+        if (state.b7_crown === 3) {
+          b7.classList.add('bubble-gold');
+        } else {
+          b7.classList.add('bubble-active');
+        }
+      } else {
+        b7.classList.add('locked');
+      }
+      b7.disabled = false;
+
+      // Update progress ring 7
+      const progressRatio7 = state.b7_crown / 3;
+      const offset7 = circumference * (1 - progressRatio7);
+      circle7.style.strokeDashoffset = offset7;
+      circle7.style.stroke = (state.b7_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-orange)';
+
+      // Render Bubble 8 (Globo Pop Game Node)
+      const b8 = document.getElementById('b8-btn');
+      if (state.b7_crown === 3 && state.game_unlocked_1_2) {
+        b8.className = 'bubble-btn bubble-game';
+      } else {
+        b8.className = 'bubble-btn locked bubble-game';
+      }
+      b8.disabled = false;
+
+      // Render Bubble 9 (Alphabet study node)
+      const b9 = document.getElementById('b9-btn');
+      const circle9 = document.getElementById('b9-progress-circle');
+      document.getElementById('b9-crown-badge').textContent = state.b9_crown;
+
+      b9.className = 'bubble-btn';
+      if (state.b7_crown === 3) {
+        if (state.b9_crown === 2) {
+          b9.classList.add('bubble-gold');
+        } else {
+          b9.classList.add('bubble-active');
+        }
+      } else {
+        b9.classList.add('locked');
+      }
+      b9.disabled = false;
+
+      // Update progress ring 9
+      const progressRatio9 = state.b9_crown / 2;
+      const offset9 = circumference * (1 - progressRatio9);
+      circle9.style.strokeDashoffset = offset9;
+      circle9.style.stroke = (state.b9_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-orange)';
+
+      // Render Bubble 10 (River Game Repeat Node)
+      const b10 = document.getElementById('b10-btn');
+      if (state.b9_crown === 2 && state.game2_unlocked_1_2) {
+        b10.className = 'bubble-btn bubble-game';
+      } else {
+        b10.className = 'bubble-btn locked bubble-game';
+      }
+      b10.disabled = false;
+
+      // Render Bubble 11 (Checkpoint Exam 1.2 Node)
+      const b11 = document.getElementById('b11-btn');
+      b11.className = 'bubble-btn';
+      if (state.b9_crown === 2) {
+        if (state.b11_completed) {
+          b11.classList.add('bubble-gold');
+        } else {
+          b11.classList.add('bubble-active');
+        }
+      } else {
+        b11.classList.add('locked');
+      }
+      b11.disabled = false;
     }
 
     // ── EXPORT / IMPORT CONTROLS ───────────────────────────────────────
@@ -1446,8 +1698,13 @@
           b3_crown: 0,
           b5_crown: 0,
           b6_completed: false,
+          b7_crown: 0,
+          b9_crown: 0,
+          b11_completed: false,
           game_unlocked: false,
           game2_unlocked: false,
+          game_unlocked_1_2: false,
+          game2_unlocked_1_2: false,
           word_strengths: {},
           theme_strengths: {}
         };
@@ -1631,6 +1888,14 @@
         alert("🔒 Curiosidades e Islas is locked! You must first complete Bubble 3 (Geografía y Ciudades) to 3 crowns.");
         return;
       }
+      if (bubbleNum === 7 && !state.b6_completed) {
+        alert("🔒 Chapter 1.2 is locked! You must first pass the Chapter 1.1 Checkpoint Exam (Bubble 6) to unlock these lessons.");
+        return;
+      }
+      if (bubbleNum === 9 && state.b7_crown < 3) {
+        alert("🔒 Presentaciones y Alfabeto is locked! You must first complete Bubble 7 (Saludos y Sentimientos) to 3 crowns.");
+        return;
+      }
 
       decayStrengths();
       
@@ -1645,11 +1910,18 @@
       } else if (bubbleNum === 5) {
         crownLevel = state.b5_crown;
         levelsPool = BUBBLE_5_LEVELS;
+      } else if (bubbleNum === 7) {
+        crownLevel = state.b7_crown;
+        levelsPool = BUBBLE_7_LEVELS;
+      } else if (bubbleNum === 9) {
+        crownLevel = state.b9_crown;
+        levelsPool = BUBBLE_9_LEVELS;
       }
       
-      const isGold = crownLevel === 3;
+      const isB9 = bubbleNum === 9;
+      const isGold = isB9 ? (crownLevel === 2) : (crownLevel === 3);
       const targetCount = isGold ? 10 : 12;
-      const level = Math.min(2, crownLevel);
+      const level = Math.min(isB9 ? 1 : 2, crownLevel);
       
       const activePool = [];
       for (let i = 0; i <= level; i++) {
@@ -2198,6 +2470,9 @@
         if (typeof SpaceInvadersGame !== 'undefined' && SpaceInvadersGame.isActive()) {
           SpaceInvadersGame.quit();
         }
+        if (typeof GloboPopGame !== 'undefined' && GloboPopGame.isActive()) {
+          GloboPopGame.quit();
+        }
         document.body.classList.remove('checkpoint-mode');
         document.getElementById('lesson-lives-box').style.display = 'none';
         document.getElementById('lesson-overlay').style.display = 'none';
@@ -2276,6 +2551,50 @@
           subtitle = "Great review of Curiosities & Islands!";
           emoji = "💪";
         }
+      } else if (bNum === 7) {
+        if (state.b7_crown < 3) {
+          state.b7_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Saludos y Sentimientos is now Level ${state.b7_crown}/3`;
+          if (state.b7_crown === 3) {
+            state.crowns++;
+            state.game_unlocked_1_2 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 7! Globo Pop game unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Greetings & Feelings!";
+          emoji = "💪";
+          state.game_unlocked_1_2 = true;
+        }
+      } else if (bNum === 9) {
+        if (state.b9_crown < 2) {
+          state.b9_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Presentaciones y Alfabeto is now Level ${state.b9_crown}/2`;
+          if (state.b9_crown === 2) {
+            state.crowns++;
+            state.game2_unlocked_1_2 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 9! River game 1.2 unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Alphabet & Introductions!";
+          emoji = "💪";
+          state.game2_unlocked_1_2 = true;
+        }
+      } else if (bNum === 11) {
+        state.b11_completed = true;
+        rewardXP += 20; // +40 XP total for Checkpoint Exam!
+        title = "Chapter Exam Cleared!";
+        subtitle = "Incredible! You have mastered Chapter 1.2: ¿Qué tal?!";
+        emoji = "🏆";
       } else if (bNum === 6) {
         state.b6_completed = true;
         rewardXP += 20; // +40 XP total for Checkpoint Exam!
@@ -2300,6 +2619,12 @@
       }
       if (state.b3_crown === 3) {
         state.game2_unlocked = true;
+      }
+      if (state.b7_crown === 3) {
+        state.game_unlocked_1_2 = true;
+      }
+      if (state.b9_crown === 2) {
+        state.game2_unlocked_1_2 = true;
       }
 
       saveProgress();
@@ -2329,18 +2654,28 @@
       session = null;
     }
 
-    function startCheckpointTest() {
-      if (state.b5_crown < 3) {
-        alert("🔒 Examen del Capítulo is locked! You must first complete Bubble 5 (Curiosidades e Islas) to 3 crowns.");
-        return;
+    function startCheckpointTest(chapterNum = 1) {
+      if (chapterNum === 1) {
+        if (state.b5_crown < 3) {
+          alert("🔒 Examen del Capítulo 1.1 is locked! You must first complete Bubble 5 (Curiosidades e Islas) to 3 crowns.");
+          return;
+        }
+      } else if (chapterNum === 2) {
+        if (state.b9_crown < 2) {
+          alert("🔒 Examen del Capítulo 1.2 is locked! You must first complete Bubble 9 (Presentaciones y Alfabeto) to 2 crowns.");
+          return;
+        }
       }
 
       decayStrengths();
 
-      const fullPool = [
+      const fullPool = chapterNum === 1 ? [
         ...BUBBLE_1_LEVELS[0], ...BUBBLE_1_LEVELS[1], ...BUBBLE_1_LEVELS[2],
         ...BUBBLE_3_LEVELS[0], ...BUBBLE_3_LEVELS[1], ...BUBBLE_3_LEVELS[2],
         ...BUBBLE_5_LEVELS[0], ...BUBBLE_5_LEVELS[1], ...BUBBLE_5_LEVELS[2]
+      ] : [
+        ...BUBBLE_7_LEVELS[0], ...BUBBLE_7_LEVELS[1], ...BUBBLE_7_LEVELS[2],
+        ...BUBBLE_9_LEVELS[0], ...BUBBLE_9_LEVELS[1]
       ];
 
       const checkpointWords = shuffle(fullPool).slice(0, 15);
@@ -2351,7 +2686,7 @@
       });
 
       session = {
-        bubbleNum: 6,
+        bubbleNum: chapterNum === 1 ? 6 : 11,
         isCheckpoint: true,
         isBossChallenge: false,
         lives: 4,
@@ -2416,12 +2751,19 @@
       session.lives = 0;
       drawHeartsHUD();
 
-      const bossCard = {
+      const isCh1 = session.bubbleNum === 6;
+      const bossCard = isCh1 ? {
         type: "bank",
         isBoss: true,
         prompt: "Chile is a Spanish-speaking country.",
         correct: "Chile es un país hispanohablante",
         wordsPool: shuffle(["Chile", "es", "un", "país", "hispanohablante", "el", "monumento", "tú", "famoso", "España"])
+      } : {
+        type: "bank",
+        isBoss: true,
+        prompt: "How are you? Very well, thank you.",
+        correct: "¿Cómo estás? Muy bien, gracias",
+        wordsPool: shuffle(["¿Cómo", "estás?", "Muy", "bien,", "gracias", "regular", "fatal", "tardes", "Buenas", "tú"])
       };
 
       session.queue = [bossCard];

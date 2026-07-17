@@ -1,7 +1,7 @@
 /* Frogger Crossing Game Engine Module */
 
 const FroggerGame = (function() {
-  const GAME_SENTENCES = [
+  const GAME_SENTENCES_1_1 = [
     { english: "Hello! I am from Spain.", spanish: ["¡hola!", "soy de", "España"] },
     { english: "Hello! I am from Argentina.", spanish: ["¡hola!", "soy de", "Argentina"] },
     { english: "Hello! I am from Cuba.", spanish: ["¡hola!", "soy de", "Cuba"] },
@@ -19,16 +19,42 @@ const FroggerGame = (function() {
     { english: "Hello! She is from Cuba.", spanish: ["¡hola!", "ella", "es de", "Cuba"] }
   ];
 
+  const GAME_SENTENCES_1_2 = [
+    { english: "What is your name?", spanish: ["¿cómo", "te", "llamas?"] },
+    { english: "How do you write it?", spanish: ["¿cómo", "se", "escribe?"] },
+    { english: "My name is Spain.", spanish: ["me", "llamo", "España"] },
+    { english: "His name is Cuba.", spanish: ["se", "llama", "Cuba"] },
+    { english: "Her name is Argentina.", spanish: ["se", "llama", "Argentina"] },
+    { english: "To write the alphabet.", spanish: ["escribir", "el", "alfabeto"] },
+    { english: "My name is well.", spanish: ["me", "llamo", "bien"] },
+    { english: "Her name is she.", spanish: ["se", "llama", "ella"] },
+    { english: "His name is he.", spanish: ["se", "llama", "él"] }
+  ];
+
   let gameLoop = null;
   let canvas = null;
   let ctx = null;
   let gameObj = null;
 
-  function start() {
-    if (state.b1_crown < 3) return; 
-    if (!state.game_unlocked) {
-      alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
-      return;
+  function start(chapterNum = 1) {
+    if (chapterNum === 1) {
+      if (state.b1_crown < 3) {
+        alert("🔒 Cruce del Río is locked! You must first complete Bubble 1 (Saludos y Países) to 3 crowns to unlock this game.");
+        return;
+      }
+      if (!state.game_unlocked) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
+    } else if (chapterNum === 2) {
+      if (state.b9_crown < 2) {
+        alert("🔒 Cruce del Río (1.2) is locked! You must first complete Bubble 9 (Presentaciones y Alfabeto) to 2 crowns to unlock this game.");
+        return;
+      }
+      if (!state.game2_unlocked_1_2) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
     }
 
     const area = document.getElementById('question-area');
@@ -50,23 +76,27 @@ const FroggerGame = (function() {
     document.getElementById('check-btn').hidden = true;
     document.getElementById('lesson-overlay').style.display = 'flex';
 
-    init();
+    init(chapterNum);
   }
 
-  function init() {
+  function init(chapterNum) {
     canvas = document.getElementById('frogger-canvas');
     ctx = canvas.getContext('2d');
 
-    // Reset progress bar in header to 0%
     document.getElementById('lesson-progress-fill').style.width = '0%';
 
-    const gameWords = ["¡hola!", "Buenos días", "¡Adiós!", "¿Qué tal?", "soy de", "España", "Estados Unidos", "Argentina", "él", "ella", "es de", "Cuba"];
+    const gameWords = chapterNum === 1 ? [
+      "¡hola!", "Buenos días", "¡Adiós!", "¿Qué tal?", "soy de", "España", "Estados Unidos", "Argentina", "él", "ella", "es de", "Cuba"
+    ] : [
+      "el alfabeto", "escribir", "llamarse", "¿cómo se escribe?", "me llamo", "te llamas", "se llama", "¿cómo te llamas?", "bien", "mal", "regular", "fatal"
+    ];
 
     gameObj = {
-      gameState: 'playing', // 'playing', 'message', 'gameover', 'won'
+      gameState: 'playing',
       messageText: "",
       messageColor: "",
       messageTimer: 0,
+      chapterNum: chapterNum,
       words: gameWords,
       targetSentence: "",
       spanishChunks: [],
@@ -86,7 +116,8 @@ const FroggerGame = (function() {
   }
 
   function rollRound() {
-    const sentenceObj = GAME_SENTENCES[Math.floor(Math.random() * GAME_SENTENCES.length)];
+    const list = gameObj.chapterNum === 1 ? GAME_SENTENCES_1_1 : GAME_SENTENCES_1_2;
+    const sentenceObj = list[Math.floor(Math.random() * list.length)];
     gameObj.targetSentence = sentenceObj.english;
     gameObj.spanishChunks = sentenceObj.spanish;
     gameObj.numRows = sentenceObj.spanish.length;
@@ -349,7 +380,11 @@ const FroggerGame = (function() {
 
     // If the game ends because they lost all lives, lock the game!
     if (gameObj && gameObj.lives <= 0) {
-      state.game_unlocked = false;
+      if (gameObj.chapterNum === 1) {
+        state.game_unlocked = false;
+      } else {
+        state.game2_unlocked_1_2 = false;
+      }
       saveProgress();
     }
 
@@ -361,11 +396,16 @@ const FroggerGame = (function() {
   function complete() {
     clearInterval(gameLoop);
     gameLoop = null;
+    const ch = gameObj ? gameObj.chapterNum : 1;
     gameObj = null;
     document.removeEventListener('keydown', handleGameKeys);
     document.getElementById('lesson-overlay').style.display = 'none';
 
-    state.game_unlocked = false;
+    if (ch === 1) {
+      state.game_unlocked = false;
+    } else {
+      state.game2_unlocked_1_2 = false;
+    }
     state.xp += 15;
     saveProgress();
   }
