@@ -941,6 +941,84 @@
       cursor: not-allowed !important;
     }
 
+    /* Student Profile Card */
+    .profile-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      box-shadow: var(--shadow-sm);
+    }
+    .profile-avatar {
+      font-size: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--bg-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+    .profile-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .profile-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    /* Floating Focus Button */
+    .focus-bubble-fab {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--brand-green);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      transition: all 0.3s ease;
+      z-index: 99;
+    }
+    .focus-bubble-fab:hover {
+      transform: scale(1.1);
+      background: var(--brand-green-dark);
+    }
+    .focus-bubble-fab:active {
+      transform: scale(0.95);
+    }
+
+    /* Unit Banner Dynamic Gradients */
+    .unit-banner.chapter-1 {
+      background: linear-gradient(135deg, var(--brand-green), var(--brand-green-dark));
+    }
+    .unit-banner.chapter-2 {
+      background: linear-gradient(135deg, var(--brand-orange), #d35400);
+    }
+
     /* Frogger Canvas styles are loaded dynamically from games/frogger/frogger.css */
   </style>
 </head>
@@ -977,9 +1055,18 @@
   <div class="app-layout">
     <!-- Left Column: Info & Control Panels -->
     <aside class="sidebar-layout">
+      <!-- Student Profile Card -->
+      <div class="profile-card">
+        <div class="profile-avatar">🦉</div>
+        <div class="profile-info">
+          <div class="profile-label">Student</div>
+          <div class="profile-name" id="banner-student-name">-</div>
+        </div>
+      </div>
+
+      <!-- Unit Info Banner -->
       <div class="unit-banner" style="text-align: center;">
         <div class="unit-banner-title">Capítulo 1.1</div>
-        <div id="banner-student-name" style="font-weight: 800; font-size: 1rem; color: var(--brand-gold); margin: 6px 0; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 8px; display: inline-block;">Estudiante: -</div>
         <div class="unit-banner-desc">El Español Global y Saludos</div>
       </div>
 
@@ -1142,6 +1229,8 @@
         <div class="bubble-label">Examen del Capítulo 1.2</div>
       </div>
     </main>
+    <!-- Floating Focus Button -->
+    <button id="focus-bubble-btn" class="focus-bubble-fab" onclick="scrollToActiveBubble(true)" title="Scroll to active lesson">🎯</button>
   </div>
 
   <!-- LESSON PLAY OVERLAY -->
@@ -1459,6 +1548,8 @@
       // Show name entry modal if student name is empty
       if (!state.student_name) {
         document.getElementById('name-modal').style.display = 'flex';
+      } else {
+        setTimeout(() => scrollToActiveBubble(true), 350);
       }
     }
 
@@ -1681,6 +1772,16 @@
         b11.classList.add('locked');
       }
       b11.disabled = false;
+
+      // Style FAB button matching current active chapter
+      const fab = document.getElementById('focus-bubble-btn');
+      if (fab) {
+        if (!state.b6_completed) {
+          fab.style.background = 'var(--brand-green)';
+        } else {
+          fab.style.background = 'var(--brand-orange)';
+        }
+      }
     }
 
     // ── EXPORT / IMPORT CONTROLS ───────────────────────────────────────
@@ -2895,12 +2996,68 @@
       return copy;
     }
 
+    // Scroll to the active bubble on load or FAB click
+    function scrollToActiveBubble(smooth = true) {
+      let activeId = 'b1-btn';
+
+      // Determine highest active (unlocked, non-completed) bubble
+      if (state.b9_crown === 2 && !state.b11_completed) activeId = 'b11-btn';
+      else if (state.b9_crown === 2 && state.game2_unlocked_1_2) activeId = 'b10-btn';
+      else if (state.b7_crown === 3 && state.b9_crown < 2) activeId = 'b9-btn';
+      else if (state.b7_crown === 3 && state.game_unlocked_1_2) activeId = 'b8-btn';
+      else if (state.b6_completed && state.b7_crown < 3) activeId = 'b7-btn';
+      else if (state.b5_crown === 3 && !state.b6_completed) activeId = 'b6-btn';
+      else if (state.b3_crown === 3 && state.b5_crown < 3) activeId = 'b5-btn';
+      else if (state.b3_crown === 3 && state.game2_unlocked) activeId = 'b4-btn';
+      else if (state.b1_crown === 3 && state.b3_crown < 3) activeId = 'b3-btn';
+      else if (state.b1_crown === 3 && state.game_unlocked) activeId = 'b2-btn';
+      else if (state.b1_crown < 3) activeId = 'b1-btn';
+
+      const btn = document.getElementById(activeId);
+      if (btn) {
+        btn.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+      }
+    }
+
+    // Scroll-based chapter detection for dynamic unit banner
+    window.addEventListener('scroll', () => {
+      const dividers = document.querySelectorAll('.chapter-header-divider');
+      if (dividers.length < 2) return;
+
+      const div2 = dividers[1];
+      const rect2 = div2.getBoundingClientRect();
+      
+      const banner = document.querySelector('.unit-banner');
+      const title = document.querySelector('.unit-banner-title');
+      const desc = document.querySelector('.unit-banner-desc');
+      if (banner && title && desc) {
+        // If Chapter 2 divider is near or past the top of the viewport (<= 180px),
+        // update unit-banner to reflect Chapter 1.2
+        if (rect2.top <= 185) {
+          if (!banner.classList.contains('chapter-2')) {
+            banner.className = 'unit-banner chapter-2';
+            title.textContent = 'Capítulo 1.2';
+            desc.textContent = '¿Qué tal? y Sentimientos';
+          }
+        } else {
+          if (!banner.classList.contains('chapter-1')) {
+            banner.className = 'unit-banner chapter-1';
+            title.textContent = 'Capítulo 1.1';
+            desc.textContent = 'El Español Global y Saludos';
+          }
+        }
+      }
+    });
+
     // Global keyboard shortcut to press Check/Continue on Enter key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         const overlay = document.getElementById('lesson-overlay');
         if (overlay && overlay.style.display === 'flex') {
-          if (FroggerGame.isActive() || SpaceInvadersGame.isActive()) return; // Ignore during games
+          if (typeof FroggerGame !== 'undefined' && FroggerGame.isActive()) return;
+          if (typeof SpaceInvadersGame !== 'undefined' && SpaceInvadersGame.isActive()) return;
+          if (typeof GloboPopGame !== 'undefined' && GloboPopGame.isActive()) return;
+          
           const checkBtn = document.getElementById('check-btn');
           if (checkBtn && !checkBtn.disabled && checkBtn.style.display !== 'none') {
             checkBtn.click();
