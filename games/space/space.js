@@ -1,18 +1,33 @@
 /* Space Invaders Game Engine Module */
 
 const SpaceInvadersGame = (function() {
-  const GAME_WORDS = ["el mapa", "el país", "el mundo", "la capital", "tú", "eres", "¿de dónde eres?", "de dónde", "famoso", "histórico", "la lengua", "hispanohablante"];
+  const GAME_WORDS_1_1 = ["el mapa", "el país", "el mundo", "la capital", "tú", "eres", "¿de dónde eres?", "de dónde", "famoso", "histórico", "la lengua", "hispanohablante"];
+  const GAME_WORDS_1_3 = ["uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte", "veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve", "treinta", "treinta y uno"];
 
   let gameLoop = null;
   let canvas = null;
   let ctx = null;
   let gameObj = null;
 
-  function start() {
-    if (state.b3_crown < 3) return; 
-    if (!state.game2_unlocked) {
-      alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
-      return;
+  function start(chapterNum = 1) {
+    if (chapterNum === 1) {
+      if (state.b3_crown < 3) {
+        alert("🔒 Invasores del Espacio is locked! You must first complete Bubble 3 (Geografía y Ciudades) to 3 crowns.");
+        return;
+      }
+      if (!state.game2_unlocked) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
+    } else if (chapterNum === 3) {
+      if (state.b14_crown < 3) {
+        alert("🔒 Invasores del Espacio (1.3) is locked! You must first complete Bubble 14 (Los Números 1-31) to 3 crowns.");
+        return;
+      }
+      if (!state.game2_unlocked_1_3) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
     }
 
     const area = document.getElementById('question-area');
@@ -31,33 +46,32 @@ const SpaceInvadersGame = (function() {
     document.getElementById('check-btn').hidden = true;
     document.getElementById('lesson-overlay').style.display = 'flex';
 
-    init();
+    init(chapterNum);
   }
 
-  function init() {
+  function init(chapterNum) {
     canvas = document.getElementById('space-canvas');
     ctx = canvas.getContext('2d');
 
-    // Reset progress bar in header to 0%
     document.getElementById('lesson-progress-fill').style.width = '0%';
 
     gameObj = {
-      gameState: 'playing', // 'playing', 'message', 'gameover', 'won'
+      gameState: 'playing',
       messageText: "",
       messageColor: "",
       messageTimer: 0,
+      chapterNum: chapterNum,
       score: 0,
       lives: 4,
       ship: { x: 185, y: 310, w: 30, h: 20 },
       waves: [],
       lasers: [],
       stars: [],
-      waveSpawnTimer: 240, // Initialize to spawnInterval (240) to prevent double wave spawning on first frame!
-      spawnInterval: 240, // 8 seconds at 30fps
+      waveSpawnTimer: 240,
+      spawnInterval: 240,
       baseSpeed: 0.6
     };
 
-    // Create random star field decoration
     for (let i = 0; i < 30; i++) {
       gameObj.stars.push({
         x: Math.random() * canvas.width,
@@ -75,8 +89,8 @@ const SpaceInvadersGame = (function() {
   }
 
   function spawnWave() {
-    // Choose 3 unique words from GAME_WORDS
-    const roundWords = shuffle([...GAME_WORDS]).slice(0, 3);
+    const wordList = gameObj.chapterNum === 1 ? GAME_WORDS_1_1 : GAME_WORDS_1_3;
+    const roundWords = shuffle([...wordList]).slice(0, 3);
 
     const aliens = [
       { x: 10, w: 110, h: 30, word: roundWords[0], isDead: false },
@@ -405,7 +419,11 @@ const SpaceInvadersGame = (function() {
     
     // If the game ends because they lost all lives, lock the game!
     if (gameObj && gameObj.lives <= 0) {
-      state.game2_unlocked = false;
+      if (gameObj.chapterNum === 1) {
+        state.game2_unlocked = false;
+      } else {
+        state.game2_unlocked_1_3 = false;
+      }
       saveProgress();
     }
 
@@ -417,11 +435,16 @@ const SpaceInvadersGame = (function() {
   function complete() {
     clearInterval(gameLoop);
     gameLoop = null;
+    const ch = gameObj ? gameObj.chapterNum : 1;
     gameObj = null;
     document.removeEventListener('keydown', handleGameKeys);
     document.getElementById('lesson-overlay').style.display = 'none';
 
-    state.game2_unlocked = false;
+    if (ch === 1) {
+      state.game2_unlocked = false;
+    } else {
+      state.game2_unlocked_1_3 = false;
+    }
     state.xp += 25;
     saveProgress();
   }

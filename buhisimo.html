@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="games/frogger/frogger.css">
   <link rel="stylesheet" href="games/space/space.css">
   <link rel="stylesheet" href="games/globo/globo.css">
+  <link rel="stylesheet" href="games/maze/maze.css">
   
   <style>
     /* Styling System matching the Claro Vocab app */
@@ -18,6 +19,8 @@
       --brand-green-dark: #27ae60;
       --brand-blue: #3498db;
       --brand-orange: #ff9600;
+      --brand-purple: #9b59b6;
+      --brand-purple-dark: #8e44ad;
       --brand-gold: #f1c40f;
       --brand-gold-light: #fef9e7;
       --bg-color: #f8fafc;
@@ -896,6 +899,13 @@
       background: rgba(230, 126, 34, 0.15);
       color: #d35400;
     }
+    .chapter-header-divider.chapter-3 {
+      border-left-color: var(--brand-purple);
+    }
+    .chapter-header-divider.chapter-3 .chapter-badge {
+      background: rgba(155, 89, 182, 0.15);
+      color: #8e44ad;
+    }
     .chapter-header-divider .chapter-title {
       font-family: var(--font-heading);
       font-size: 1.3rem;
@@ -1020,6 +1030,9 @@
     }
     .unit-banner.chapter-2 {
       background: linear-gradient(135deg, var(--brand-orange), #d35400);
+    }
+    .unit-banner.chapter-3 {
+      background: linear-gradient(135deg, var(--brand-purple), var(--brand-purple-dark));
     }
 
     /* Frogger Canvas styles are loaded dynamically from games/frogger/frogger.css */
@@ -1231,6 +1244,69 @@
         </button>
         <div class="bubble-label">Examen del Capítulo 1.2</div>
       </div>
+
+      <!-- Chapter 1.3 Header -->
+      <div class="chapter-header-divider chapter-3">
+        <div class="chapter-badge">Chapter 1.3</div>
+        <h2 class="chapter-title">Mi carnet de identidad</h2>
+        <p class="chapter-subtitle">Master numbers 1 to 31, ask ages, and details on an ID card.</p>
+      </div>
+
+      <!-- Bubble 12: Datos Personales -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b12-progress-circle" stroke="var(--brand-purple)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b12-btn" onclick="startStudySession(12)">
+            <span class="bubble-emoji">🆔</span>
+          </button>
+          <div class="bubble-crown-badge" id="b12-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Datos Personales</div>
+      </div>
+
+      <!-- Bubble 13: El Laberinto Game -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b13-btn" onclick="OwlsMazeGame.start()">
+          <span class="bubble-emoji">🦉</span>
+        </button>
+        <div class="bubble-label">El Laberinto</div>
+      </div>
+
+      <!-- Bubble 14: Los Números 1-31 -->
+      <div class="bubble-wrapper bubble-right">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b14-progress-circle" stroke="var(--brand-purple)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b14-btn" onclick="startStudySession(14)">
+            <span class="bubble-emoji">🔢</span>
+          </button>
+          <div class="bubble-crown-badge" id="b14-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Los Números 1-31</div>
+      </div>
+
+      <!-- Bubble 15: Invasores del Espacio (1.3) -->
+      <div class="bubble-wrapper bubble-left">
+        <button class="bubble-btn locked" id="b15-btn" onclick="SpaceInvadersGame.start(3)">
+          <span class="bubble-emoji">👾</span>
+        </button>
+        <div class="bubble-label">Invasores del Espacio (1.3)</div>
+      </div>
+
+      <!-- Bubble 16: Examen del Capítulo 1.3 -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b16-btn" onclick="startCheckpointTest(3)">
+          <span class="bubble-emoji">🏆</span>
+        </button>
+        <div class="bubble-label">Examen del Capítulo 1.3</div>
+      </div>
     </main>
     <!-- Floating Focus Button -->
     <button id="focus-bubble-btn" class="focus-bubble-fab" onclick="scrollToActiveBubble(true)" title="Scroll to active lesson">🎯</button>
@@ -1309,6 +1385,7 @@
   <script src="games/frogger/frogger.js"></script>
   <script src="games/space/space.js"></script>
   <script src="games/globo/globo.js"></script>
+  <script src="games/maze/maze.js"></script>
   <script>
     // ── DATABASE & CURRICULUM DEFINITIONS ──────────────────────────────
     
@@ -1377,7 +1454,48 @@
       "me llamo": { english: "I am called", theme: "Identidad Personal" },
       "te llamas": { english: "you are called", theme: "Identidad Personal" },
       "se llama": { english: "he/she is called", theme: "Identidad Personal" },
-      "¿cómo te llamas?": { english: "what is your name?", theme: "Identidad Personal" }
+      "¿cómo te llamas?": { english: "what is your name?", theme: "Identidad Personal" },
+      // Bubble 12 Words (Theme: Identidad Personal)
+      "el nombre": { english: "first name", theme: "Identidad Personal" },
+      "el apellido": { english: "surname", theme: "Identidad Personal" },
+      "la edad": { english: "age", theme: "Identidad Personal" },
+      "el lugar de nacimiento": { english: "birthplace", theme: "Identidad Personal" },
+      "el carnet de identidad": { english: "ID card", theme: "Identidad Personal" },
+      "el/la amigo/a": { english: "friend", theme: "Identidad Personal" },
+      "¿Cuántos años tienes?": { english: "How old are you?", theme: "Identidad Personal" },
+      "tengo... años": { english: "I am... years old", theme: "Identidad Personal" },
+      // Bubble 14 Words (Theme: Los Números)
+      "uno": { english: "1", theme: "Los Números" },
+      "dos": { english: "2", theme: "Los Números" },
+      "tres": { english: "3", theme: "Los Números" },
+      "cuatro": { english: "4", theme: "Los Números" },
+      "cinco": { english: "5", theme: "Los Números" },
+      "seis": { english: "6", theme: "Los Números" },
+      "siete": { english: "7", theme: "Los Números" },
+      "ocho": { english: "8", theme: "Los Números" },
+      "nueve": { english: "9", theme: "Los Números" },
+      "diez": { english: "10", theme: "Los Números" },
+      "once": { english: "11", theme: "Los Números" },
+      "doce": { english: "12", theme: "Los Números" },
+      "trece": { english: "13", theme: "Los Números" },
+      "catorce": { english: "14", theme: "Los Números" },
+      "quince": { english: "15", theme: "Los Números" },
+      "dieciséis": { english: "16", theme: "Los Números" },
+      "diecisiete": { english: "17", theme: "Los Números" },
+      "dieciocho": { english: "18", theme: "Los Números" },
+      "diecinueve": { english: "19", theme: "Los Números" },
+      "veinte": { english: "20", theme: "Los Números" },
+      "veintiuno": { english: "21", theme: "Los Números" },
+      "veintidós": { english: "22", theme: "Los Números" },
+      "veintitrés": { english: "23", theme: "Los Números" },
+      "veinticuatro": { english: "24", theme: "Los Números" },
+      "veinticinco": { english: "25", theme: "Los Números" },
+      "veintiséis": { english: "26", theme: "Los Números" },
+      "veintisiete": { english: "27", theme: "Los Números" },
+      "veintiocho": { english: "28", theme: "Los Números" },
+      "veintinueve": { english: "29", theme: "Los Números" },
+      "treinta": { english: "30", theme: "Los Números" },
+      "treinta y uno": { english: "31", theme: "Los Números" }
     };
 
     // Bubble 1 Crowns vocabulary scope mapping
@@ -1414,18 +1532,33 @@
       ["me llamo", "te llamas", "se llama", "¿cómo te llamas?"] // Level 2 (Names/Conjugations)
     ];
 
+    // Bubble 12 Crowns vocabulary scope mapping
+    const BUBBLE_12_LEVELS = [
+      ["el nombre", "el apellido", "la edad", "el lugar de nacimiento", "el carnet de identidad", "el/la amigo/a"], // Level 1 (Personal details)
+      ["¿Cuántos años tienes?", "tengo... años"] // Level 2 (Age & Conjugations)
+    ];
+
+    // Bubble 14 Crowns vocabulary scope mapping
+    const BUBBLE_14_LEVELS = [
+      ["uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"], // Level 1 (1-10)
+      ["once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte"], // Level 2 (11-20)
+      ["veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve", "treinta", "treinta y uno"] // Level 3 (21-31)
+    ];
+
     // Theme references matching database
     const THEME_LABELS = {
       "Saludos y Sentimientos": "💬 Saludos",
       "Países": "🌍 Países",
-      "Identidad Personal": "👤 Identidad"
+      "Identidad Personal": "👤 Identidad",
+      "Los Números": "🔢 Los Números"
     };
 
     // Total words per theme in Chapter 1.1 (active unit)
     const THEME_TOTAL_COUNTS_1_1 = {
       "Saludos y Sentimientos": 17,
       "Países": 36, // Updated count including islands
-      "Identidad Personal": 16
+      "Identidad Personal": 24,
+      "Los Números": 31
     };
 
     // ── GLOBAL APPLICATION STATE ──────────────────────────────────────
@@ -1442,10 +1575,15 @@
       b7_crown: 0, // 0 to 3
       b9_crown: 0, // 0 to 2
       b11_completed: false,
+      b12_crown: 0, // 0 to 2
+      b14_crown: 0, // 0 to 3
+      b16_completed: false,
       game_unlocked: false,
       game2_unlocked: false,
       game_unlocked_1_2: false,
       game2_unlocked_1_2: false,
+      game_unlocked_1_3: false,
+      game2_unlocked_1_3: false,
       word_strengths: {}, // wordKey -> { strength: float, last_practiced: timestamp }
       theme_strengths: {}  // themeKey -> { strength: float, last_practiced: timestamp }
     };
@@ -1531,6 +1669,21 @@
       }
       if (state.game2_unlocked_1_2 === undefined) {
         state.game2_unlocked_1_2 = false;
+      }
+      if (state.b12_crown === undefined) {
+        state.b12_crown = 0;
+      }
+      if (state.b14_crown === undefined) {
+        state.b14_crown = 0;
+      }
+      if (state.b16_completed === undefined) {
+        state.b16_completed = false;
+      }
+      if (state.game_unlocked_1_3 === undefined) {
+        state.game_unlocked_1_3 = false;
+      }
+      if (state.game2_unlocked_1_3 === undefined) {
+        state.game2_unlocked_1_3 = false;
       }
       
       // Initialize strengths if missing
@@ -1776,13 +1929,93 @@
       }
       b11.disabled = false;
 
+      // Render Bubble 12 (Datos Personales study node)
+      const b12 = document.getElementById('b12-btn');
+      const circle12 = document.getElementById('b12-progress-circle');
+      document.getElementById('b12-crown-badge').textContent = state.b12_crown;
+
+      b12.className = 'bubble-btn';
+      if (state.b11_completed) {
+        if (state.b12_crown === 2) {
+          b12.classList.add('bubble-gold');
+        } else {
+          b12.classList.add('bubble-active');
+        }
+      } else {
+        b12.classList.add('locked');
+      }
+      b12.disabled = false;
+
+      // Update progress ring 12
+      const progressRatio12 = state.b12_crown / 2;
+      const offset12 = circumference * (1 - progressRatio12);
+      circle12.style.strokeDashoffset = offset12;
+      circle12.style.stroke = (state.b12_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-purple)';
+
+      // Render Bubble 13 (Owl's Maze Game Node)
+      const b13 = document.getElementById('b13-btn');
+      if (state.b12_crown === 2 && state.game_unlocked_1_3) {
+        b13.className = 'bubble-btn bubble-game';
+      } else {
+        b13.className = 'bubble-btn locked bubble-game';
+      }
+      b13.disabled = false;
+
+      // Render Bubble 14 (Numbers 1-31 study node)
+      const b14 = document.getElementById('b14-btn');
+      const circle14 = document.getElementById('b14-progress-circle');
+      document.getElementById('b14-crown-badge').textContent = state.b14_crown;
+
+      b14.className = 'bubble-btn';
+      if (state.b12_crown === 2) {
+        if (state.b14_crown === 3) {
+          b14.classList.add('bubble-gold');
+        } else {
+          b14.classList.add('bubble-active');
+        }
+      } else {
+        b14.classList.add('locked');
+      }
+      b14.disabled = false;
+
+      // Update progress ring 14
+      const progressRatio14 = state.b14_crown / 3;
+      const offset14 = circumference * (1 - progressRatio14);
+      circle14.style.strokeDashoffset = offset14;
+      circle14.style.stroke = (state.b14_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-purple)';
+
+      // Render Bubble 15 (Space Invaders Repeat Node)
+      const b15 = document.getElementById('b15-btn');
+      if (state.b14_crown === 3 && state.game2_unlocked_1_3) {
+        b15.className = 'bubble-btn bubble-game';
+      } else {
+        b15.className = 'bubble-btn locked bubble-game';
+      }
+      b15.disabled = false;
+
+      // Render Bubble 16 (Checkpoint Exam 1.3 Node)
+      const b16 = document.getElementById('b16-btn');
+      b16.className = 'bubble-btn';
+      if (state.b14_crown === 3) {
+        if (state.b16_completed) {
+          b16.classList.add('bubble-gold');
+        } else {
+          b16.classList.add('bubble-active');
+        }
+      } else {
+        b16.classList.add('locked');
+      }
+      b16.disabled = false;
+
       // Style FAB button matching current active chapter
       const fab = document.getElementById('focus-bubble-btn');
       if (fab) {
-        if (!state.b6_completed) {
-          fab.style.background = 'var(--brand-green)';
-        } else {
+        if (state.b11_completed) {
+          fab.style.background = 'var(--brand-purple)';
+        } else if (state.b6_completed) {
           fab.style.background = 'var(--brand-orange)';
+        } else {
+          fab.style.background = 'var(--brand-green)';
         }
       }
     }
@@ -1805,10 +2038,15 @@
           b7_crown: 0,
           b9_crown: 0,
           b11_completed: false,
+          b12_crown: 0,
+          b14_crown: 0,
+          b16_completed: false,
           game_unlocked: false,
           game2_unlocked: false,
           game_unlocked_1_2: false,
           game2_unlocked_1_2: false,
+          game_unlocked_1_3: false,
+          game2_unlocked_1_3: false,
           word_strengths: {},
           theme_strengths: {}
         };
@@ -2000,6 +2238,14 @@
         alert("🔒 Presentaciones y Alfabeto is locked! You must first complete Bubble 7 (Saludos y Sentimientos) to 3 crowns.");
         return;
       }
+      if (bubbleNum === 12 && !state.b11_completed) {
+        alert("🔒 Chapter 1.3 is locked! You must first pass the Chapter 1.2 Checkpoint Exam (Bubble 11) to unlock these lessons.");
+        return;
+      }
+      if (bubbleNum === 14 && state.b12_crown < 2) {
+        alert("🔒 Los Números 1-31 is locked! You must first complete Bubble 12 (Datos Personales) to 2 crowns.");
+        return;
+      }
 
       decayStrengths();
       
@@ -2020,12 +2266,18 @@
       } else if (bubbleNum === 9) {
         crownLevel = state.b9_crown;
         levelsPool = BUBBLE_9_LEVELS;
+      } else if (bubbleNum === 12) {
+        crownLevel = state.b12_crown;
+        levelsPool = BUBBLE_12_LEVELS;
+      } else if (bubbleNum === 14) {
+        crownLevel = state.b14_crown;
+        levelsPool = BUBBLE_14_LEVELS;
       }
       
-      const isB9 = bubbleNum === 9;
-      const isGold = isB9 ? (crownLevel === 2) : (crownLevel === 3);
+      const isMax2 = (bubbleNum === 9 || bubbleNum === 12);
+      const isGold = isMax2 ? (crownLevel === 2) : (crownLevel === 3);
       const targetCount = isGold ? 10 : 12;
-      const level = Math.min(isB9 ? 1 : 2, crownLevel);
+      const level = Math.min(isMax2 ? 1 : 2, crownLevel);
       
       const activePool = [];
       for (let i = 0; i <= level; i++) {
@@ -2577,6 +2829,9 @@
         if (typeof GloboPopGame !== 'undefined' && GloboPopGame.isActive()) {
           GloboPopGame.quit();
         }
+        if (typeof OwlsMazeGame !== 'undefined' && OwlsMazeGame.isActive()) {
+          OwlsMazeGame.quit();
+        }
         document.body.classList.remove('checkpoint-mode');
         document.getElementById('lesson-lives-box').style.display = 'none';
         document.getElementById('lesson-overlay').style.display = 'none';
@@ -2699,6 +2954,50 @@
         title = "Chapter Exam Cleared!";
         subtitle = "Incredible! You have mastered Chapter 1.2: ¿Qué tal?!";
         emoji = "🏆";
+      } else if (bNum === 12) {
+        if (state.b12_crown < 2) {
+          state.b12_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Datos Personales is now Level ${state.b12_crown}/2`;
+          if (state.b12_crown === 2) {
+            state.crowns++;
+            state.game_unlocked_1_3 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 12! Owl's Maze game unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Personal Identification!";
+          emoji = "💪";
+          state.game_unlocked_1_3 = true;
+        }
+      } else if (bNum === 14) {
+        if (state.b14_crown < 3) {
+          state.b14_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Los Números 1-31 is now Level ${state.b14_crown}/3`;
+          if (state.b14_crown === 3) {
+            state.crowns++;
+            state.game2_unlocked_1_3 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 14! Space Invaders 1.3 unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Numbers 1-31!";
+          emoji = "💪";
+          state.game2_unlocked_1_3 = true;
+        }
+      } else if (bNum === 16) {
+        state.b16_completed = true;
+        rewardXP += 20; // +40 XP total for Checkpoint Exam!
+        title = "Chapter Exam Cleared!";
+        subtitle = "Incredible! You have mastered Chapter 1.3: Mi carnet de identidad!";
+        emoji = "🏆";
       } else if (bNum === 6) {
         state.b6_completed = true;
         rewardXP += 20; // +40 XP total for Checkpoint Exam!
@@ -2769,6 +3068,11 @@
           alert("🔒 Examen del Capítulo 1.2 is locked! You must first complete Bubble 9 (Presentaciones y Alfabeto) to 2 crowns.");
           return;
         }
+      } else if (chapterNum === 3) {
+        if (state.b14_crown < 3) {
+          alert("🔒 Examen del Capítulo 1.3 is locked! You must first complete Bubble 14 (Los Números 1-31) to 3 crowns.");
+          return;
+        }
       }
 
       decayStrengths();
@@ -2777,10 +3081,13 @@
         ...BUBBLE_1_LEVELS[0], ...BUBBLE_1_LEVELS[1], ...BUBBLE_1_LEVELS[2],
         ...BUBBLE_3_LEVELS[0], ...BUBBLE_3_LEVELS[1], ...BUBBLE_3_LEVELS[2],
         ...BUBBLE_5_LEVELS[0], ...BUBBLE_5_LEVELS[1], ...BUBBLE_5_LEVELS[2]
-      ] : [
+      ] : (chapterNum === 2 ? [
         ...BUBBLE_7_LEVELS[0], ...BUBBLE_7_LEVELS[1], ...BUBBLE_7_LEVELS[2],
         ...BUBBLE_9_LEVELS[0], ...BUBBLE_9_LEVELS[1]
-      ];
+      ] : [
+        ...BUBBLE_12_LEVELS[0], ...BUBBLE_12_LEVELS[1],
+        ...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2]
+      ]);
 
       const checkpointWords = shuffle(fullPool).slice(0, 15);
       const queue = [];
@@ -2790,7 +3097,7 @@
       });
 
       session = {
-        bubbleNum: chapterNum === 1 ? 6 : 11,
+        bubbleNum: chapterNum === 1 ? 6 : (chapterNum === 2 ? 11 : 16),
         isCheckpoint: true,
         isBossChallenge: false,
         lives: 4,
@@ -2856,19 +3163,26 @@
       drawHeartsHUD();
 
       const isCh1 = session.bubbleNum === 6;
+      const isCh2 = session.bubbleNum === 11;
       const bossCard = isCh1 ? {
         type: "bank",
         isBoss: true,
         prompt: "Chile is a Spanish-speaking country.",
         correct: "Chile es un país hispanohablante",
         wordsPool: shuffle(["Chile", "es", "un", "país", "hispanohablante", "el", "monumento", "tú", "famoso", "España"])
-      } : {
+      } : (isCh2 ? {
         type: "bank",
         isBoss: true,
         prompt: "How are you? Very well, thank you.",
         correct: "¿Cómo estás? Muy bien, gracias",
         wordsPool: shuffle(["¿Cómo", "estás?", "Muy", "bien,", "gracias", "regular", "fatal", "tardes", "Buenas", "tú"])
-      };
+      } : {
+        type: "bank",
+        isBoss: true,
+        prompt: "How old are you? I am fifteen years old.",
+        correct: "¿Cuántos años tienes? Tengo quince años",
+        wordsPool: shuffle(["¿Cuántos", "años", "tienes?", "Tengo", "quince", "años", "veinte", "cuatro", "nombre", "apellido"])
+      });
 
       session.queue = [bossCard];
       session.mistakesQueue = []; 
@@ -3004,7 +3318,12 @@
       let activeId = 'b1-btn';
 
       // Determine highest active (unlocked, non-completed) bubble
-      if (state.b9_crown === 2 && !state.b11_completed) activeId = 'b11-btn';
+      if (state.b14_crown === 3 && !state.b16_completed) activeId = 'b16-btn';
+      else if (state.b14_crown === 3 && state.game2_unlocked_1_3) activeId = 'b15-btn';
+      else if (state.b12_crown === 2 && state.b14_crown < 3) activeId = 'b14-btn';
+      else if (state.b12_crown === 2 && state.game_unlocked_1_3) activeId = 'b13-btn';
+      else if (state.b11_completed && state.b12_crown < 2) activeId = 'b12-btn';
+      else if (state.b9_crown === 2 && !state.b11_completed) activeId = 'b11-btn';
       else if (state.b9_crown === 2 && state.game2_unlocked_1_2) activeId = 'b10-btn';
       else if (state.b7_crown === 3 && state.b9_crown < 2) activeId = 'b9-btn';
       else if (state.b7_crown === 3 && state.game_unlocked_1_2) activeId = 'b8-btn';
@@ -3028,15 +3347,21 @@
       if (dividers.length < 2) return;
 
       const div2 = dividers[1];
+      const div3 = dividers.length >= 3 ? dividers[2] : null;
       const rect2 = div2.getBoundingClientRect();
+      const rect3 = div3 ? div3.getBoundingClientRect() : null;
       
       const banner = document.querySelector('.unit-banner');
       const title = document.querySelector('.unit-banner-title');
       const desc = document.querySelector('.unit-banner-desc');
       if (banner && title && desc) {
-        // If Chapter 2 divider is near or past the top of the viewport (<= 180px),
-        // update unit-banner to reflect Chapter 1.2
-        if (rect2.top <= 185) {
+        if (rect3 && rect3.top <= 185) {
+          if (!banner.classList.contains('chapter-3')) {
+            banner.className = 'unit-banner chapter-3';
+            title.textContent = 'Capítulo 1.3';
+            desc.textContent = 'Mi carnet de identidad';
+          }
+        } else if (rect2.top <= 185) {
           if (!banner.classList.contains('chapter-2')) {
             banner.className = 'unit-banner chapter-2';
             title.textContent = 'Capítulo 1.2';
@@ -3060,6 +3385,7 @@
           if (typeof FroggerGame !== 'undefined' && FroggerGame.isActive()) return;
           if (typeof SpaceInvadersGame !== 'undefined' && SpaceInvadersGame.isActive()) return;
           if (typeof GloboPopGame !== 'undefined' && GloboPopGame.isActive()) return;
+          if (typeof OwlsMazeGame !== 'undefined' && OwlsMazeGame.isActive()) return;
           
           const checkBtn = document.getElementById('check-btn');
           if (checkBtn && !checkBtn.disabled && checkBtn.style.display !== 'none') {
