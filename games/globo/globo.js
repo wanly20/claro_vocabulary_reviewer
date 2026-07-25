@@ -1,10 +1,15 @@
 /* Globo Pop (Balloon Archer) Game Engine Module */
 
 const GloboPopGame = (function() {
-  const GAME_WORDS = [
+  const GAME_WORDS_1_2 = [
     "Buenas tardes", "¡Hasta luego!", "¿Cómo estás?", "¿Y tú?",
     "bien", "mal", "regular", "fatal",
     "fantástico", "fenomenal", "bien, gracias", "muy bien"
+  ];
+  const GAME_WORDS_1_4 = [
+    "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo",
+    "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+    "septiembre", "octubre", "noviembre", "diciembre"
   ];
 
   let gameLoop = null;
@@ -12,14 +17,25 @@ const GloboPopGame = (function() {
   let ctx = null;
   let gameObj = null;
 
-  function start() {
-    if (state.b7_crown < 3) {
-      alert("🔒 Globo Pop is locked! You must first complete Bubble 7 (Saludos y Sentimientos) to 3 crowns to unlock this game.");
-      return;
-    }
-    if (!state.game_unlocked_1_2) {
-      alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
-      return;
+  function start(chapterNum = 2) {
+    if (chapterNum === 2) {
+      if (state.b7_crown < 3) {
+        alert("🔒 Globo Pop is locked! You must first complete Bubble 7 (Saludos y Sentimientos) to 3 crowns to unlock this game.");
+        return;
+      }
+      if (!state.game_unlocked_1_2) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
+    } else if (chapterNum === 4) {
+      if (state.b17_crown < 2) {
+        alert("🔒 Globo Pop (1.4) is locked! You must first complete Bubble 17 (Días y Meses) to 2 crowns to unlock this game.");
+        return;
+      }
+      if (!state.game_unlocked_1_4) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
     }
 
     const area = document.getElementById('question-area');
@@ -38,10 +54,10 @@ const GloboPopGame = (function() {
     document.getElementById('check-btn').hidden = true;
     document.getElementById('lesson-overlay').style.display = 'flex';
 
-    init();
+    init(chapterNum);
   }
 
-  function init() {
+  function init(chapterNum) {
     canvas = document.getElementById('globo-canvas');
     ctx = canvas.getContext('2d');
 
@@ -52,6 +68,7 @@ const GloboPopGame = (function() {
       messageText: "",
       messageColor: "",
       messageTimer: 0,
+      chapterNum: chapterNum,
       score: 0,
       lives: 4,
       bow: { x: 200, y: 330, angle: -Math.PI / 2, length: 30 },
@@ -71,8 +88,8 @@ const GloboPopGame = (function() {
   }
 
   function spawnWave() {
-    // Select 3 random unique words from pool
-    const roundWords = shuffle([...GAME_WORDS]).slice(0, 3);
+    const list = gameObj.chapterNum === 2 ? GAME_WORDS_1_2 : GAME_WORDS_1_4;
+    const roundWords = shuffle([...list]).slice(0, 3);
     const correctWord = roundWords[Math.floor(Math.random() * roundWords.length)];
     const wordData = VOCAB_DATABASE[correctWord];
 
@@ -404,7 +421,11 @@ const GloboPopGame = (function() {
     gameLoop = null;
 
     if (gameObj && gameObj.lives <= 0) {
-      state.game_unlocked_1_2 = false;
+      if (gameObj.chapterNum === 2) {
+        state.game_unlocked_1_2 = false;
+      } else {
+        state.game_unlocked_1_4 = false;
+      }
       saveProgress();
     }
 
@@ -418,11 +439,16 @@ const GloboPopGame = (function() {
   function complete() {
     clearInterval(gameLoop);
     gameLoop = null;
+    const ch = gameObj ? gameObj.chapterNum : 2;
     gameObj = null;
     window.removeEventListener('keydown', handleGameKeys);
     document.getElementById('lesson-overlay').style.display = 'none';
 
-    state.game_unlocked_1_2 = false;
+    if (ch === 2) {
+      state.game_unlocked_1_2 = false;
+    } else {
+      state.game_unlocked_1_4 = false;
+    }
     state.xp += 15;
     saveProgress();
     session = null;

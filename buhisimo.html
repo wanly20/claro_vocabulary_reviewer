@@ -954,6 +954,45 @@
       cursor: not-allowed !important;
     }
 
+    /* Revision bubble styling */
+    .bubble-btn.bubble-revision {
+      background: #e2e8f0;
+      border: 4px solid #cbd5e1;
+      box-shadow: 0 8px 0 #94a3b8;
+      color: #64748b;
+      transform: scale(0.85); /* 15% smaller */
+    }
+    .bubble-btn.bubble-revision.bubble-active {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 0 #94a3b8;
+      color: #475569;
+    }
+    .bubble-btn.bubble-revision.bubble-gold {
+      background: var(--brand-gold-light);
+      border-color: var(--brand-gold);
+      box-shadow: 0 8px 0 #d39e00;
+      color: #b58900;
+    }
+    [data-theme="dark"] .bubble-btn.bubble-revision {
+      background: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 8px 0 #0f172a;
+      color: #94a3b8;
+    }
+    [data-theme="dark"] .bubble-btn.bubble-revision.bubble-active {
+      background: #334155;
+      border-color: #475569;
+      box-shadow: 0 8px 0 #1e293b;
+      color: #cbd5e1;
+    }
+    [data-theme="dark"] .bubble-btn.bubble-revision.bubble-gold {
+      background: rgba(241, 196, 15, 0.1);
+      border-color: var(--brand-gold);
+      box-shadow: 0 8px 0 #b58900;
+      color: var(--brand-gold);
+    }
+
     /* Student Profile Card */
     .profile-card {
       width: 100%;
@@ -1189,6 +1228,22 @@
         <p class="chapter-subtitle">Introduce yourself, express feelings, and master names & spelling.</p>
       </div>
 
+      <!-- Revision Bubble R1 -->
+      <div class="bubble-wrapper bubble-right">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r1-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked bubble-revision" id="r1-btn" onclick="startStudySession('r1')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r1-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Saludos y Países</div>
+      </div>
+
       <!-- Bubble 7: Saludos y Sentimientos -->
       <div class="bubble-wrapper bubble-left">
         <div class="bubble-btn-container">
@@ -1207,10 +1262,26 @@
 
       <!-- Bubble 8: Globo Pop Game -->
       <div class="bubble-wrapper">
-        <button class="bubble-btn locked" id="b8-btn" onclick="GloboPopGame.start()">
+        <button class="bubble-btn locked" id="b8-btn" onclick="GloboPopGame.start(2)">
           <span class="bubble-emoji">🎈</span>
         </button>
         <div class="bubble-label">Globo Pop</div>
+      </div>
+
+      <!-- Revision Bubble R2 -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r2-progress-circle" stroke="var(--brand-orange)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked bubble-revision" id="r2-btn" onclick="startStudySession('r2')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r2-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Sentimientos</div>
       </div>
 
       <!-- Bubble 9: Presentaciones y Alfabeto -->
@@ -1252,6 +1323,22 @@
         <p class="chapter-subtitle">Master numbers 1 to 31, ask ages, and details on an ID card.</p>
       </div>
 
+      <!-- Revision Bubble R3 -->
+      <div class="bubble-wrapper bubble-right">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r3-progress-circle" stroke="var(--brand-purple)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked bubble-revision" id="r3-btn" onclick="startStudySession('r3')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r3-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Cap. 1.1 Completo</div>
+      </div>
+
       <!-- Bubble 12: Datos Personales -->
       <div class="bubble-wrapper bubble-left">
         <div class="bubble-btn-container">
@@ -1270,10 +1357,26 @@
 
       <!-- Bubble 13: El Laberinto Game -->
       <div class="bubble-wrapper">
-        <button class="bubble-btn locked" id="b13-btn" onclick="OwlsMazeGame.start()">
+        <button class="bubble-btn locked" id="b13-btn" onclick="OwlsMazeGame.start(3)">
           <span class="bubble-emoji">🦉</span>
         </button>
         <div class="bubble-label">El Laberinto</div>
+      </div>
+
+      <!-- Revision Bubble R4 -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r4-progress-circle" stroke="var(--brand-purple)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked bubble-revision" id="r4-btn" onclick="startStudySession('r4')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r4-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Datos Personales</div>
       </div>
 
       <!-- Bubble 14: Los Números 1-31 -->
@@ -1306,6 +1409,101 @@
           <span class="bubble-emoji">🏆</span>
         </button>
         <div class="bubble-label">Examen del Capítulo 1.3</div>
+      </div>
+
+      <!-- Chapter 1.4 Header -->
+      <div class="chapter-header-divider chapter-4">
+        <div class="chapter-badge">Chapter 1.4</div>
+        <h2 class="chapter-title">¡...y que cumplas muchos más!</h2>
+        <p class="chapter-subtitle">Ask birthdays, talk about months & days, and spell calendar dates.</p>
+      </div>
+
+      <!-- Revision Bubble R5 -->
+      <div class="bubble-wrapper bubble-right">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r5-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked bubble-revision" id="r5-btn" onclick="startStudySession('r5')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r5-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Identidad y Números</div>
+      </div>
+
+      <!-- Bubble 17: Días y Meses -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b17-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b17-btn" onclick="startStudySession(17)">
+            <span class="bubble-emoji">📅</span>
+          </button>
+          <div class="bubble-crown-badge" id="b17-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Días y Meses</div>
+      </div>
+
+      <!-- Bubble 18: Globo Pop Game (1.4 variant) -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b18-btn" onclick="GloboPopGame.start(4)">
+          <span class="bubble-emoji">🎈</span>
+        </button>
+        <div class="bubble-label">Globo Pop (1.4)</div>
+      </div>
+
+      <!-- Revision Bubble R6 -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r6-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked bubble-revision" id="r6-btn" onclick="startStudySession('r6')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r6-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Días y Meses</div>
+      </div>
+
+      <!-- Bubble 19: Fechas y Cumpleaños -->
+      <div class="bubble-wrapper bubble-right">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b19-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b19-btn" onclick="startStudySession(19)">
+            <span class="bubble-emoji">🎂</span>
+          </button>
+          <div class="bubble-crown-badge" id="b19-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Fechas y Cumpleaños</div>
+      </div>
+
+      <!-- Bubble 20: El Laberinto Game (1.4 variant) -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b20-btn" onclick="OwlsMazeGame.start(4)">
+          <span class="bubble-emoji">🦉</span>
+        </button>
+        <div class="bubble-label">El Laberinto (1.4)</div>
+      </div>
+
+      <!-- Bubble 21: Examen del Capítulo 1.4 -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b21-btn" onclick="startCheckpointTest(4)">
+          <span class="bubble-emoji">🏆</span>
+        </button>
+        <div class="bubble-label">Examen del Capítulo 1.4</div>
       </div>
     </main>
     <!-- Floating Focus Button -->
@@ -1484,7 +1682,7 @@
       "diecisiete": { english: "17", theme: "Los Números" },
       "dieciocho": { english: "18", theme: "Los Números" },
       "diecinueve": { english: "19", theme: "Los Números" },
-      "veinte": { english: "20", theme: "Los Números" },
+"veinte": { english: "20", theme: "Los Números" },
       "veintiuno": { english: "21", theme: "Los Números" },
       "veintidós": { english: "22", theme: "Los Números" },
       "veintitrés": { english: "23", theme: "Los Números" },
@@ -1495,7 +1693,35 @@
       "veintiocho": { english: "28", theme: "Los Números" },
       "veintinueve": { english: "29", theme: "Los Números" },
       "treinta": { english: "30", theme: "Los Números" },
-      "treinta y uno": { english: "31", theme: "Los Números" }
+      "treinta y uno": { english: "31", theme: "Los Números" },
+      // Bubble 17 & 19 Words (Theme: Calendario)
+      "lunes": { english: "Monday", theme: "Calendario" },
+      "martes": { english: "Tuesday", theme: "Calendario" },
+      "miércoles": { english: "Wednesday", theme: "Calendario" },
+      "jueves": { english: "Thursday", theme: "Calendario" },
+      "viernes": { english: "Friday", theme: "Calendario" },
+      "sábado": { english: "Saturday", theme: "Calendario" },
+      "domingo": { english: "Sunday", theme: "Calendario" },
+      "enero": { english: "January", theme: "Calendario" },
+      "febrero": { english: "February", theme: "Calendario" },
+      "marzo": { english: "March", theme: "Calendario" },
+      "abril": { english: "April", theme: "Calendario" },
+      "mayo": { english: "May", theme: "Calendario" },
+      "junio": { english: "June", theme: "Calendario" },
+      "julio": { english: "July", theme: "Calendario" },
+      "agosto": { english: "August", theme: "Calendario" },
+      "septiembre": { english: "September", theme: "Calendario" },
+      "octubre": { english: "October", theme: "Calendario" },
+      "noviembre": { english: "November", theme: "Calendario" },
+      "diciembre": { english: "December", theme: "Calendario" },
+      "el año": { english: "year", theme: "Calendario" },
+      "el mes": { english: "month", theme: "Calendario" },
+      "la semana": { english: "week", theme: "Calendario" },
+      "la fecha": { english: "date", theme: "Calendario" },
+      "el cumpleaños": { english: "birthday", theme: "Calendario" },
+      "el primero": { english: "the first", theme: "Calendario" },
+      "el uno": { english: "the first", theme: "Calendario" },
+      "¿Cuándo es tu cumpleaños?": { english: "When is your birthday?", theme: "Calendario" }
     };
 
     // Bubble 1 Crowns vocabulary scope mapping
@@ -1545,12 +1771,25 @@
       ["veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve", "treinta", "treinta y uno"] // Level 3 (21-31)
     ];
 
+    // Bubble 17 Crowns vocabulary scope mapping
+    const BUBBLE_17_LEVELS = [
+      ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"], // Level 1 (Days)
+      ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"] // Level 2 (Months)
+    ];
+
+    // Bubble 19 Crowns vocabulary scope mapping
+    const BUBBLE_19_LEVELS = [
+      ["el año", "el mes", "la semana", "la fecha", "el cumpleaños", "el primero", "el uno"], // Level 1 (Nouns)
+      ["¿Cuándo es tu cumpleaños?"] // Level 2 (Questions)
+    ];
+
     // Theme references matching database
     const THEME_LABELS = {
       "Saludos y Sentimientos": "💬 Saludos",
       "Países": "🌍 Países",
       "Identidad Personal": "👤 Identidad",
-      "Los Números": "🔢 Los Números"
+      "Los Números": "🔢 Los Números",
+      "Calendario": "📅 Calendario"
     };
 
     // Total words per theme in Chapter 1.1 (active unit)
@@ -1572,18 +1811,29 @@
       b3_crown: 0, // 0 to 3
       b5_crown: 0, // 0 to 3
       b6_completed: false,
+      r1_crown: 0, // 0 to 1
       b7_crown: 0, // 0 to 3
+      r2_crown: 0, // 0 to 1
       b9_crown: 0, // 0 to 2
       b11_completed: false,
+      r3_crown: 0, // 0 to 1
       b12_crown: 0, // 0 to 2
+      r4_crown: 0, // 0 to 1
       b14_crown: 0, // 0 to 3
       b16_completed: false,
+      r5_crown: 0, // 0 to 1
+      b17_crown: 0, // 0 to 2
+      r6_crown: 0, // 0 to 1
+      b19_crown: 0, // 0 to 2
+      b21_completed: false,
       game_unlocked: false,
       game2_unlocked: false,
       game_unlocked_1_2: false,
       game2_unlocked_1_2: false,
       game_unlocked_1_3: false,
       game2_unlocked_1_3: false,
+      game_unlocked_1_4: false,
+      game2_unlocked_1_4: false,
       word_strengths: {}, // wordKey -> { strength: float, last_practiced: timestamp }
       theme_strengths: {}  // themeKey -> { strength: float, last_practiced: timestamp }
     };
@@ -1851,27 +2101,35 @@
       }
       b6.disabled = false;
 
+      // --- R1 Drawing ---
+      const r1 = document.getElementById('r1-btn');
+      const circleR1 = document.getElementById('r1-progress-circle');
+      document.getElementById('r1-crown-badge').textContent = state.r1_crown;
+      r1.className = 'bubble-btn bubble-revision';
+      if (state.b6_completed) {
+        if (state.r1_crown === 1) r1.classList.add('bubble-gold');
+        else r1.classList.add('bubble-active');
+      } else {
+        r1.classList.add('locked');
+      }
+      r1.disabled = false;
+      const progressRatioR1 = state.r1_crown / 1;
+      circleR1.style.strokeDashoffset = circumference * (1 - progressRatioR1);
+      circleR1.style.stroke = (state.r1_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-orange)';
+
       // Render Bubble 7 (Saludos y Sentimientos study node)
       const b7 = document.getElementById('b7-btn');
       const circle7 = document.getElementById('b7-progress-circle');
       document.getElementById('b7-crown-badge').textContent = state.b7_crown;
-
       b7.className = 'bubble-btn';
-      if (state.b6_completed) {
-        if (state.b7_crown === 3) {
-          b7.classList.add('bubble-gold');
-        } else {
-          b7.classList.add('bubble-active');
-        }
+      if (state.r1_crown === 1) {
+        if (state.b7_crown === 3) b7.classList.add('bubble-gold');
+        else b7.classList.add('bubble-active');
       } else {
         b7.classList.add('locked');
       }
       b7.disabled = false;
-
-      // Update progress ring 7
-      const progressRatio7 = state.b7_crown / 3;
-      const offset7 = circumference * (1 - progressRatio7);
-      circle7.style.strokeDashoffset = offset7;
+      circle7.style.strokeDashoffset = circumference * (1 - (state.b7_crown / 3));
       circle7.style.stroke = (state.b7_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-orange)';
 
       // Render Bubble 8 (Globo Pop Game Node)
@@ -1883,27 +2141,34 @@
       }
       b8.disabled = false;
 
+      // --- R2 Drawing ---
+      const r2 = document.getElementById('r2-btn');
+      const circleR2 = document.getElementById('r2-progress-circle');
+      document.getElementById('r2-crown-badge').textContent = state.r2_crown;
+      r2.className = 'bubble-btn bubble-revision';
+      if (state.b7_crown === 3) {
+        if (state.r2_crown === 1) r2.classList.add('bubble-gold');
+        else r2.classList.add('bubble-active');
+      } else {
+        r2.classList.add('locked');
+      }
+      r2.disabled = false;
+      circleR2.style.strokeDashoffset = circumference * (1 - (state.r2_crown / 1));
+      circleR2.style.stroke = (state.r2_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-orange)';
+
       // Render Bubble 9 (Alphabet study node)
       const b9 = document.getElementById('b9-btn');
       const circle9 = document.getElementById('b9-progress-circle');
       document.getElementById('b9-crown-badge').textContent = state.b9_crown;
-
       b9.className = 'bubble-btn';
-      if (state.b7_crown === 3) {
-        if (state.b9_crown === 2) {
-          b9.classList.add('bubble-gold');
-        } else {
-          b9.classList.add('bubble-active');
-        }
+      if (state.r2_crown === 1) {
+        if (state.b9_crown === 2) b9.classList.add('bubble-gold');
+        else b9.classList.add('bubble-active');
       } else {
         b9.classList.add('locked');
       }
       b9.disabled = false;
-
-      // Update progress ring 9
-      const progressRatio9 = state.b9_crown / 2;
-      const offset9 = circumference * (1 - progressRatio9);
-      circle9.style.strokeDashoffset = offset9;
+      circle9.style.strokeDashoffset = circumference * (1 - (state.b9_crown / 2));
       circle9.style.stroke = (state.b9_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-orange)';
 
       // Render Bubble 10 (River Game Repeat Node)
@@ -1919,37 +2184,41 @@
       const b11 = document.getElementById('b11-btn');
       b11.className = 'bubble-btn';
       if (state.b9_crown === 2) {
-        if (state.b11_completed) {
-          b11.classList.add('bubble-gold');
-        } else {
-          b11.classList.add('bubble-active');
-        }
+        if (state.b11_completed) b11.classList.add('bubble-gold');
+        else b11.classList.add('bubble-active');
       } else {
         b11.classList.add('locked');
       }
       b11.disabled = false;
 
+      // --- R3 Drawing ---
+      const r3 = document.getElementById('r3-btn');
+      const circleR3 = document.getElementById('r3-progress-circle');
+      document.getElementById('r3-crown-badge').textContent = state.r3_crown;
+      r3.className = 'bubble-btn bubble-revision';
+      if (state.b11_completed) {
+        if (state.r3_crown === 1) r3.classList.add('bubble-gold');
+        else r3.classList.add('bubble-active');
+      } else {
+        r3.classList.add('locked');
+      }
+      r3.disabled = false;
+      circleR3.style.strokeDashoffset = circumference * (1 - (state.r3_crown / 1));
+      circleR3.style.stroke = (state.r3_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-purple)';
+
       // Render Bubble 12 (Datos Personales study node)
       const b12 = document.getElementById('b12-btn');
       const circle12 = document.getElementById('b12-progress-circle');
       document.getElementById('b12-crown-badge').textContent = state.b12_crown;
-
       b12.className = 'bubble-btn';
-      if (state.b11_completed) {
-        if (state.b12_crown === 2) {
-          b12.classList.add('bubble-gold');
-        } else {
-          b12.classList.add('bubble-active');
-        }
+      if (state.r3_crown === 1) {
+        if (state.b12_crown === 2) b12.classList.add('bubble-gold');
+        else b12.classList.add('bubble-active');
       } else {
         b12.classList.add('locked');
       }
       b12.disabled = false;
-
-      // Update progress ring 12
-      const progressRatio12 = state.b12_crown / 2;
-      const offset12 = circumference * (1 - progressRatio12);
-      circle12.style.strokeDashoffset = offset12;
+      circle12.style.strokeDashoffset = circumference * (1 - (state.b12_crown / 2));
       circle12.style.stroke = (state.b12_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-purple)';
 
       // Render Bubble 13 (Owl's Maze Game Node)
@@ -1961,27 +2230,34 @@
       }
       b13.disabled = false;
 
+      // --- R4 Drawing ---
+      const r4 = document.getElementById('r4-btn');
+      const circleR4 = document.getElementById('r4-progress-circle');
+      document.getElementById('r4-crown-badge').textContent = state.r4_crown;
+      r4.className = 'bubble-btn bubble-revision';
+      if (state.b12_crown === 2) {
+        if (state.r4_crown === 1) r4.classList.add('bubble-gold');
+        else r4.classList.add('bubble-active');
+      } else {
+        r4.classList.add('locked');
+      }
+      r4.disabled = false;
+      circleR4.style.strokeDashoffset = circumference * (1 - (state.r4_crown / 1));
+      circleR4.style.stroke = (state.r4_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-purple)';
+
       // Render Bubble 14 (Numbers 1-31 study node)
       const b14 = document.getElementById('b14-btn');
       const circle14 = document.getElementById('b14-progress-circle');
       document.getElementById('b14-crown-badge').textContent = state.b14_crown;
-
       b14.className = 'bubble-btn';
-      if (state.b12_crown === 2) {
-        if (state.b14_crown === 3) {
-          b14.classList.add('bubble-gold');
-        } else {
-          b14.classList.add('bubble-active');
-        }
+      if (state.r4_crown === 1) {
+        if (state.b14_crown === 3) b14.classList.add('bubble-gold');
+        else b14.classList.add('bubble-active');
       } else {
         b14.classList.add('locked');
       }
       b14.disabled = false;
-
-      // Update progress ring 14
-      const progressRatio14 = state.b14_crown / 3;
-      const offset14 = circumference * (1 - progressRatio14);
-      circle14.style.strokeDashoffset = offset14;
+      circle14.style.strokeDashoffset = circumference * (1 - (state.b14_crown / 3));
       circle14.style.stroke = (state.b14_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-purple)';
 
       // Render Bubble 15 (Space Invaders Repeat Node)
@@ -1997,20 +2273,108 @@
       const b16 = document.getElementById('b16-btn');
       b16.className = 'bubble-btn';
       if (state.b14_crown === 3) {
-        if (state.b16_completed) {
-          b16.classList.add('bubble-gold');
-        } else {
-          b16.classList.add('bubble-active');
-        }
+        if (state.b16_completed) b16.classList.add('bubble-gold');
+        else b16.classList.add('bubble-active');
       } else {
         b16.classList.add('locked');
       }
       b16.disabled = false;
 
+      // --- R5 Drawing ---
+      const r5 = document.getElementById('r5-btn');
+      const circleR5 = document.getElementById('r5-progress-circle');
+      document.getElementById('r5-crown-badge').textContent = state.r5_crown;
+      r5.className = 'bubble-btn bubble-revision';
+      if (state.b16_completed) {
+        if (state.r5_crown === 1) r5.classList.add('bubble-gold');
+        else r5.classList.add('bubble-active');
+      } else {
+        r5.classList.add('locked');
+      }
+      r5.disabled = false;
+      circleR5.style.strokeDashoffset = circumference * (1 - (state.r5_crown / 1));
+      circleR5.style.stroke = (state.r5_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 17 (Días y Meses study node)
+      const b17 = document.getElementById('b17-btn');
+      const circle17 = document.getElementById('b17-progress-circle');
+      document.getElementById('b17-crown-badge').textContent = state.b17_crown;
+      b17.className = 'bubble-btn';
+      if (state.r5_crown === 1) {
+        if (state.b17_crown === 2) b17.classList.add('bubble-gold');
+        else b17.classList.add('bubble-active');
+      } else {
+        b17.classList.add('locked');
+      }
+      b17.disabled = false;
+      circle17.style.strokeDashoffset = circumference * (1 - (state.b17_crown / 2));
+      circle17.style.stroke = (state.b17_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 18 (Globo Pop 1.4 repeat game)
+      const b18 = document.getElementById('b18-btn');
+      if (state.b17_crown === 2 && state.game_unlocked_1_4) {
+        b18.className = 'bubble-btn bubble-game';
+      } else {
+        b18.className = 'bubble-btn locked bubble-game';
+      }
+      b18.disabled = false;
+
+      // --- R6 Drawing ---
+      const r6 = document.getElementById('r6-btn');
+      const circleR6 = document.getElementById('r6-progress-circle');
+      document.getElementById('r6-crown-badge').textContent = state.r6_crown;
+      r6.className = 'bubble-btn bubble-revision';
+      if (state.b17_crown === 2) {
+        if (state.r6_crown === 1) r6.classList.add('bubble-gold');
+        else r6.classList.add('bubble-active');
+      } else {
+        r6.classList.add('locked');
+      }
+      r6.disabled = false;
+      circleR6.style.strokeDashoffset = circumference * (1 - (state.r6_crown / 1));
+      circleR6.style.stroke = (state.r6_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 19 (Fechas y Cumpleaños study node)
+      const b19 = document.getElementById('b19-btn');
+      const circle19 = document.getElementById('b19-progress-circle');
+      document.getElementById('b19-crown-badge').textContent = state.b19_crown;
+      b19.className = 'bubble-btn';
+      if (state.r6_crown === 1) {
+        if (state.b19_crown === 2) b19.classList.add('bubble-gold');
+        else b19.classList.add('bubble-active');
+      } else {
+        b19.classList.add('locked');
+      }
+      b19.disabled = false;
+      circle19.style.strokeDashoffset = circumference * (1 - (state.b19_crown / 2));
+      circle19.style.stroke = (state.b19_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 20 (El Laberinto 1.4 repeat game)
+      const b20 = document.getElementById('b20-btn');
+      if (state.b19_crown === 2 && state.game2_unlocked_1_4) {
+        b20.className = 'bubble-btn bubble-game';
+      } else {
+        b20.className = 'bubble-btn locked bubble-game';
+      }
+      b20.disabled = false;
+
+      // Render Bubble 21 (Checkpoint Exam 1.4 Node)
+      const b21 = document.getElementById('b21-btn');
+      b21.className = 'bubble-btn';
+      if (state.b19_crown === 2) {
+        if (state.b21_completed) b21.classList.add('bubble-gold');
+        else b21.classList.add('bubble-active');
+      } else {
+        b21.classList.add('locked');
+      }
+      b21.disabled = false;
+
       // Style FAB button matching current active chapter
       const fab = document.getElementById('focus-bubble-btn');
       if (fab) {
-        if (state.b11_completed) {
+        if (state.b21_completed || state.b16_completed) {
+          fab.style.background = 'var(--brand-teal)';
+        } else if (state.b11_completed) {
           fab.style.background = 'var(--brand-purple)';
         } else if (state.b6_completed) {
           fab.style.background = 'var(--brand-orange)';
@@ -2035,18 +2399,29 @@
           b3_crown: 0,
           b5_crown: 0,
           b6_completed: false,
+          r1_crown: 0,
           b7_crown: 0,
+          r2_crown: 0,
           b9_crown: 0,
           b11_completed: false,
+          r3_crown: 0,
           b12_crown: 0,
+          r4_crown: 0,
           b14_crown: 0,
           b16_completed: false,
+          r5_crown: 0,
+          b17_crown: 0,
+          r6_crown: 0,
+          b19_crown: 0,
+          b21_completed: false,
           game_unlocked: false,
           game2_unlocked: false,
           game_unlocked_1_2: false,
           game2_unlocked_1_2: false,
           game_unlocked_1_3: false,
           game2_unlocked_1_3: false,
+          game_unlocked_1_4: false,
+          game2_unlocked_1_4: false,
           word_strengths: {},
           theme_strengths: {}
         };
@@ -2230,54 +2605,111 @@
         alert("🔒 Curiosidades e Islas is locked! You must first complete Bubble 3 (Geografía y Ciudades) to 3 crowns.");
         return;
       }
-      if (bubbleNum === 7 && !state.b6_completed) {
-        alert("🔒 Chapter 1.2 is locked! You must first pass the Chapter 1.1 Checkpoint Exam (Bubble 6) to unlock these lessons.");
+      if (bubbleNum === 'r1' && !state.b6_completed) {
+        alert("🔒 Repaso: Saludos y Países is locked! You must first pass the Chapter 1.1 Checkpoint Exam.");
         return;
       }
-      if (bubbleNum === 9 && state.b7_crown < 3) {
-        alert("🔒 Presentaciones y Alfabeto is locked! You must first complete Bubble 7 (Saludos y Sentimientos) to 3 crowns.");
+      if (bubbleNum === 7 && state.r1_crown < 1) {
+        alert("🔒 Saludos y Sentimientos is locked! You must first complete Revision Bubble R1.");
         return;
       }
-      if (bubbleNum === 12 && !state.b11_completed) {
-        alert("🔒 Chapter 1.3 is locked! You must first pass the Chapter 1.2 Checkpoint Exam (Bubble 11) to unlock these lessons.");
+      if (bubbleNum === 'r2' && state.b7_crown < 3) {
+        alert("🔒 Repaso: Geografía y Sentimientos is locked! Complete Bubble 7 to 3 crowns first.");
         return;
       }
-      if (bubbleNum === 14 && state.b12_crown < 2) {
-        alert("🔒 Los Números 1-31 is locked! You must first complete Bubble 12 (Datos Personales) to 2 crowns.");
+      if (bubbleNum === 9 && state.r2_crown < 1) {
+        alert("🔒 Presentaciones y Alfabeto is locked! You must first complete Revision Bubble R2.");
+        return;
+      }
+      if (bubbleNum === 'r3' && !state.b11_completed) {
+        alert("🔒 Repaso: Vocabulario del Cap. 1.1 is locked! Clear Chapter 1.2 first.");
+        return;
+      }
+      if (bubbleNum === 12 && state.r3_crown < 1) {
+        alert("🔒 Datos Personales is locked! You must first complete Revision Bubble R3.");
+        return;
+      }
+      if (bubbleNum === 'r4' && state.b12_crown < 2) {
+        alert("🔒 Repaso: Presentaciones y Alfabeto is locked! Complete Bubble 12 to 2 crowns first.");
+        return;
+      }
+      if (bubbleNum === 14 && state.r4_crown < 1) {
+        alert("🔒 Los Números 1-31 is locked! You must first complete Revision Bubble R4.");
+        return;
+      }
+      if (bubbleNum === 'r5' && !state.b16_completed) {
+        alert("🔒 Repaso: Identidad y Edad is locked! Clear Chapter 1.3 first.");
+        return;
+      }
+      if (bubbleNum === 17 && state.r5_crown < 1) {
+        alert("🔒 Días y Meses is locked! You must first complete Revision Bubble R5.");
+        return;
+      }
+      if (bubbleNum === 'r6' && state.b17_crown < 2) {
+        alert("🔒 Repaso: Los Números 1-31 is locked! Complete Bubble 17 to 2 crowns first.");
+        return;
+      }
+      if (bubbleNum === 19 && state.r6_crown < 1) {
+        alert("🔒 Fechas y Cumpleaños is locked! You must first complete Revision Bubble R6.");
         return;
       }
 
       decayStrengths();
       
+      let isRevision = typeof bubbleNum === 'string' && bubbleNum.startsWith('r');
       let crownLevel = 0;
       let levelsPool = [];
-      if (bubbleNum === 1) {
-        crownLevel = state.b1_crown;
-        levelsPool = BUBBLE_1_LEVELS;
-      } else if (bubbleNum === 3) {
-        crownLevel = state.b3_crown;
-        levelsPool = BUBBLE_3_LEVELS;
-      } else if (bubbleNum === 5) {
-        crownLevel = state.b5_crown;
-        levelsPool = BUBBLE_5_LEVELS;
-      } else if (bubbleNum === 7) {
-        crownLevel = state.b7_crown;
-        levelsPool = BUBBLE_7_LEVELS;
-      } else if (bubbleNum === 9) {
-        crownLevel = state.b9_crown;
-        levelsPool = BUBBLE_9_LEVELS;
-      } else if (bubbleNum === 12) {
-        crownLevel = state.b12_crown;
-        levelsPool = BUBBLE_12_LEVELS;
-      } else if (bubbleNum === 14) {
-        crownLevel = state.b14_crown;
-        levelsPool = BUBBLE_14_LEVELS;
-      }
       
-      const isMax2 = (bubbleNum === 9 || bubbleNum === 12);
-      const isGold = isMax2 ? (crownLevel === 2) : (crownLevel === 3);
-      const targetCount = isGold ? 10 : 12;
-      const level = Math.min(isMax2 ? 1 : 2, crownLevel);
+      if (isRevision) {
+        crownLevel = state[bubbleNum + '_crown'] || 0;
+        if (bubbleNum === 'r1') {
+          levelsPool = [[...BUBBLE_1_LEVELS[0], ...BUBBLE_1_LEVELS[1], ...BUBBLE_1_LEVELS[2]]];
+        } else if (bubbleNum === 'r2') {
+          levelsPool = [[...BUBBLE_3_LEVELS[0], ...BUBBLE_3_LEVELS[1], ...BUBBLE_3_LEVELS[2], ...BUBBLE_5_LEVELS[0], ...BUBBLE_5_LEVELS[1], ...BUBBLE_5_LEVELS[2], ...BUBBLE_7_LEVELS[0], ...BUBBLE_7_LEVELS[1], ...BUBBLE_7_LEVELS[2]]];
+        } else if (bubbleNum === 'r3') {
+          levelsPool = [[...BUBBLE_1_LEVELS[0], ...BUBBLE_1_LEVELS[1], ...BUBBLE_1_LEVELS[2], ...BUBBLE_3_LEVELS[0], ...BUBBLE_3_LEVELS[1], ...BUBBLE_3_LEVELS[2], ...BUBBLE_5_LEVELS[0], ...BUBBLE_5_LEVELS[1], ...BUBBLE_5_LEVELS[2]]];
+        } else if (bubbleNum === 'r4') {
+          levelsPool = [[...BUBBLE_7_LEVELS[0], ...BUBBLE_7_LEVELS[1], ...BUBBLE_7_LEVELS[2], ...BUBBLE_9_LEVELS[0], ...BUBBLE_9_LEVELS[1]]];
+        } else if (bubbleNum === 'r5') {
+          levelsPool = [[...BUBBLE_9_LEVELS[0], ...BUBBLE_9_LEVELS[1], ...BUBBLE_12_LEVELS[0], ...BUBBLE_12_LEVELS[1], ...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2]]];
+        } else if (bubbleNum === 'r6') {
+          levelsPool = [[...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2], ...BUBBLE_17_LEVELS[0], ...BUBBLE_17_LEVELS[1]]];
+        }
+      } else {
+        if (bubbleNum === 1) {
+          crownLevel = state.b1_crown;
+          levelsPool = BUBBLE_1_LEVELS;
+        } else if (bubbleNum === 3) {
+          crownLevel = state.b3_crown;
+          levelsPool = BUBBLE_3_LEVELS;
+        } else if (bubbleNum === 5) {
+          crownLevel = state.b5_crown;
+          levelsPool = BUBBLE_5_LEVELS;
+        } else if (bubbleNum === 7) {
+          crownLevel = state.b7_crown;
+          levelsPool = BUBBLE_7_LEVELS;
+        } else if (bubbleNum === 9) {
+          crownLevel = state.b9_crown;
+          levelsPool = BUBBLE_9_LEVELS;
+        } else if (bubbleNum === 12) {
+          crownLevel = state.b12_crown;
+          levelsPool = BUBBLE_12_LEVELS;
+        } else if (bubbleNum === 14) {
+          crownLevel = state.b14_crown;
+          levelsPool = BUBBLE_14_LEVELS;
+        } else if (bubbleNum === 17) {
+          crownLevel = state.b17_crown;
+          levelsPool = BUBBLE_17_LEVELS;
+        } else if (bubbleNum === 19) {
+          crownLevel = state.b19_crown;
+          levelsPool = BUBBLE_19_LEVELS;
+        }
+      }
+
+      const isMax2 = (bubbleNum === 9 || bubbleNum === 12 || bubbleNum === 17 || bubbleNum === 19);
+      const isGold = isRevision ? (crownLevel === 1) : (isMax2 ? (crownLevel === 2) : (crownLevel === 3));
+      const targetCount = isRevision ? 10 : (isGold ? 10 : 12);
+      const level = isRevision ? 0 : Math.min(isMax2 ? 1 : 2, crownLevel);
       
       const activePool = [];
       for (let i = 0; i <= level; i++) {
@@ -2289,7 +2721,7 @@
         isGold: isGold,
         level: level,
         activePool: activePool,
-        newWords: isGold ? [] : levelsPool[level],
+        newWords: (isRevision || isGold) ? [] : levelsPool[level],
         introducedCount: 0,
         queue: [], 
         currentCard: null,
@@ -2298,7 +2730,7 @@
         mistakesQueue: []
       };
 
-      if (!isGold) {
+      if (!isRevision && !isGold) {
         session.newWords.forEach(w => {
           session.queue.push({
             type: "intro",
@@ -2310,7 +2742,7 @@
         });
       }
 
-      const mixedCount = isGold ? 10 : 8;
+      const mixedCount = isRevision ? 10 : (isGold ? 10 : 8);
       for (let i = 0; i < mixedCount; i++) {
         session.queue.push(generateRandomQuestion(activePool));
       }
@@ -2325,11 +2757,16 @@
     }
 
     function generateRandomQuestion(pool, targetWord = null) {
-      const qStyles = ["mc", "match", "dialogue", "bank"];
-      const style = qStyles[Math.floor(Math.random() * qStyles.length)];
+      const qStyles = ["mc", "match", "dialogue", "bank", "typing", "listening"];
+      let style = qStyles[Math.floor(Math.random() * qStyles.length)];
       
       if (!targetWord) {
         targetWord = pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      const convoKeys = ["¿Qué tal?", "¿cómo te llamas?", "¿de dónde eres?", "¿Cuántos años tienes?", "¿Cuándo es tu cumpleaños?"];
+      if (style === "dialogue" && !convoKeys.includes(targetWord)) {
+        style = Math.random() < 0.5 ? "mc" : "bank";
       }
 
       if (style === "match" && pool.length >= 3) {
@@ -2340,44 +2777,94 @@
         };
       }
 
-      if (style === "dialogue" && targetWord === "¿Qué tal?") {
+      if (style === "dialogue") {
+        if (targetWord === "¿Qué tal?") {
+          return {
+            type: "dialogue",
+            prompt: "¿Qué tal?",
+            correct: "Buenos días, bien",
+            options: shuffle(["Buenos días, bien", "¡Adiós!", "España"])
+          };
+        } else if (targetWord === "¿cómo te llamas?") {
+          return {
+            type: "dialogue",
+            prompt: "¿cómo te llamas?",
+            correct: "me llamo Señor Ospina León",
+            options: shuffle(["me llamo Señor Ospina León", "soy de Cuba", "Buenos días"])
+          };
+        } else if (targetWord === "¿de dónde eres?") {
+          return {
+            type: "dialogue",
+            prompt: "¿de dónde eres?",
+            correct: "soy de España",
+            options: shuffle(["soy de España", "me llamo Carlos", "tengo doce años"])
+          };
+        } else if (targetWord === "¿Cuántos años tienes?") {
+          return {
+            type: "dialogue",
+            prompt: "¿Cuántos años tienes?",
+            correct: "tengo quince años",
+            options: shuffle(["tengo quince años", "mi cumpleaños es mañana", "muy bien, gracias"])
+          };
+        } else if (targetWord === "¿Cuándo es tu cumpleaños?") {
+          return {
+            type: "dialogue",
+            prompt: "¿Cuándo es tu cumpleaños?",
+            correct: "mi cumpleaños es el primero de junio",
+            options: shuffle(["mi cumpleaños es el primero de junio", "tengo diez años", "soy de Argentina"])
+          };
+        }
+      }
+
+      const esSent = targetWord;
+      const enSent = VOCAB_DATABASE[targetWord].english;
+
+      if (style === "listening") {
         return {
-          type: "dialogue",
-          prompt: "¿Qué tal?",
-          correct: "Buenos días, bien",
-          options: shuffle(["Buenos días, bien", "¡Adiós!", "España"])
+          type: "listening",
+          audioText: esSent,
+          correct: enSent,
+          options: shuffle([enSent, ...getRandomDistractors(enSent, 3)])
+        };
+      }
+
+      if (style === "typing") {
+        return {
+          type: "typing",
+          prompt: enSent,
+          correct: esSent
         };
       }
 
       const dir = Math.random() < 0.5 ? "es-en" : "en-es";
-      let esSent = targetWord;
-      let enSent = VOCAB_DATABASE[targetWord].english;
+      let promptEs = esSent;
+      let promptEn = enSent;
 
       if (targetWord === "España" || targetWord === "Estados Unidos" || targetWord === "Argentina" || targetWord === "Cuba") {
         if (pool.includes("soy de")) {
-          esSent = "soy de " + targetWord;
-          enSent = "I am from " + VOCAB_DATABASE[targetWord].english;
+          promptEs = "soy de " + targetWord;
+          promptEn = "I am from " + VOCAB_DATABASE[targetWord].english;
         }
       } else if (targetWord === "es") {
         if (pool.includes("él") && pool.includes("España")) {
-          esSent = "él es de España";
-          enSent = "he is from Spain";
+          promptEs = "él es de España";
+          promptEn = "he is from Spain";
         }
       }
 
       if (dir === "es-en") {
         return {
           type: "mc",
-          prompt: esSent,
-          correct: enSent,
-          options: shuffle([enSent, ...getRandomDistractors(enSent, 3)])
+          prompt: promptEs,
+          correct: promptEn,
+          options: shuffle([promptEn, ...getRandomDistractors(promptEn, 3)])
         };
       } else {
         return {
           type: "bank",
-          prompt: enSent,
-          correct: esSent,
-          wordsPool: shuffle([...esSent.split(' '), ...getRandomWordPoolDistractors(esSent.split(' '), 5)])
+          prompt: promptEn,
+          correct: promptEs,
+          wordsPool: shuffle([...promptEs.split(' '), ...getRandomWordPoolDistractors(promptEs.split(' '), 5)])
         };
       }
     }
@@ -2462,6 +2949,79 @@
         
         speakTTS(q.prompt);
       } 
+      else if (q.type === "listening") {
+        const lbl = document.createElement('span');
+        lbl.className = 'prompt-label';
+        lbl.textContent = "Listen and translate what you hear:";
+        
+        const audioBtn = document.createElement('button');
+        audioBtn.className = 'btn';
+        audioBtn.style.margin = '20px auto';
+        audioBtn.style.padding = '16px 28px';
+        audioBtn.style.fontSize = '1.2rem';
+        audioBtn.style.borderRadius = '50px';
+        audioBtn.style.display = 'flex';
+        audioBtn.style.alignItems = 'center';
+        audioBtn.style.gap = '8px';
+        audioBtn.style.background = 'var(--brand-purple)';
+        audioBtn.style.color = '#ffffff';
+        audioBtn.style.cursor = 'pointer';
+        audioBtn.style.border = 'none';
+        audioBtn.innerHTML = '🔊 Click to Listen';
+        audioBtn.onclick = () => speakTTS(q.audioText);
+
+        const grid = document.createElement('div');
+        grid.className = 'options-grid';
+
+        q.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = opt;
+          btn.onclick = () => selectOption(btn, opt);
+          grid.appendChild(btn);
+        });
+
+        area.appendChild(lbl);
+        area.appendChild(audioBtn);
+        area.appendChild(grid);
+        
+        setTimeout(() => speakTTS(q.audioText), 200);
+      }
+      else if (q.type === "typing") {
+        const lbl = document.createElement('span');
+        lbl.className = 'prompt-label';
+        lbl.textContent = "Translate to Spanish (Type your answer):";
+        
+        const text = document.createElement('h3');
+        text.className = 'prompt-text';
+        text.textContent = q.prompt;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'typing-input';
+        input.id = 'typing-answer-input';
+        input.placeholder = 'Type in Spanish...';
+        input.autocomplete = 'off';
+        input.style.width = '100%';
+        input.style.marginTop = '16px';
+        input.style.padding = '12px';
+        input.style.fontSize = '1.1rem';
+        input.style.borderRadius = '12px';
+        input.style.border = '2px solid var(--border-color)';
+        
+        setTimeout(() => input.focus(), 100);
+
+        area.appendChild(lbl);
+        area.appendChild(text);
+        area.appendChild(input);
+
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') {
+            const checkBtn = document.getElementById('check-btn');
+            if (checkBtn && !checkBtn.disabled) checkBtn.click();
+          }
+        });
+      }
       else if (q.type === "mc") {
         const lbl = document.createElement('span');
         lbl.className = 'prompt-label';
@@ -2731,6 +3291,14 @@
       checkBtn.onclick = () => confirmContinue(false);
     }
 
+    function cleanSpanString(str) {
+      if (!str) return "";
+      return str.trim()
+                .toLowerCase()
+                .replace(/[¡!¿?.,;]/g, '')
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
     function submitAnswer() {
       const checkBtn = document.getElementById('check-btn');
       if (checkBtn.textContent === "Continue") {
@@ -2740,15 +3308,26 @@
       const q = session.currentCard;
       let userVal = "";
 
-      if (q.type === "mc" || q.type === "intro" || q.type === "dialogue") {
+      if (q.type === "mc" || q.type === "intro" || q.type === "dialogue" || q.type === "listening") {
         userVal = chosenVal;
       } else if (q.type === "bank") {
         userVal = activeBank.map(i => i.word).join(' ');
+      } else if (q.type === "typing") {
+        const input = document.getElementById('typing-answer-input');
+        userVal = input ? input.value : "";
       }
 
       if (!userVal) return;
 
-      const isCorrect = userVal.trim().toLowerCase() === q.correct.trim().toLowerCase();
+      let isCorrect = false;
+      if (q.type === "typing") {
+        const cleanUser = cleanSpanString(userVal);
+        const cleanCorrect = cleanSpanString(q.correct);
+        const cleanCorrectNoArticle = cleanCorrect.replace(/^(el|la|los|las)\s+/, '');
+        isCorrect = (cleanUser === cleanCorrect) || (cleanUser === cleanCorrectNoArticle);
+      } else {
+        isCorrect = userVal.trim().toLowerCase() === q.correct.trim().toLowerCase();
+      }
       const banner = document.getElementById('feedback-banner');
       
       if (isCorrect) {
@@ -2992,6 +3571,63 @@
           emoji = "💪";
           state.game2_unlocked_1_3 = true;
         }
+      } else if (typeof bNum === 'string' && bNum.startsWith('r')) {
+        if (state[bNum + '_crown'] < 1) {
+          state[bNum + '_crown'] = 1;
+          state.crowns++;
+          rewardXP += 10;
+          title = "Revision Complete!";
+          subtitle = `You cleared the Spaced Repetition Review!`;
+          emoji = "🏆";
+        } else {
+          title = "Revision Practice Complete!";
+          subtitle = "Excellent review of previous vocabulary!";
+          emoji = "💪";
+        }
+      } else if (bNum === 17) {
+        if (state.b17_crown < 2) {
+          state.b17_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Días y Meses is now Level ${state.b17_crown}/2`;
+          if (state.b17_crown === 2) {
+            state.crowns++;
+            state.game_unlocked_1_4 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 17! Globo Pop 1.4 unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Days & Months!";
+          emoji = "💪";
+          state.game_unlocked_1_4 = true;
+        }
+      } else if (bNum === 19) {
+        if (state.b19_crown < 2) {
+          state.b19_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Fechas y Cumpleaños is now Level ${state.b19_crown}/2`;
+          if (state.b19_crown === 2) {
+            state.crowns++;
+            state.game2_unlocked_1_4 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 19! El Laberinto 1.4 unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Dates & Birthdays!";
+          emoji = "💪";
+          state.game2_unlocked_1_4 = true;
+        }
+      } else if (bNum === 21) {
+        state.b21_completed = true;
+        rewardXP += 20; // +40 XP total for Checkpoint Exam!
+        title = "Chapter Exam Cleared!";
+        subtitle = "Incredible! You have mastered Chapter 1.4: ¡...y que cumplas muchos más!";
+        emoji = "🏆";
       } else if (bNum === 16) {
         state.b16_completed = true;
         rewardXP += 20; // +40 XP total for Checkpoint Exam!
@@ -3073,6 +3709,11 @@
           alert("🔒 Examen del Capítulo 1.3 is locked! You must first complete Bubble 14 (Los Números 1-31) to 3 crowns.");
           return;
         }
+      } else if (chapterNum === 4) {
+        if (state.b19_crown < 2) {
+          alert("🔒 Examen del Capítulo 1.4 is locked! You must first complete Bubble 19 (Fechas y Cumpleaños) to 2 crowns.");
+          return;
+        }
       }
 
       decayStrengths();
@@ -3084,10 +3725,13 @@
       ] : (chapterNum === 2 ? [
         ...BUBBLE_7_LEVELS[0], ...BUBBLE_7_LEVELS[1], ...BUBBLE_7_LEVELS[2],
         ...BUBBLE_9_LEVELS[0], ...BUBBLE_9_LEVELS[1]
-      ] : [
+      ] : (chapterNum === 3 ? [
         ...BUBBLE_12_LEVELS[0], ...BUBBLE_12_LEVELS[1],
         ...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2]
-      ]);
+      ] : [
+        ...BUBBLE_17_LEVELS[0], ...BUBBLE_17_LEVELS[1],
+        ...BUBBLE_19_LEVELS[0], ...BUBBLE_19_LEVELS[1]
+      ]));
 
       const checkpointWords = shuffle(fullPool).slice(0, 15);
       const queue = [];
@@ -3097,7 +3741,7 @@
       });
 
       session = {
-        bubbleNum: chapterNum === 1 ? 6 : (chapterNum === 2 ? 11 : 16),
+        bubbleNum: chapterNum === 1 ? 6 : (chapterNum === 2 ? 11 : (chapterNum === 3 ? 16 : 21)),
         isCheckpoint: true,
         isBossChallenge: false,
         lives: 4,
@@ -3164,6 +3808,7 @@
 
       const isCh1 = session.bubbleNum === 6;
       const isCh2 = session.bubbleNum === 11;
+      const isCh3 = session.bubbleNum === 16;
       const bossCard = isCh1 ? {
         type: "bank",
         isBoss: true,
@@ -3176,13 +3821,19 @@
         prompt: "How are you? Very well, thank you.",
         correct: "¿Cómo estás? Muy bien, gracias",
         wordsPool: shuffle(["¿Cómo", "estás?", "Muy", "bien,", "gracias", "regular", "fatal", "tardes", "Buenas", "tú"])
-      } : {
+      } : (isCh3 ? {
         type: "bank",
         isBoss: true,
         prompt: "How old are you? I am fifteen years old.",
         correct: "¿Cuántos años tienes? Tengo quince años",
         wordsPool: shuffle(["¿Cuántos", "años", "tienes?", "Tengo", "quince", "años", "veinte", "cuatro", "nombre", "apellido"])
-      });
+      } : {
+        type: "bank",
+        isBoss: true,
+        prompt: "When is your birthday? My birthday is the first of June.",
+        correct: "¿Cuándo es tu cumpleaños? Mi cumpleaños es el primero de junio",
+        wordsPool: shuffle(["¿Cuándo", "es", "tu", "cumpleaños?", "Mi", "cumpleaños", "es", "el", "primero", "de", "junio", "nombre", "lunes", "edad", "veintiuno"])
+      }));
 
       session.queue = [bossCard];
       session.mistakesQueue = []; 
@@ -3318,16 +3969,27 @@
       let activeId = 'b1-btn';
 
       // Determine highest active (unlocked, non-completed) bubble
-      if (state.b14_crown === 3 && !state.b16_completed) activeId = 'b16-btn';
+      if (state.b19_crown === 2 && !state.b21_completed) activeId = 'b21-btn';
+      else if (state.b19_crown === 2 && state.game2_unlocked_1_4) activeId = 'b20-btn';
+      else if (state.r6_crown === 1 && state.b19_crown < 2) activeId = 'b19-btn';
+      else if (state.b17_crown === 2 && state.r6_crown < 1) activeId = 'r6-btn';
+      else if (state.b17_crown === 2 && state.game_unlocked_1_4) activeId = 'b18-btn';
+      else if (state.r5_crown === 1 && state.b17_crown < 2) activeId = 'b17-btn';
+      else if (state.b16_completed && state.r5_crown < 1) activeId = 'r5-btn';
+      else if (state.b14_crown === 3 && !state.b16_completed) activeId = 'b16-btn';
       else if (state.b14_crown === 3 && state.game2_unlocked_1_3) activeId = 'b15-btn';
-      else if (state.b12_crown === 2 && state.b14_crown < 3) activeId = 'b14-btn';
+      else if (state.r4_crown === 1 && state.b14_crown < 3) activeId = 'b14-btn';
+      else if (state.b12_crown === 2 && state.r4_crown < 1) activeId = 'r4-btn';
       else if (state.b12_crown === 2 && state.game_unlocked_1_3) activeId = 'b13-btn';
-      else if (state.b11_completed && state.b12_crown < 2) activeId = 'b12-btn';
+      else if (state.r3_crown === 1 && state.b12_crown < 2) activeId = 'b12-btn';
+      else if (state.b11_completed && state.r3_crown < 1) activeId = 'r3-btn';
       else if (state.b9_crown === 2 && !state.b11_completed) activeId = 'b11-btn';
       else if (state.b9_crown === 2 && state.game2_unlocked_1_2) activeId = 'b10-btn';
-      else if (state.b7_crown === 3 && state.b9_crown < 2) activeId = 'b9-btn';
+      else if (state.r2_crown === 1 && state.b9_crown < 2) activeId = 'b9-btn';
+      else if (state.b7_crown === 3 && state.r2_crown < 1) activeId = 'r2-btn';
       else if (state.b7_crown === 3 && state.game_unlocked_1_2) activeId = 'b8-btn';
-      else if (state.b6_completed && state.b7_crown < 3) activeId = 'b7-btn';
+      else if (state.r1_crown === 1 && state.b7_crown < 3) activeId = 'b7-btn';
+      else if (state.b6_completed && state.r1_crown < 1) activeId = 'r1-btn';
       else if (state.b5_crown === 3 && !state.b6_completed) activeId = 'b6-btn';
       else if (state.b3_crown === 3 && state.b5_crown < 3) activeId = 'b5-btn';
       else if (state.b3_crown === 3 && state.game2_unlocked) activeId = 'b4-btn';
@@ -3348,14 +4010,22 @@
 
       const div2 = dividers[1];
       const div3 = dividers.length >= 3 ? dividers[2] : null;
+      const div4 = dividers.length >= 4 ? dividers[3] : null;
       const rect2 = div2.getBoundingClientRect();
       const rect3 = div3 ? div3.getBoundingClientRect() : null;
+      const rect4 = div4 ? div4.getBoundingClientRect() : null;
       
       const banner = document.querySelector('.unit-banner');
       const title = document.querySelector('.unit-banner-title');
       const desc = document.querySelector('.unit-banner-desc');
       if (banner && title && desc) {
-        if (rect3 && rect3.top <= 185) {
+        if (rect4 && rect4.top <= 185) {
+          if (!banner.classList.contains('chapter-4')) {
+            banner.className = 'unit-banner chapter-4';
+            title.textContent = 'Capítulo 1.4';
+            desc.textContent = '¡...y que cumplas muchos más!';
+          }
+        } else if (rect3 && rect3.top <= 185) {
           if (!banner.classList.contains('chapter-3')) {
             banner.className = 'unit-banner chapter-3';
             title.textContent = 'Capítulo 1.3';
@@ -3388,6 +4058,8 @@
           if (typeof OwlsMazeGame !== 'undefined' && OwlsMazeGame.isActive()) return;
           
           const checkBtn = document.getElementById('check-btn');
+          if (e.target.tagName === 'INPUT' && checkBtn.textContent === "Check") return;
+
           if (checkBtn && !checkBtn.disabled && checkBtn.style.display !== 'none') {
             checkBtn.click();
           }

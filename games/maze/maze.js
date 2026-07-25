@@ -1,10 +1,15 @@
 /* Owl's Maze (Laberinto) Game Engine Module */
 
 const OwlsMazeGame = (function() {
-  const GAME_WORDS = [
+  const GAME_WORDS_1_3 = [
     "el nombre", "el apellido", "la edad",
     "el lugar de nacimiento", "el carnet de identidad",
     "el/la amigo/a", "¿Cuántos años tienes?", "tengo... años"
+  ];
+  const GAME_WORDS_1_4 = [
+    "el año", "el mes", "la semana",
+    "la fecha", "el cumpleaños", "el primero",
+    "el uno", "¿Cuándo es tu cumpleaños?"
   ];
 
   // 8 cols x 6 rows maze layout (1 = wall, 0 = path)
@@ -34,14 +39,25 @@ const OwlsMazeGame = (function() {
   let ctx = null;
   let gameObj = null;
 
-  function start() {
-    if (state.b12_crown < 2) {
-      alert("🔒 El Laberinto is locked! You must first complete Bubble 12 (Datos Personales) to 2 crowns to unlock this game.");
-      return;
-    }
-    if (!state.game_unlocked_1_3) {
-      alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
-      return;
+  function start(chapterNum = 3) {
+    if (chapterNum === 3) {
+      if (state.b12_crown < 2) {
+        alert("🔒 El Laberinto is locked! You must first complete Bubble 12 (Datos Personales) to 2 crowns to unlock this game.");
+        return;
+      }
+      if (!state.game_unlocked_1_3) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
+    } else if (chapterNum === 4) {
+      if (state.b19_crown < 2) {
+        alert("🔒 El Laberinto (1.4) is locked! You must first complete Bubble 19 (Fechas y Cumpleaños) to 2 crowns to unlock this game.");
+        return;
+      }
+      if (!state.game2_unlocked_1_4) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
     }
 
     const area = document.getElementById('question-area');
@@ -63,10 +79,10 @@ const OwlsMazeGame = (function() {
     document.getElementById('check-btn').hidden = true;
     document.getElementById('lesson-overlay').style.display = 'flex';
 
-    init();
+    init(chapterNum);
   }
 
-  function init() {
+  function init(chapterNum) {
     canvas = document.getElementById('maze-canvas');
     ctx = canvas.getContext('2d');
 
@@ -77,6 +93,7 @@ const OwlsMazeGame = (function() {
       messageText: "",
       messageColor: "",
       messageTimer: 0,
+      chapterNum: chapterNum,
       score: 0,
       lives: 4,
       owl: { r: 4, c: 1 }, // Start position
@@ -94,29 +111,86 @@ const OwlsMazeGame = (function() {
     gameLoop = setInterval(update, 1000 / 30);
   }
 
+  function isReachable(start, target, blockedSpots) {
+    const queue = [start];
+    const visited = new Set();
+    visited.add(`${start.r},${start.c}`);
+
+    while (queue.length > 0) {
+      const curr = queue.shift();
+      if (curr.r === target.r && curr.c === target.c) return true;
+
+      const neighbors = [
+        { r: curr.r - 1, c: curr.c },
+        { r: curr.r + 1, c: curr.c },
+        { r: curr.r, c: curr.c - 1 },
+        { r: curr.r, c: curr.c + 1 }
+      ];
+
+      for (const n of neighbors) {
+        if (n.r >= 0 && n.r < ROWS && n.c >= 0 && n.c < COLS) {
+          if (MAZE_GRID[n.r][n.c] === 0) {
+            const key = `${n.r},${n.c}`;
+            if (!visited.has(key)) {
+              const isBlocked = blockedSpots.some(b => b.r === n.r && b.c === n.c);
+              if (!isBlocked) {
+                visited.add(key);
+                queue.push(n);
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   function spawnRound() {
     // Reset owl to starting position
     gameObj.owl = { r: 4, c: 1 };
 
     // Choose 3 unique words
-    const roundWords = shuffle([...GAME_WORDS]).slice(0, 3);
+    const list = gameObj.chapterNum === 3 ? GAME_WORDS_1_3 : GAME_WORDS_1_4;
+    const roundWords = shuffle([...list]).slice(0, 3);
     const correctWord = roundWords[Math.floor(Math.random() * roundWords.length)];
+    const wrongWords = roundWords.filter(w => w !== correctWord);
     const wordData = VOCAB_DATABASE[correctWord];
 
     gameObj.correctAnswer = correctWord;
     gameObj.targetWord = wordData ? wordData.english : correctWord;
 
-    // Pick 3 distinct open spots (excluding owl start spot r:4, c:1)
-    const availableSpots = shuffle(OPEN_SPOTS.filter(s => !(s.r === 4 && s.c === 1)));
-    
-    gameObj.scrolls = [];
-    for (let i = 0; i < 3; i++) {
-      gameObj.scrolls.push({
-        r: availableSpots[i].r,
-        c: availableSpots[i].c,
-        word: roundWords[i]
-      });
+    const candidates = OPEN_SPOTS.filter(s => !(s.r === 4 && s.c === 1));
+    let chosenSpots = null;
+    let attempts = 0;
+
+    while (attempts < 100) {
+      attempts++;
+      const shuffledSpots = shuffle([...candidates]).slice(0, 3);
+      const correctSpot = shuffledSpots[0];
+      const wrongSpots = [shuffledSpots[1], shuffledSpots[2]];
+
+      if (isReachable(gameObj.owl, correctSpot, wrongSpots)) {
+        chosenSpots = {
+          correct: correctSpot,
+          wrongs: wrongSpots
+        };
+        break;
+      }
     }
+
+    if (!chosenSpots) {
+      const shuffledSpots = shuffle([...candidates]).slice(0, 3);
+      chosenSpots = {
+        correct: shuffledSpots[0],
+        wrongs: [shuffledSpots[1], shuffledSpots[2]]
+      };
+    }
+
+    gameObj.scrolls = [
+      { r: chosenSpots.correct.r, c: chosenSpots.correct.c, word: correctWord },
+      { r: chosenSpots.wrongs[0].r, c: chosenSpots.wrongs[0].c, word: wrongWords[0] },
+      { r: chosenSpots.wrongs[1].r, c: chosenSpots.wrongs[1].c, word: wrongWords[1] }
+    ];
 
     document.getElementById('game-prompt-title').textContent = `Collect: "${gameObj.targetWord}"`;
   }
@@ -328,7 +402,11 @@ const OwlsMazeGame = (function() {
     gameLoop = null;
 
     if (gameObj && gameObj.lives <= 0) {
-      state.game_unlocked_1_3 = false;
+      if (gameObj.chapterNum === 3) {
+        state.game_unlocked_1_3 = false;
+      } else {
+        state.game2_unlocked_1_4 = false;
+      }
       saveProgress();
     }
 
@@ -342,11 +420,16 @@ const OwlsMazeGame = (function() {
   function complete() {
     clearInterval(gameLoop);
     gameLoop = null;
+    const ch = gameObj ? gameObj.chapterNum : 3;
     gameObj = null;
     window.removeEventListener('keydown', handleGameKeys);
     document.getElementById('lesson-overlay').style.display = 'none';
 
-    state.game_unlocked_1_3 = false;
+    if (ch === 3) {
+      state.game_unlocked_1_3 = false;
+    } else {
+      state.game2_unlocked_1_4 = false;
+    }
     state.xp += 15;
     saveProgress();
     session = null;
