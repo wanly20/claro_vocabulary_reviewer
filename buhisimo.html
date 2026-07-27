@@ -2106,7 +2106,7 @@
       const circleR1 = document.getElementById('r1-progress-circle');
       document.getElementById('r1-crown-badge').textContent = state.r1_crown;
       r1.className = 'bubble-btn bubble-revision';
-      if (state.b6_completed) {
+      if (state.b6_completed || state.r1_crown > 0 || state.b7_crown > 0) {
         if (state.r1_crown === 1) r1.classList.add('bubble-gold');
         else r1.classList.add('bubble-active');
       } else {
@@ -2122,7 +2122,7 @@
       const circle7 = document.getElementById('b7-progress-circle');
       document.getElementById('b7-crown-badge').textContent = state.b7_crown;
       b7.className = 'bubble-btn';
-      if (state.r1_crown === 1) {
+      if (state.r1_crown >= 1 || state.b6_completed || state.b7_crown > 0) {
         if (state.b7_crown === 3) b7.classList.add('bubble-gold');
         else b7.classList.add('bubble-active');
       } else {
@@ -2146,7 +2146,7 @@
       const circleR2 = document.getElementById('r2-progress-circle');
       document.getElementById('r2-crown-badge').textContent = state.r2_crown;
       r2.className = 'bubble-btn bubble-revision';
-      if (state.b7_crown === 3) {
+      if (state.b7_crown >= 3 || state.r2_crown > 0 || state.b9_crown > 0) {
         if (state.r2_crown === 1) r2.classList.add('bubble-gold');
         else r2.classList.add('bubble-active');
       } else {
@@ -2161,7 +2161,7 @@
       const circle9 = document.getElementById('b9-progress-circle');
       document.getElementById('b9-crown-badge').textContent = state.b9_crown;
       b9.className = 'bubble-btn';
-      if (state.r2_crown === 1) {
+      if (state.r2_crown >= 1 || state.b7_crown >= 3 || state.b9_crown > 0) {
         if (state.b9_crown === 2) b9.classList.add('bubble-gold');
         else b9.classList.add('bubble-active');
       } else {
@@ -2196,7 +2196,7 @@
       const circleR3 = document.getElementById('r3-progress-circle');
       document.getElementById('r3-crown-badge').textContent = state.r3_crown;
       r3.className = 'bubble-btn bubble-revision';
-      if (state.b11_completed) {
+      if (state.b11_completed || state.r3_crown > 0 || state.b12_crown > 0) {
         if (state.r3_crown === 1) r3.classList.add('bubble-gold');
         else r3.classList.add('bubble-active');
       } else {
@@ -2211,7 +2211,7 @@
       const circle12 = document.getElementById('b12-progress-circle');
       document.getElementById('b12-crown-badge').textContent = state.b12_crown;
       b12.className = 'bubble-btn';
-      if (state.r3_crown === 1) {
+      if (state.r3_crown >= 1 || state.b11_completed || state.b12_crown > 0) {
         if (state.b12_crown === 2) b12.classList.add('bubble-gold');
         else b12.classList.add('bubble-active');
       } else {
@@ -2235,7 +2235,7 @@
       const circleR4 = document.getElementById('r4-progress-circle');
       document.getElementById('r4-crown-badge').textContent = state.r4_crown;
       r4.className = 'bubble-btn bubble-revision';
-      if (state.b12_crown === 2) {
+      if (state.b12_crown >= 2 || state.r4_crown > 0 || state.b14_crown > 0) {
         if (state.r4_crown === 1) r4.classList.add('bubble-gold');
         else r4.classList.add('bubble-active');
       } else {
@@ -2250,7 +2250,7 @@
       const circle14 = document.getElementById('b14-progress-circle');
       document.getElementById('b14-crown-badge').textContent = state.b14_crown;
       b14.className = 'bubble-btn';
-      if (state.r4_crown === 1) {
+      if (state.r4_crown >= 1 || state.b12_crown >= 2 || state.b14_crown > 0) {
         if (state.b14_crown === 3) b14.classList.add('bubble-gold');
         else b14.classList.add('bubble-active');
       } else {
@@ -2285,7 +2285,7 @@
       const circleR5 = document.getElementById('r5-progress-circle');
       document.getElementById('r5-crown-badge').textContent = state.r5_crown;
       r5.className = 'bubble-btn bubble-revision';
-      if (state.b16_completed) {
+      if (state.b16_completed || state.r5_crown > 0 || state.b17_crown > 0) {
         if (state.r5_crown === 1) r5.classList.add('bubble-gold');
         else r5.classList.add('bubble-active');
       } else {
@@ -2300,7 +2300,7 @@
       const circle17 = document.getElementById('b17-progress-circle');
       document.getElementById('b17-crown-badge').textContent = state.b17_crown;
       b17.className = 'bubble-btn';
-      if (state.r5_crown === 1) {
+      if (state.r5_crown >= 1 || state.b16_completed || state.b17_crown > 0) {
         if (state.b17_crown === 2) b17.classList.add('bubble-gold');
         else b17.classList.add('bubble-active');
       } else {
@@ -2324,7 +2324,7 @@
       const circleR6 = document.getElementById('r6-progress-circle');
       document.getElementById('r6-crown-badge').textContent = state.r6_crown;
       r6.className = 'bubble-btn bubble-revision';
-      if (state.b17_crown === 2) {
+      if (state.b17_crown >= 2 || state.r6_crown > 0 || state.b19_crown > 0) {
         if (state.r6_crown === 1) r6.classList.add('bubble-gold');
         else r6.classList.add('bubble-active');
       } else {
@@ -2339,7 +2339,7 @@
       const circle19 = document.getElementById('b19-progress-circle');
       document.getElementById('b19-crown-badge').textContent = state.b19_crown;
       b19.className = 'bubble-btn';
-      if (state.r6_crown === 1) {
+      if (state.r6_crown >= 1 || state.b17_crown >= 2 || state.b19_crown > 0) {
         if (state.b19_crown === 2) b19.classList.add('bubble-gold');
         else b19.classList.add('bubble-active');
       } else {
@@ -2605,51 +2605,51 @@
         alert("🔒 Curiosidades e Islas is locked! You must first complete Bubble 3 (Geografía y Ciudades) to 3 crowns.");
         return;
       }
-      if (bubbleNum === 'r1' && !state.b6_completed) {
+      if (bubbleNum === 'r1' && !(state.b6_completed || state.r1_crown > 0 || state.b7_crown > 0)) {
         alert("🔒 Repaso: Saludos y Países is locked! You must first pass the Chapter 1.1 Checkpoint Exam.");
         return;
       }
-      if (bubbleNum === 7 && state.r1_crown < 1) {
+      if (bubbleNum === 7 && !(state.r1_crown >= 1 || state.b6_completed || state.b7_crown > 0)) {
         alert("🔒 Saludos y Sentimientos is locked! You must first complete Revision Bubble R1.");
         return;
       }
-      if (bubbleNum === 'r2' && state.b7_crown < 3) {
+      if (bubbleNum === 'r2' && !(state.b7_crown >= 3 || state.r2_crown > 0 || state.b9_crown > 0)) {
         alert("🔒 Repaso: Geografía y Sentimientos is locked! Complete Bubble 7 to 3 crowns first.");
         return;
       }
-      if (bubbleNum === 9 && state.r2_crown < 1) {
+      if (bubbleNum === 9 && !(state.r2_crown >= 1 || state.b7_crown >= 3 || state.b9_crown > 0)) {
         alert("🔒 Presentaciones y Alfabeto is locked! You must first complete Revision Bubble R2.");
         return;
       }
-      if (bubbleNum === 'r3' && !state.b11_completed) {
+      if (bubbleNum === 'r3' && !(state.b11_completed || state.r3_crown > 0 || state.b12_crown > 0)) {
         alert("🔒 Repaso: Vocabulario del Cap. 1.1 is locked! Clear Chapter 1.2 first.");
         return;
       }
-      if (bubbleNum === 12 && state.r3_crown < 1) {
+      if (bubbleNum === 12 && !(state.r3_crown >= 1 || state.b11_completed || state.b12_crown > 0)) {
         alert("🔒 Datos Personales is locked! You must first complete Revision Bubble R3.");
         return;
       }
-      if (bubbleNum === 'r4' && state.b12_crown < 2) {
+      if (bubbleNum === 'r4' && !(state.b12_crown >= 2 || state.r4_crown > 0 || state.b14_crown > 0)) {
         alert("🔒 Repaso: Presentaciones y Alfabeto is locked! Complete Bubble 12 to 2 crowns first.");
         return;
       }
-      if (bubbleNum === 14 && state.r4_crown < 1) {
+      if (bubbleNum === 14 && !(state.r4_crown >= 1 || state.b12_crown >= 2 || state.b14_crown > 0)) {
         alert("🔒 Los Números 1-31 is locked! You must first complete Revision Bubble R4.");
         return;
       }
-      if (bubbleNum === 'r5' && !state.b16_completed) {
+      if (bubbleNum === 'r5' && !(state.b16_completed || state.r5_crown > 0 || state.b17_crown > 0)) {
         alert("🔒 Repaso: Identidad y Edad is locked! Clear Chapter 1.3 first.");
         return;
       }
-      if (bubbleNum === 17 && state.r5_crown < 1) {
+      if (bubbleNum === 17 && !(state.r5_crown >= 1 || state.b16_completed || state.b17_crown > 0)) {
         alert("🔒 Días y Meses is locked! You must first complete Revision Bubble R5.");
         return;
       }
-      if (bubbleNum === 'r6' && state.b17_crown < 2) {
+      if (bubbleNum === 'r6' && !(state.b17_crown >= 2 || state.r6_crown > 0 || state.b19_crown > 0)) {
         alert("🔒 Repaso: Los Números 1-31 is locked! Complete Bubble 17 to 2 crowns first.");
         return;
       }
-      if (bubbleNum === 19 && state.r6_crown < 1) {
+      if (bubbleNum === 19 && !(state.r6_crown >= 1 || state.b17_crown >= 2 || state.b19_crown > 0)) {
         alert("🔒 Fechas y Cumpleaños is locked! You must first complete Revision Bubble R6.");
         return;
       }
@@ -4058,9 +4058,11 @@
           if (typeof OwlsMazeGame !== 'undefined' && OwlsMazeGame.isActive()) return;
           
           const checkBtn = document.getElementById('check-btn');
-          if (e.target.tagName === 'INPUT' && checkBtn.textContent === "Check") return;
-
-          if (checkBtn && !checkBtn.disabled && checkBtn.style.display !== 'none') {
+          if (checkBtn && !checkBtn.disabled && checkBtn.style.display !== 'none' && !checkBtn.hidden) {
+            e.preventDefault();
+            if (e.target && typeof e.target.blur === 'function') {
+              e.target.blur();
+            }
             checkBtn.click();
           }
         }
