@@ -2760,6 +2760,13 @@
         if (q) session.queue.push(q);
       }
 
+      if (session.queue.length === 0) {
+        alert("⚠️ Could not load questions for this lesson. Please try again.");
+        document.getElementById('lesson-overlay').style.display = 'none';
+        session = null;
+        return;
+      }
+
       document.getElementById('question-area').style.display = 'flex';
       document.getElementById('completion-screen').style.display = 'none';
       document.getElementById('lesson-lives-box').style.display = 'none';
