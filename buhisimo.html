@@ -3043,13 +3043,6 @@
         area.appendChild(lbl);
         area.appendChild(text);
         area.appendChild(input);
-
-        input.addEventListener('keydown', e => {
-          if (e.key === 'Enter') {
-            const checkBtn = document.getElementById('check-btn');
-            if (checkBtn && !checkBtn.disabled) checkBtn.click();
-          }
-        });
       }
       else if (q.type === "mc") {
         const lbl = document.createElement('span');
