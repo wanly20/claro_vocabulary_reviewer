@@ -1936,6 +1936,10 @@
         state.game2_unlocked_1_3 = false;
       }
       
+      ['r1_crown', 'r2_crown', 'r3_crown', 'r4_crown', 'r5_crown', 'r6_crown'].forEach(key => {
+        if (state[key] === undefined) state[key] = 0;
+      });
+      
       // Initialize strengths if missing
       Object.keys(VOCAB_DATABASE).forEach(w => {
         if (!state.word_strengths[w]) {
@@ -3601,8 +3605,9 @@
           state.game2_unlocked_1_3 = true;
         }
       } else if (typeof bNum === 'string' && bNum.startsWith('r')) {
-        if (state[bNum + '_crown'] < 1) {
-          state[bNum + '_crown'] = 1;
+        const key = bNum + '_crown';
+        if (!state[key] || state[key] < 1) {
+          state[key] = 1;
           state.crowns++;
           rewardXP += 10;
           title = "Revision Complete!";
