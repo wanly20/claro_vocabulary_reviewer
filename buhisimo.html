@@ -2597,6 +2597,10 @@
     // ── LESSON PLAY LOOP ───────────────────────────────────────────────
     
     function startStudySession(bubbleNum = 1) {
+      if (typeof bubbleNum === 'string' && !bubbleNum.startsWith('r')) {
+        bubbleNum = parseInt(bubbleNum, 10);
+      }
+
       if (bubbleNum === 3 && state.b1_crown < 3) {
         alert("🔒 Geografía y Ciudades is locked! You must first complete Bubble 1 (Saludos y Países) to 3 crowns.");
         return;
@@ -2713,7 +2717,9 @@
       
       const activePool = [];
       for (let i = 0; i <= level; i++) {
-        activePool.push(...levelsPool[i]);
+        if (levelsPool[i]) {
+          activePool.push(...levelsPool[i]);
+        }
       }
 
       session = {
@@ -2721,7 +2727,7 @@
         isGold: isGold,
         level: level,
         activePool: activePool,
-        newWords: (isRevision || isGold) ? [] : levelsPool[level],
+        newWords: (isRevision || isGold) ? [] : (levelsPool[level] || []),
         introducedCount: 0,
         queue: [], 
         currentCard: null,
@@ -3432,7 +3438,10 @@
       let subtitle = "";
       let emoji = "👑";
 
-      const bNum = session.bubbleNum;
+      let bNum = session.bubbleNum;
+      if (typeof bNum === 'string' && !bNum.startsWith('r')) {
+        bNum = parseInt(bNum, 10);
+      }
 
       if (bNum === 1) {
         if (state.b1_crown < 3) {
