@@ -1889,55 +1889,23 @@
         }
       }
       
-      // Initialize name if missing from state
-      if (state.student_name === undefined) {
-        state.student_name = "";
-      }
-      if (state.b3_crown === undefined) {
-        state.b3_crown = 0;
-      }
-      if (state.game2_unlocked === undefined) {
-        state.game2_unlocked = false;
-      }
-      if (state.b5_crown === undefined) {
-        state.b5_crown = 0;
-      }
-      if (state.b6_completed === undefined) {
-        state.b6_completed = false;
-      }
-      if (state.b7_crown === undefined) {
-        state.b7_crown = 0;
-      }
-      if (state.b9_crown === undefined) {
-        state.b9_crown = 0;
-      }
-      if (state.b11_completed === undefined) {
-        state.b11_completed = false;
-      }
-      if (state.game_unlocked_1_2 === undefined) {
-        state.game_unlocked_1_2 = false;
-      }
-      if (state.game2_unlocked_1_2 === undefined) {
-        state.game2_unlocked_1_2 = false;
-      }
-      if (state.b12_crown === undefined) {
-        state.b12_crown = 0;
-      }
-      if (state.b14_crown === undefined) {
-        state.b14_crown = 0;
-      }
-      if (state.b16_completed === undefined) {
-        state.b16_completed = false;
-      }
-      if (state.game_unlocked_1_3 === undefined) {
-        state.game_unlocked_1_3 = false;
-      }
-      if (state.game2_unlocked_1_3 === undefined) {
-        state.game2_unlocked_1_3 = false;
-      }
-      
-      ['r1_crown', 'r2_crown', 'r3_crown', 'r4_crown', 'r5_crown', 'r6_crown'].forEach(key => {
-        if (state[key] === undefined) state[key] = 0;
+      // Initialize any missing properties from default state schema
+      const defaultStateKeys = {
+        student_name: "", streak: 0, crowns: 0, xp: 0, lastActive: "",
+        b1_crown: 0, b3_crown: 0, b5_crown: 0, b6_completed: false,
+        r1_crown: 0, b7_crown: 0, r2_crown: 0, b9_crown: 0,
+        b11_completed: false, r3_crown: 0, b12_crown: 0, r4_crown: 0,
+        b14_crown: 0, b16_completed: false, r5_crown: 0, b17_crown: 0,
+        r6_crown: 0, b19_crown: 0, b21_completed: false,
+        game_unlocked: false, game2_unlocked: false,
+        game_unlocked_1_2: false, game2_unlocked_1_2: false,
+        game_unlocked_1_3: false, game2_unlocked_1_3: false,
+        game_unlocked_1_4: false, game2_unlocked_1_4: false
+      };
+      Object.keys(defaultStateKeys).forEach(key => {
+        if (state[key] === undefined) {
+          state[key] = defaultStateKeys[key];
+        }
       });
       
       // Initialize strengths if missing
@@ -2713,6 +2681,7 @@
           levelsPool = BUBBLE_19_LEVELS;
         }
       }
+      crownLevel = crownLevel || 0;
 
       const isMax2 = (bubbleNum === 9 || bubbleNum === 12 || bubbleNum === 17 || bubbleNum === 19);
       const isGold = isRevision ? (crownLevel === 1) : (isMax2 ? (crownLevel === 2) : (crownLevel === 3));
