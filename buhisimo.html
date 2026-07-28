@@ -2715,19 +2715,23 @@
       const targetCount = isRevision ? 10 : (isGold ? 10 : 12);
       const level = isRevision ? 0 : Math.min(isMax2 ? 1 : 2, crownLevel);
       
-      const activePool = [];
+      const rawActivePool = [];
       for (let i = 0; i <= level; i++) {
         if (levelsPool[i]) {
-          activePool.push(...levelsPool[i]);
+          rawActivePool.push(...levelsPool[i]);
         }
       }
+      const activePool = rawActivePool.filter(w => VOCAB_DATABASE[w] !== undefined);
+
+      const rawNewWords = (isRevision || isGold) ? [] : (levelsPool[level] || []);
+      const newWords = rawNewWords.filter(w => VOCAB_DATABASE[w] !== undefined);
 
       session = {
         bubbleNum: bubbleNum,
         isGold: isGold,
         level: level,
         activePool: activePool,
-        newWords: (isRevision || isGold) ? [] : (levelsPool[level] || []),
+        newWords: newWords,
         introducedCount: 0,
         queue: [], 
         currentCard: null,
@@ -2738,19 +2742,22 @@
 
       if (!isRevision && !isGold) {
         session.newWords.forEach(w => {
-          session.queue.push({
-            type: "intro",
-            prompt: w,
-            correct: VOCAB_DATABASE[w].english,
-            options: shuffle([VOCAB_DATABASE[w].english, ...getRandomDistractors(VOCAB_DATABASE[w].english, 3)]),
-            introducedWord: w
-          });
+          if (VOCAB_DATABASE[w]) {
+            session.queue.push({
+              type: "intro",
+              prompt: w,
+              correct: VOCAB_DATABASE[w].english,
+              options: shuffle([VOCAB_DATABASE[w].english, ...getRandomDistractors(VOCAB_DATABASE[w].english, 3)]),
+              introducedWord: w
+            });
+          }
         });
       }
 
       const mixedCount = isRevision ? 10 : (isGold ? 10 : 8);
       for (let i = 0; i < mixedCount; i++) {
-        session.queue.push(generateRandomQuestion(activePool));
+        const q = generateRandomQuestion(activePool);
+        if (q) session.queue.push(q);
       }
 
       document.getElementById('question-area').style.display = 'flex';
@@ -2763,11 +2770,14 @@
     }
 
     function generateRandomQuestion(pool, targetWord = null) {
+      const validPool = (pool || []).filter(w => VOCAB_DATABASE[w] !== undefined);
+      if (validPool.length === 0) return null;
+
       const qStyles = ["mc", "match", "dialogue", "bank", "typing", "listening"];
       let style = qStyles[Math.floor(Math.random() * qStyles.length)];
       
-      if (!targetWord) {
-        targetWord = pool[Math.floor(Math.random() * pool.length)];
+      if (!targetWord || VOCAB_DATABASE[targetWord] === undefined) {
+        targetWord = validPool[Math.floor(Math.random() * validPool.length)];
       }
 
       const convoKeys = ["¿Qué tal?", "¿cómo te llamas?", "¿de dónde eres?", "¿Cuántos años tienes?", "¿Cuándo es tu cumpleaños?"];
@@ -2775,8 +2785,8 @@
         style = Math.random() < 0.5 ? "mc" : "bank";
       }
 
-      if (style === "match" && pool.length >= 3) {
-        const pairs = shuffle([...pool]).slice(0, 4);
+      if (style === "match" && validPool.length >= 3) {
+        const pairs = shuffle([...validPool]).slice(0, 4);
         return {
           type: "match",
           pairs: pairs
@@ -2821,6 +2831,8 @@
           };
         }
       }
+
+      if (!VOCAB_DATABASE[targetWord]) return null;
 
       const esSent = targetWord;
       const enSent = VOCAB_DATABASE[targetWord].english;
@@ -3163,7 +3175,8 @@
         
         const bubbleWord = document.createElement('span');
         bubbleWord.className = 'word-inspect';
-        bubbleWord.setAttribute('data-translation', VOCAB_DATABASE[q.prompt].english);
+        const translationText = VOCAB_DATABASE[q.prompt]?.english || q.correct || "";
+        bubbleWord.setAttribute('data-translation', translationText);
         bubbleWord.textContent = q.prompt;
         bubble.appendChild(bubbleWord);
 
