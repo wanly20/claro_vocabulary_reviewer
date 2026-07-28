@@ -1505,6 +1505,101 @@
         </button>
         <div class="bubble-label">Examen del Capítulo 1.4</div>
       </div>
+
+      <!-- Chapter 1.5 Header -->
+      <div class="chapter-header-divider">
+        <div class="chapter-badge">Chapter 1.5</div>
+        <h2 class="chapter-title">Mis Preferencias</h2>
+        <p class="chapter-subtitle">Learn colours, expressing likes/dislikes, and sentence connectors.</p>
+      </div>
+
+      <!-- Bubble R7: Repaso Spaced Repetition (Chapter 1.3 & 1.4) -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r7-progress-circle" stroke="var(--brand-gold)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn bubble-revision locked" id="r7-btn" onclick="startStudySession('r7')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r7-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Fechas y Cumpleaños</div>
+      </div>
+
+      <!-- Bubble 22: Los Colores -->
+      <div class="bubble-wrapper">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b22-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b22-btn" onclick="startStudySession(22)">
+            <span class="bubble-emoji">🎨</span>
+          </button>
+          <div class="bubble-crown-badge" id="b22-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Los Colores</div>
+      </div>
+
+      <!-- Bubble 23: Space Invaders Game (1.5 variant) -->
+      <div class="bubble-wrapper bubble-right">
+        <button class="bubble-btn locked bubble-game" id="b23-btn" onclick="SpaceInvadersGame.start(5)">
+          <span class="bubble-emoji">👾</span>
+        </button>
+        <div class="bubble-label">Invasores del Espacio (1.5)</div>
+      </div>
+
+      <!-- Bubble R8: Repaso Spaced Repetition (Colors & Numbers) -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r8-progress-circle" stroke="var(--brand-gold)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn bubble-revision locked" id="r8-btn" onclick="startStudySession('r8')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r8-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Colores y Números</div>
+      </div>
+
+      <!-- Bubble 24: Opiniones y Conectores -->
+      <div class="bubble-wrapper">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b24-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b24-btn" onclick="startStudySession(24)">
+            <span class="bubble-emoji">❤️</span>
+          </button>
+          <div class="bubble-crown-badge" id="b24-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Opiniones y Conectores</div>
+      </div>
+
+      <!-- Bubble 25: El Laberinto Game (1.5 variant) -->
+      <div class="bubble-wrapper bubble-right">
+        <button class="bubble-btn locked bubble-game" id="b25-btn" onclick="OwlsMazeGame.start(5)">
+          <span class="bubble-emoji">🦉</span>
+        </button>
+        <div class="bubble-label">El Laberinto (1.5)</div>
+      </div>
+
+      <!-- Bubble 26: Examen del Capítulo 1.5 -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b26-btn" onclick="startCheckpointTest(5)">
+          <span class="bubble-emoji">🏆</span>
+        </button>
+        <div class="bubble-label">Examen del Capítulo 1.5</div>
+      </div>
     </main>
     <!-- Floating Focus Button -->
     <button id="focus-bubble-btn" class="focus-bubble-fab" onclick="scrollToActiveBubble(true)" title="Scroll to active lesson">🎯</button>
@@ -1721,7 +1816,42 @@
       "el cumpleaños": { english: "birthday", theme: "Calendario" },
       "el primero": { english: "the first", theme: "Calendario" },
       "el uno": { english: "the first", theme: "Calendario" },
-      "¿Cuándo es tu cumpleaños?": { english: "When is your birthday?", theme: "Calendario" }
+      "¿Cuándo es tu cumpleaños?": { english: "When is your birthday?", theme: "Calendario" },
+
+      // Bubble 22 & 24 Words (Theme: Mis Preferencias)
+      "rojo": { english: "red", theme: "Mis Preferencias" },
+      "roja": { english: "red", theme: "Mis Preferencias" },
+      "azul": { english: "blue", theme: "Mis Preferencias" },
+      "amarillo": { english: "yellow", theme: "Mis Preferencias" },
+      "amarilla": { english: "yellow", theme: "Mis Preferencias" },
+      "verde": { english: "green", theme: "Mis Preferencias" },
+      "negro": { english: "black", theme: "Mis Preferencias" },
+      "negra": { english: "black", theme: "Mis Preferencias" },
+      "blanco": { english: "white", theme: "Mis Preferencias" },
+      "blanca": { english: "white", theme: "Mis Preferencias" },
+      "gris": { english: "grey", theme: "Mis Preferencias" },
+      "marrón": { english: "brown", theme: "Mis Preferencias" },
+      "morado": { english: "purple", theme: "Mis Preferencias" },
+      "morada": { english: "purple", theme: "Mis Preferencias" },
+      "naranja": { english: "orange", theme: "Mis Preferencias" },
+      "rosa": { english: "pink", theme: "Mis Preferencias" },
+      "claro": { english: "light", theme: "Mis Preferencias" },
+      "clara": { english: "light", theme: "Mis Preferencias" },
+      "oscuro": { english: "dark", theme: "Mis Preferencias" },
+      "oscura": { english: "dark", theme: "Mis Preferencias" },
+      "mi color favorito es…": { english: "My favorite colour is...", theme: "Mis Preferencias" },
+      "me gusta": { english: "I like", theme: "Mis Preferencias" },
+      "no me gusta": { english: "I don't like", theme: "Mis Preferencias" },
+      "me encanta": { english: "I love", theme: "Mis Preferencias" },
+      "prefiero": { english: "I prefer", theme: "Mis Preferencias" },
+      "odio": { english: "I hate", theme: "Mis Preferencias" },
+      "detesto": { english: "I detest", theme: "Mis Preferencias" },
+      "y": { english: "and", theme: "Mis Preferencias" },
+      "o": { english: "or", theme: "Mis Preferencias" },
+      "pero": { english: "but", theme: "Mis Preferencias" },
+      "también": { english: "also", theme: "Mis Preferencias" },
+      "además": { english: "furthermore", theme: "Mis Preferencias" },
+      "sin embargo": { english: "however", theme: "Mis Preferencias" }
     };
 
     // Bubble 1 Crowns vocabulary scope mapping
@@ -1783,6 +1913,18 @@
       ["¿Cuándo es tu cumpleaños?"] // Level 2 (Questions)
     ];
 
+    // Bubble 22 Crowns vocabulary scope mapping
+    const BUBBLE_22_LEVELS = [
+      ["rojo", "azul", "amarillo", "verde", "negro", "blanco", "gris"], // Level 1 (Primary Colors)
+      ["marrón", "morado", "naranja", "rosa", "claro", "oscuro", "mi color favorito es…"] // Level 2 (Shades & Favorites)
+    ];
+
+    // Bubble 24 Crowns vocabulary scope mapping
+    const BUBBLE_24_LEVELS = [
+      ["me gusta", "no me gusta", "me encanta", "prefiero", "odio", "detesto"], // Level 1 (Likes/Dislikes)
+      ["y", "o", "pero", "también", "además", "sin embargo"] // Level 2 (Connectors)
+    ];
+
     // Theme references matching database
     const THEME_LABELS = {
       "Saludos y Sentimientos": "💬 Saludos",
@@ -1826,6 +1968,11 @@
       r6_crown: 0, // 0 to 1
       b19_crown: 0, // 0 to 2
       b21_completed: false,
+      r7_crown: 0, // 0 to 1
+      b22_crown: 0, // 0 to 2
+      r8_crown: 0, // 0 to 1
+      b24_crown: 0, // 0 to 2
+      b26_completed: false,
       game_unlocked: false,
       game2_unlocked: false,
       game_unlocked_1_2: false,
@@ -1834,6 +1981,8 @@
       game2_unlocked_1_3: false,
       game_unlocked_1_4: false,
       game2_unlocked_1_4: false,
+      game_unlocked_1_5: false,
+      game2_unlocked_1_5: false,
       word_strengths: {}, // wordKey -> { strength: float, last_practiced: timestamp }
       theme_strengths: {}  // themeKey -> { strength: float, last_practiced: timestamp }
     };
@@ -1897,10 +2046,12 @@
         b11_completed: false, r3_crown: 0, b12_crown: 0, r4_crown: 0,
         b14_crown: 0, b16_completed: false, r5_crown: 0, b17_crown: 0,
         r6_crown: 0, b19_crown: 0, b21_completed: false,
+        r7_crown: 0, b22_crown: 0, r8_crown: 0, b24_crown: 0, b26_completed: false,
         game_unlocked: false, game2_unlocked: false,
         game_unlocked_1_2: false, game2_unlocked_1_2: false,
         game_unlocked_1_3: false, game2_unlocked_1_3: false,
-        game_unlocked_1_4: false, game2_unlocked_1_4: false
+        game_unlocked_1_4: false, game2_unlocked_1_4: false,
+        game_unlocked_1_5: false, game2_unlocked_1_5: false
       };
       Object.keys(defaultStateKeys).forEach(key => {
         if (state[key] === undefined) {
@@ -2341,10 +2492,99 @@
       }
       b21.disabled = false;
 
+      // --- R7 Drawing ---
+      const r7 = document.getElementById('r7-btn');
+      const circleR7 = document.getElementById('r7-progress-circle');
+      document.getElementById('r7-crown-badge').textContent = state.r7_crown;
+      r7.className = 'bubble-btn bubble-revision';
+      if (state.b21_completed || state.r7_crown > 0 || state.b22_crown > 0) {
+        if (state.r7_crown === 1) r7.classList.add('bubble-gold');
+        else r7.classList.add('bubble-active');
+      } else {
+        r7.classList.add('locked');
+      }
+      r7.disabled = false;
+      circleR7.style.strokeDashoffset = circumference * (1 - (state.r7_crown / 1));
+      circleR7.style.stroke = (state.r7_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-orange)';
+
+      // Render Bubble 22 (Los Colores study node)
+      const b22 = document.getElementById('b22-btn');
+      const circle22 = document.getElementById('b22-progress-circle');
+      document.getElementById('b22-crown-badge').textContent = state.b22_crown;
+      b22.className = 'bubble-btn';
+      if (state.r7_crown >= 1 || state.b21_completed || state.b22_crown > 0) {
+        if (state.b22_crown === 2) b22.classList.add('bubble-gold');
+        else b22.classList.add('bubble-active');
+      } else {
+        b22.classList.add('locked');
+      }
+      b22.disabled = false;
+      circle22.style.strokeDashoffset = circumference * (1 - (state.b22_crown / 2));
+      circle22.style.stroke = (state.b22_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 23 (Space Invaders 1.5 game node)
+      const b23 = document.getElementById('b23-btn');
+      if (state.b22_crown === 2 && state.game_unlocked_1_5) {
+        b23.className = 'bubble-btn bubble-game';
+      } else {
+        b23.className = 'bubble-btn locked bubble-game';
+      }
+      b23.disabled = false;
+
+      // --- R8 Drawing ---
+      const r8 = document.getElementById('r8-btn');
+      const circleR8 = document.getElementById('r8-progress-circle');
+      document.getElementById('r8-crown-badge').textContent = state.r8_crown;
+      r8.className = 'bubble-btn bubble-revision';
+      if (state.b22_crown >= 2 || state.r8_crown > 0 || state.b24_crown > 0) {
+        if (state.r8_crown === 1) r8.classList.add('bubble-gold');
+        else r8.classList.add('bubble-active');
+      } else {
+        r8.classList.add('locked');
+      }
+      r8.disabled = false;
+      circleR8.style.strokeDashoffset = circumference * (1 - (state.r8_crown / 1));
+      circleR8.style.stroke = (state.r8_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 24 (Opiniones y Conectores study node)
+      const b24 = document.getElementById('b24-btn');
+      const circle24 = document.getElementById('b24-progress-circle');
+      document.getElementById('b24-crown-badge').textContent = state.b24_crown;
+      b24.className = 'bubble-btn';
+      if (state.r8_crown >= 1 || state.b22_crown >= 2 || state.b24_crown > 0) {
+        if (state.b24_crown === 2) b24.classList.add('bubble-gold');
+        else b24.classList.add('bubble-active');
+      } else {
+        b24.classList.add('locked');
+      }
+      b24.disabled = false;
+      circle24.style.strokeDashoffset = circumference * (1 - (state.b24_crown / 2));
+      circle24.style.stroke = (state.b24_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 25 (El Laberinto 1.5 game node)
+      const b25 = document.getElementById('b25-btn');
+      if (state.b24_crown === 2 && state.game2_unlocked_1_5) {
+        b25.className = 'bubble-btn bubble-game';
+      } else {
+        b25.className = 'bubble-btn locked bubble-game';
+      }
+      b25.disabled = false;
+
+      // Render Bubble 26 (Checkpoint Exam 1.5 Node)
+      const b26 = document.getElementById('b26-btn');
+      b26.className = 'bubble-btn';
+      if (state.b24_crown === 2) {
+        if (state.b26_completed) b26.classList.add('bubble-gold');
+        else b26.classList.add('bubble-active');
+      } else {
+        b26.classList.add('locked');
+      }
+      b26.disabled = false;
+
       // Style FAB button matching current active chapter
       const fab = document.getElementById('focus-bubble-btn');
       if (fab) {
-        if (state.b21_completed || state.b16_completed) {
+        if (state.b26_completed || state.b21_completed || state.b16_completed) {
           fab.style.background = 'var(--brand-teal)';
         } else if (state.b11_completed) {
           fab.style.background = 'var(--brand-purple)';
@@ -2386,6 +2626,11 @@
           r6_crown: 0,
           b19_crown: 0,
           b21_completed: false,
+          r7_crown: 0,
+          b22_crown: 0,
+          r8_crown: 0,
+          b24_crown: 0,
+          b26_completed: false,
           game_unlocked: false,
           game2_unlocked: false,
           game_unlocked_1_2: false,
@@ -2394,6 +2639,8 @@
           game2_unlocked_1_3: false,
           game_unlocked_1_4: false,
           game2_unlocked_1_4: false,
+          game_unlocked_1_5: false,
+          game2_unlocked_1_5: false,
           word_strengths: {},
           theme_strengths: {}
         };
@@ -2629,6 +2876,22 @@
         alert("🔒 Fechas y Cumpleaños is locked! You must first complete Revision Bubble R6.");
         return;
       }
+      if (bubbleNum === 'r7' && !(state.b21_completed || state.r7_crown > 0 || state.b22_crown > 0)) {
+        alert("🔒 Repaso: Fechas y Cumpleaños is locked! Clear Chapter 1.4 first.");
+        return;
+      }
+      if (bubbleNum === 22 && !(state.r7_crown >= 1 || state.b21_completed || state.b22_crown > 0)) {
+        alert("🔒 Los Colores is locked! You must first complete Revision Bubble R7.");
+        return;
+      }
+      if (bubbleNum === 'r8' && !(state.b22_crown >= 2 || state.r8_crown > 0 || state.b24_crown > 0)) {
+        alert("🔒 Repaso: Colores y Números is locked! Complete Bubble 22 to 2 crowns first.");
+        return;
+      }
+      if (bubbleNum === 24 && !(state.r8_crown >= 1 || state.b22_crown >= 2 || state.b24_crown > 0)) {
+        alert("🔒 Opiniones y Conectores is locked! You must first complete Revision Bubble R8.");
+        return;
+      }
 
       decayStrengths();
       
@@ -2650,6 +2913,10 @@
           levelsPool = [[...BUBBLE_9_LEVELS[0], ...BUBBLE_9_LEVELS[1], ...BUBBLE_12_LEVELS[0], ...BUBBLE_12_LEVELS[1], ...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2]]];
         } else if (bubbleNum === 'r6') {
           levelsPool = [[...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2], ...BUBBLE_17_LEVELS[0], ...BUBBLE_17_LEVELS[1]]];
+        } else if (bubbleNum === 'r7') {
+          levelsPool = [[...BUBBLE_17_LEVELS[0], ...BUBBLE_17_LEVELS[1], ...BUBBLE_19_LEVELS[0], ...BUBBLE_19_LEVELS[1]]];
+        } else if (bubbleNum === 'r8') {
+          levelsPool = [[...BUBBLE_22_LEVELS[0], ...BUBBLE_22_LEVELS[1], ...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2]]];
         }
       } else {
         if (bubbleNum === 1) {
@@ -2679,11 +2946,17 @@
         } else if (bubbleNum === 19) {
           crownLevel = state.b19_crown;
           levelsPool = BUBBLE_19_LEVELS;
+        } else if (bubbleNum === 22) {
+          crownLevel = state.b22_crown;
+          levelsPool = BUBBLE_22_LEVELS;
+        } else if (bubbleNum === 24) {
+          crownLevel = state.b24_crown;
+          levelsPool = BUBBLE_24_LEVELS;
         }
       }
       crownLevel = crownLevel || 0;
 
-      const isMax2 = (bubbleNum === 9 || bubbleNum === 12 || bubbleNum === 17 || bubbleNum === 19);
+      const isMax2 = (bubbleNum === 9 || bubbleNum === 12 || bubbleNum === 17 || bubbleNum === 19 || bubbleNum === 22 || bubbleNum === 24);
       const isGold = isRevision ? (crownLevel === 1) : (isMax2 ? (crownLevel === 2) : (crownLevel === 3));
       const targetCount = isRevision ? 10 : (isGold ? 10 : 12);
       const level = isRevision ? 0 : Math.min(isMax2 ? 1 : 2, crownLevel);
@@ -3624,6 +3897,50 @@
         title = "Chapter Exam Cleared!";
         subtitle = "Incredible! You have mastered Chapter 1.4: ¡...y que cumplas muchos más!";
         emoji = "🏆";
+      } else if (bNum === 22) {
+        if (state.b22_crown < 2) {
+          state.b22_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Los Colores is now Level ${state.b22_crown}/2`;
+          if (state.b22_crown === 2) {
+            state.crowns++;
+            state.game_unlocked_1_5 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 22! Space Invaders 1.5 unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Colours!";
+          emoji = "💪";
+          state.game_unlocked_1_5 = true;
+        }
+      } else if (bNum === 24) {
+        if (state.b24_crown < 2) {
+          state.b24_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Opiniones y Conectores is now Level ${state.b24_crown}/2`;
+          if (state.b24_crown === 2) {
+            state.crowns++;
+            state.game2_unlocked_1_5 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 24! El Laberinto 1.5 unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of Opinions & Connectors!";
+          emoji = "💪";
+          state.game2_unlocked_1_5 = true;
+        }
+      } else if (bNum === 26) {
+        state.b26_completed = true;
+        rewardXP += 20; // +40 XP total for Checkpoint Exam!
+        title = "Chapter Exam Cleared!";
+        subtitle = "Incredible! You have mastered Chapter 1.5: Mis preferencias!";
+        emoji = "🏆";
       } else if (bNum === 16) {
         state.b16_completed = true;
         rewardXP += 20; // +40 XP total for Checkpoint Exam!
@@ -3710,6 +4027,11 @@
           alert("🔒 Examen del Capítulo 1.4 is locked! You must first complete Bubble 19 (Fechas y Cumpleaños) to 2 crowns.");
           return;
         }
+      } else if (chapterNum === 5) {
+        if (state.b24_crown < 2) {
+          alert("🔒 Examen del Capítulo 1.5 is locked! You must first complete Bubble 24 (Opiniones y Conectores) to 2 crowns.");
+          return;
+        }
       }
 
       decayStrengths();
@@ -3724,10 +4046,13 @@
       ] : (chapterNum === 3 ? [
         ...BUBBLE_12_LEVELS[0], ...BUBBLE_12_LEVELS[1],
         ...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2]
-      ] : [
+      ] : (chapterNum === 4 ? [
         ...BUBBLE_17_LEVELS[0], ...BUBBLE_17_LEVELS[1],
         ...BUBBLE_19_LEVELS[0], ...BUBBLE_19_LEVELS[1]
-      ]));
+      ] : [
+        ...BUBBLE_22_LEVELS[0], ...BUBBLE_22_LEVELS[1],
+        ...BUBBLE_24_LEVELS[0], ...BUBBLE_24_LEVELS[1]
+      ])));
 
       const checkpointWords = shuffle(fullPool).slice(0, 15);
       const queue = [];
@@ -3737,7 +4062,7 @@
       });
 
       session = {
-        bubbleNum: chapterNum === 1 ? 6 : (chapterNum === 2 ? 11 : (chapterNum === 3 ? 16 : 21)),
+        bubbleNum: chapterNum === 1 ? 6 : (chapterNum === 2 ? 11 : (chapterNum === 3 ? 16 : (chapterNum === 4 ? 21 : 26))),
         isCheckpoint: true,
         isBossChallenge: false,
         lives: 4,
@@ -3805,6 +4130,7 @@
       const isCh1 = session.bubbleNum === 6;
       const isCh2 = session.bubbleNum === 11;
       const isCh3 = session.bubbleNum === 16;
+      const isCh4 = session.bubbleNum === 21;
       const bossCard = isCh1 ? {
         type: "bank",
         isBoss: true,
@@ -3823,13 +4149,19 @@
         prompt: "How old are you? I am fifteen years old.",
         correct: "¿Cuántos años tienes? Tengo quince años",
         wordsPool: shuffle(["¿Cuántos", "años", "tienes?", "Tengo", "quince", "años", "veinte", "cuatro", "nombre", "apellido"])
-      } : {
+      } : (isCh4 ? {
         type: "bank",
         isBoss: true,
         prompt: "When is your birthday? My birthday is the first of June.",
         correct: "¿Cuándo es tu cumpleaños? Mi cumpleaños es el primero de junio",
         wordsPool: shuffle(["¿Cuándo", "es", "tu", "cumpleaños?", "Mi", "cumpleaños", "es", "el", "primero", "de", "junio", "nombre", "lunes", "edad", "veintiuno"])
-      }));
+      } : {
+        type: "bank",
+        isBoss: true,
+        prompt: "I love blue, but I don't like yellow at all.",
+        correct: "Me encanta el azul, pero no me gusta nada el amarillo",
+        wordsPool: shuffle(["Me", "encanta", "el", "azul,", "pero", "no", "me", "gusta", "nada", "el", "amarillo", "rojo", "verde", "también", "prefiero"])
+      })));
 
       session.queue = [bossCard];
       session.mistakesQueue = []; 
@@ -3965,7 +4297,14 @@
       let activeId = 'b1-btn';
 
       // Determine highest active (unlocked, non-completed) bubble
-      if (state.b19_crown === 2 && !state.b21_completed) activeId = 'b21-btn';
+      if (state.b24_crown === 2 && !state.b26_completed) activeId = 'b26-btn';
+      else if (state.b24_crown === 2 && state.game2_unlocked_1_5) activeId = 'b25-btn';
+      else if (state.r8_crown === 1 && state.b24_crown < 2) activeId = 'b24-btn';
+      else if (state.b22_crown === 2 && state.r8_crown < 1) activeId = 'r8-btn';
+      else if (state.b22_crown === 2 && state.game_unlocked_1_5) activeId = 'b23-btn';
+      else if (state.r7_crown === 1 && state.b22_crown < 2) activeId = 'b22-btn';
+      else if (state.b21_completed && state.r7_crown < 1) activeId = 'r7-btn';
+      else if (state.b19_crown === 2 && !state.b21_completed) activeId = 'b21-btn';
       else if (state.b19_crown === 2 && state.game2_unlocked_1_4) activeId = 'b20-btn';
       else if (state.r6_crown === 1 && state.b19_crown < 2) activeId = 'b19-btn';
       else if (state.b17_crown === 2 && state.r6_crown < 1) activeId = 'r6-btn';
@@ -4007,15 +4346,23 @@
       const div2 = dividers[1];
       const div3 = dividers.length >= 3 ? dividers[2] : null;
       const div4 = dividers.length >= 4 ? dividers[3] : null;
+      const div5 = dividers.length >= 5 ? dividers[4] : null;
       const rect2 = div2.getBoundingClientRect();
       const rect3 = div3 ? div3.getBoundingClientRect() : null;
       const rect4 = div4 ? div4.getBoundingClientRect() : null;
+      const rect5 = div5 ? div5.getBoundingClientRect() : null;
       
       const banner = document.querySelector('.unit-banner');
       const title = document.querySelector('.unit-banner-title');
       const desc = document.querySelector('.unit-banner-desc');
       if (banner && title && desc) {
-        if (rect4 && rect4.top <= 185) {
+        if (rect5 && rect5.top <= 185) {
+          if (!banner.classList.contains('chapter-5')) {
+            banner.className = 'unit-banner chapter-5';
+            title.textContent = 'Capítulo 1.5';
+            desc.textContent = 'Mis Preferencias';
+          }
+        } else if (rect4 && rect4.top <= 185) {
           if (!banner.classList.contains('chapter-4')) {
             banner.className = 'unit-banner chapter-4';
             title.textContent = 'Capítulo 1.4';

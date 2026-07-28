@@ -3,6 +3,7 @@
 const SpaceInvadersGame = (function() {
   const GAME_WORDS_1_1 = ["el mapa", "el país", "el mundo", "la capital", "tú", "eres", "¿de dónde eres?", "de dónde", "famoso", "histórico", "la lengua", "hispanohablante"];
   const GAME_WORDS_1_3 = ["uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte", "veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve", "treinta", "treinta y uno"];
+  const GAME_WORDS_1_5 = ["rojo", "azul", "amarillo", "verde", "negro", "blanco", "gris", "marrón", "morado", "naranja", "rosa", "claro", "oscuro"];
 
   let gameLoop = null;
   let canvas = null;
@@ -25,6 +26,15 @@ const SpaceInvadersGame = (function() {
         return;
       }
       if (!state.game2_unlocked_1_3) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
+    } else if (chapterNum === 5) {
+      if (state.b22_crown < 2) {
+        alert("🔒 Invasores del Espacio (1.5) is locked! You must first complete Bubble 22 (Los Colores) to 2 crowns.");
+        return;
+      }
+      if (!state.game_unlocked_1_5) {
         alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
         return;
       }
@@ -89,7 +99,7 @@ const SpaceInvadersGame = (function() {
   }
 
   function spawnWave() {
-    const wordList = gameObj.chapterNum === 1 ? GAME_WORDS_1_1 : GAME_WORDS_1_3;
+    const wordList = gameObj.chapterNum === 1 ? GAME_WORDS_1_1 : (gameObj.chapterNum === 3 ? GAME_WORDS_1_3 : GAME_WORDS_1_5);
     const roundWords = shuffle([...wordList]).slice(0, 3);
 
     const aliens = [

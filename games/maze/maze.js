@@ -11,6 +11,11 @@ const OwlsMazeGame = (function() {
     "la fecha", "el cumpleaños", "el primero",
     "el uno", "¿Cuándo es tu cumpleaños?"
   ];
+  const GAME_WORDS_1_5 = [
+    "me gusta", "no me gusta", "me encanta",
+    "prefiero", "odio", "detesto",
+    "y", "o", "pero", "también", "además", "sin embargo"
+  ];
 
   // 8 cols x 6 rows maze layout (1 = wall, 0 = path)
   const MAZE_GRID = [
@@ -55,6 +60,15 @@ const OwlsMazeGame = (function() {
         return;
       }
       if (!state.game2_unlocked_1_4) {
+        alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
+        return;
+      }
+    } else if (chapterNum === 5) {
+      if (state.b24_crown < 2) {
+        alert("🔒 El Laberinto (1.5) is locked! You must first complete Bubble 24 (Opiniones y Conectores) to 2 crowns to unlock this game.");
+        return;
+      }
+      if (!state.game2_unlocked_1_5) {
         alert("🔒 Game is locked! To play this game again, you must first complete a practice crown in a study bubble.");
         return;
       }
@@ -150,7 +164,7 @@ const OwlsMazeGame = (function() {
     gameObj.owl = { r: 4, c: 1 };
 
     // Choose 3 unique words
-    const list = gameObj.chapterNum === 3 ? GAME_WORDS_1_3 : GAME_WORDS_1_4;
+    const list = gameObj.chapterNum === 3 ? GAME_WORDS_1_3 : (gameObj.chapterNum === 4 ? GAME_WORDS_1_4 : GAME_WORDS_1_5);
     const roundWords = shuffle([...list]).slice(0, 3);
     const correctWord = roundWords[Math.floor(Math.random() * roundWords.length)];
     const wrongWords = roundWords.filter(w => w !== correctWord);
