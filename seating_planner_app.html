@@ -400,6 +400,32 @@
                 <button onclick="saveRoster()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Save Roster</button>
             </div>
         </div>
+    <!-- Add Classroom Modal -->
+    <div id="addRoomModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-slate-800">Add New Classroom</h2>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Classroom Name</label>
+                    <input type="text" id="roomNameInput" placeholder="e.g., Room 101, Science Lab..." class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Select Layout Template</label>
+                    <p class="text-xs text-slate-500 mb-2">Select from existing layout templates or copy current layout.</p>
+                    <select id="roomLayoutSelect" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
+                        <!-- Options injected by JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeModals()" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="saveNewRoom()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Create Classroom</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1065,7 +1091,7 @@
                         </div>
                         <span class="text-sm font-semibold text-slate-700 truncate" title="${t.name}">${t.name}</span>
                     </div>
-                    ${!t.isDefault ? `<button onclick="event.stopPropagation(); deleteTemplate('${t.id}')" class="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                    ${state.templates.length > 1 ? `<button onclick="event.stopPropagation(); deleteTemplate('${t.id}')" class="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 p-1" title="Delete Layout Template"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
                 `;
                 listEl.appendChild(el);
             });
@@ -1112,15 +1138,33 @@
             const tpl = state.templates.find(t => t.id === id);
             if (!tpl) return;
 
-            if (confirm(`Are you sure you want to apply the layout template "${tpl.name}"? This will move all students in this room to the unassigned list.`)) {
-                // Rebuild desks array from template
-                room.desks = tpl.desks.map(d => ({
-                    id: uuid(),
-                    x: d.x,
-                    y: d.y,
-                    isTeacher: d.isTeacher,
-                    student: null
-                }));
+            // Preserve currently assigned students in order of student desks
+            const seatedStudents = room.desks
+                .filter(d => !d.isTeacher && d.student)
+                .map(d => d.student);
+
+            const confirmMsg = seatedStudents.length > 0
+                ? `Apply layout template "${tpl.name}" to "${room.name}"?\n\nThe ${seatedStudents.length} assigned student(s) will automatically move to their respective desks in the new layout.`
+                : `Apply layout template "${tpl.name}" to "${room.name}"?`;
+
+            if (confirm(confirmMsg)) {
+                let studentIdx = 0;
+
+                // Rebuild desks array from template, automatically mapping seated students
+                room.desks = tpl.desks.map(d => {
+                    let assignedStudent = null;
+                    if (!d.isTeacher && studentIdx < seatedStudents.length) {
+                        assignedStudent = seatedStudents[studentIdx];
+                        studentIdx++;
+                    }
+                    return {
+                        id: uuid(),
+                        x: d.x,
+                        y: d.y,
+                        isTeacher: d.isTeacher,
+                        student: assignedStudent
+                    };
+                });
 
                 saveState();
                 renderAll();
@@ -1132,7 +1176,10 @@
             if (tplIndex === -1) return;
 
             const tpl = state.templates[tplIndex];
-            if (tpl.isDefault) return; // Prevent deleting default templates
+            if (state.templates.length <= 1) {
+                alert("You must keep at least one layout template.");
+                return;
+            }
 
             if (confirm(`Are you sure you want to delete the layout template "${tpl.name}"?`)) {
                 state.templates.splice(tplIndex, 1);
@@ -1336,35 +1383,89 @@
 
         function addRoom() {
             const ac = getActiveClass();
+            if (!ac) {
+                alert("Please select a class first.");
+                return;
+            }
+            
+            document.getElementById('roomNameInput').value = `Room ${ac.rooms.length + 1}`;
+            const selectEl = document.getElementById('roomLayoutSelect');
+            selectEl.innerHTML = '';
+
+            // Add option for copying current classroom layout if active room exists
+            const currentRoom = getActiveRoom();
+            if (currentRoom) {
+                const optCopy = document.createElement('option');
+                optCopy.value = 'current';
+                optCopy.textContent = `📋 Copy layout from active room (${currentRoom.name})`;
+                selectEl.appendChild(optCopy);
+            }
+
+            // Add options for existing layout templates
+            state.templates.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = `📐 Template: ${t.name} (${t.desks.filter(d => !d.isTeacher).length} student desks)`;
+                selectEl.appendChild(opt);
+            });
+
+            document.getElementById('addRoomModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function saveNewRoom() {
+            const ac = getActiveClass();
             if (!ac) return;
-            const name = prompt('Enter classroom name:', `Room ${ac.rooms.length + 1}`);
-            if (name) {
-                // Copy layout from the currently active room, or fallback to standard
-                let newDesks = [];
-                const currentRoom = getActiveRoom() || ac.rooms[0];
-                
+
+            const nameInput = document.getElementById('roomNameInput');
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert("Please enter a classroom name.");
+                return;
+            }
+
+            const layoutSource = document.getElementById('roomLayoutSelect').value;
+            let newDesks = [];
+
+            if (layoutSource === 'current') {
+                const currentRoom = getActiveRoom();
                 if (currentRoom) {
                     newDesks = currentRoom.desks.map(d => ({
                         id: uuid(),
                         x: d.x,
                         y: d.y,
                         isTeacher: d.isTeacher,
-                        student: d.student // Copies existing student allocations
+                        student: d.student
                     }));
                 } else {
                     newDesks = generateStandardLayout();
                 }
-
-                const newRoom = {
-                    id: uuid(),
-                    name: name,
-                    desks: newDesks 
-                };
-                ac.rooms.push(newRoom);
-                state.activeRoomId = newRoom.id;
-                renderAll();
-                saveState();
+            } else {
+                const tpl = state.templates.find(t => t.id === layoutSource);
+                if (tpl) {
+                    newDesks = tpl.desks.map(d => ({
+                        id: uuid(),
+                        x: d.x,
+                        y: d.y,
+                        isTeacher: d.isTeacher,
+                        student: null
+                    }));
+                } else {
+                    newDesks = generateStandardLayout();
+                }
             }
+
+            const newRoom = {
+                id: uuid(),
+                name: name,
+                desks: newDesks
+            };
+
+            ac.rooms.push(newRoom);
+            state.activeRoomId = newRoom.id;
+            closeModals();
+            renderAll();
+            saveState();
         }
 
         function deleteRoom(id) {
@@ -1749,6 +1850,7 @@
         function closeModals() {
             document.getElementById('classModal').classList.add('hidden');
             document.getElementById('rosterModal').classList.add('hidden');
+            document.getElementById('addRoomModal').classList.add('hidden');
         }
 
 
