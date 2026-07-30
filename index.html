@@ -1605,11 +1605,8 @@
     <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px;">
       <button class="btn btn-ghost" onclick="saveTeacherNames(); window.location.href='seating_planner_app.html';" style="border-radius: 12px; font-weight: 600; padding: 10px 16px;">🪑 Seating Planner</button>
       <button class="btn btn-primary" onclick="closeTeacherModal()" style="border-radius: 12px; font-weight: 600; padding: 10px 16px;">Save & Close</button>
-    </div>
-  </div>
-<script src="challenges/animal_colour.js"></script>
-<script src="challenges/retrato_robot.js"></script>
-<script src="challenges/verb_conjugation.js"></script>
+</div>
+
 <script>
   // ── Theme Toggle Logic ────────────────────────────────────────────────
   function initTheme() {
@@ -1917,19 +1914,36 @@
   // ── Init ─────────────────────────────────────────────────────────────
   async function init() {
     initTheme();
-    const text = await fetch('vocabulary_database.csv').then(r => r.text());
-    db.allWords = parseCSV(text)
-      .map(([s, e, sec, , capitals]) => ({
-        spanish: s?.trim(), english: e?.trim(), section: sec?.trim(),
-        capitals: capitals?.trim() === 'yes'
-      }))
-      .filter(w => w.spanish && w.english && w.section);
+    try {
+      const response = await fetch('vocabulary_database.csv');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+      }
+      const text = await response.text();
+      db.allWords = parseCSV(text)
+        .map(([s, e, sec, , capitals]) => ({
+          spanish: s?.trim(), english: e?.trim(), section: sec?.trim(),
+          capitals: capitals?.trim() === 'yes'
+        }))
+        .filter(w => w.spanish && w.english && w.section);
 
-    for (const w of db.allWords) {
-      if (!db.sections[w.section]) db.sections[w.section] = [];
-      db.sections[w.section].push(w);
+      for (const w of db.allWords) {
+        if (!db.sections[w.section]) db.sections[w.section] = [];
+        db.sections[w.section].push(w);
+      }
+      renderSectionList();
+    } catch (err) {
+      console.error("Failed to load vocabulary_database.csv:", err);
+      const el = document.getElementById('section-list');
+      if (el) {
+        el.innerHTML = `
+          <div style="padding: 12px; border-radius: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger-color); color: var(--text-primary); font-size: 0.85rem; line-height: 1.4;">
+            ⚠️ <strong>Unable to load vocabulary database</strong><br>
+            If you are opening <code>index.html</code> directly from your file manager (file:// protocol), browser security restrictions (CORS) prevent fetching <code>vocabulary_database.csv</code>.<br><br>
+            👉 Please run a local web server (e.g. <code>python -m http.server</code> or VS Code Live Server) to view and practice vocabulary sets!
+          </div>`;
+      }
     }
-    renderSectionList();
     initTeacherMode();
   }
 
@@ -3612,5 +3626,8 @@
 
   init();
 </script>
+<script src="challenges/animal_colour.js"></script>
+<script src="challenges/retrato_robot.js"></script>
+<script src="challenges/verb_conjugation.js"></script>
 </body>
 </html>
