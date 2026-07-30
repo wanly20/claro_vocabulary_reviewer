@@ -889,14 +889,14 @@
             state.classes.forEach(c => {
                 const isActive = c.id === state.activeClassId;
                 const el = document.createElement('div');
-                el.className = `flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${isActive ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-slate-50 text-slate-600'}`;
+                el.className = `flex items-center gap-2.5 p-1.5 px-2.5 rounded-lg text-sm cursor-pointer transition-all border ${isActive ? 'bg-indigo-50/80 border-indigo-200 text-indigo-700 font-semibold shadow-2xs' : 'border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-200/60'}`;
                 el.onclick = () => selectClass(c.id);
                 el.innerHTML = `
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white" style="background-color: ${c.color}">
-                        <i data-lucide="${c.icon}" class="w-4 h-4"></i>
+                    <div class="w-6 h-6 rounded-md flex items-center justify-center text-white shrink-0 shadow-2xs" style="background-color: ${c.color}">
+                        <i data-lucide="${c.icon}" class="w-3.5 h-3.5"></i>
                     </div>
                     <span class="font-medium flex-1 truncate">${c.name}</span>
-                    <button onclick="event.stopPropagation(); deleteClass('${c.id}')" class="text-slate-400 hover:text-red-500 hidden group-hover:block transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <button onclick="event.stopPropagation(); deleteClass('${c.id}')" class="text-slate-400 hover:text-red-500 hidden group-hover:block transition-colors"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 `;
                 // Add group class to parent for hover effect
                 el.classList.add('group');
