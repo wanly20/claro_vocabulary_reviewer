@@ -10,8 +10,51 @@
   <link rel="stylesheet" href="games/maze/maze.css">
   
   <style>
+    /* ==========================================================================
+       IMPORTANT: NO INLINE CSS ALLOWED IN HTML MARKUP
+       All styling rules must be placed in this CSS block or external stylesheets.
+       ========================================================================== */
+
     /* Styling System matching the Claro Vocab app */
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Fredoka+One&display=swap');
+
+    .header-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-back {
+      box-shadow: none;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sun-icon, .moon-icon {
+      display: none;
+    }
+
+    .dashboard-panel-full {
+      margin-top: 0;
+      width: 100%;
+    }
+
+    .btn-vocab-strengths {
+      grid-column: span 2;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-transfer-in {
+      grid-column: span 2;
+      margin-top: 8px;
+    }
 
     :root {
       --brand-green: #2ecc71;
@@ -152,6 +195,7 @@
       margin-bottom: 20px;
       box-shadow: var(--shadow-md);
       position: relative;
+      text-align: center;
     }
 
     .unit-banner-title {
@@ -1080,22 +1124,22 @@
 <body>
 
   <header>
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <button class="btn btn-grey" onclick="location.href='index.html'" style="box-shadow: none; padding: 6px 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+    <div class="header-group">
+      <button class="btn btn-grey btn-back" onclick="location.href='index.html'">
         ← Back
       </button>
       <div class="header-logo" onclick="location.href='index.html'">
         🦉 Buhísimo
       </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
+    <div class="header-group">
       <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
         <!-- Sun icon (shown in dark theme) -->
-        <svg class="sun-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+        <svg class="sun-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
         <!-- Moon icon (shown in light theme) -->
-        <svg class="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+        <svg class="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
         </svg>
       </button>
@@ -1120,20 +1164,20 @@
       </div>
 
       <!-- Unit Info Banner -->
-      <div class="unit-banner" style="text-align: center;">
+      <div class="unit-banner">
         <div class="unit-banner-title">Capítulo 1.1</div>
         <div class="unit-banner-desc">El Español Global y Saludos</div>
       </div>
 
-      <div class="dashboard-panel" style="margin-top: 0; width: 100%;">
+      <div class="dashboard-panel dashboard-panel-full">
         <div class="dashboard-panel-title">⚙️ Buhísimo Controls</div>
         <div class="dashboard-panel-grid">
-          <button class="btn btn-green" onclick="openStrengthModal()" style="grid-column: span 2; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <button class="btn btn-green btn-vocab-strengths" onclick="openStrengthModal()">
             📊 My Vocabulary
           </button>
           <button class="btn btn-red" onclick="resetBuhisimoData()">Reset Data</button>
           <button class="btn btn-blue" onclick="exportBuhisimoData()">Save Data</button>
-          <button class="btn btn-indigo" onclick="importBuhisimoData()" style="grid-column: span 2; margin-top: 8px;">Transfer In (Load)</button>
+          <button class="btn btn-indigo btn-transfer-in" onclick="importBuhisimoData()">Transfer In (Load)</button>
         </div>
       </div>
     </aside>
