@@ -56,6 +56,41 @@
       margin-top: 8px;
     }
 
+    .name-modal-mask {
+      z-index: 3000;
+    }
+
+    .welcome-modal-box {
+      padding: 24px;
+      text-align: center;
+      max-width: 360px;
+    }
+
+    .welcome-mascot {
+      font-size: 4rem;
+      display: block;
+      animation: bounceMASCOT 1.5s infinite;
+    }
+
+    .welcome-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-top: 12px;
+      font-family: var(--font-heading);
+    }
+
+    .welcome-desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 8px;
+      margin-bottom: 20px;
+    }
+
+    .welcome-input {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
     :root {
       --brand-green: #2ecc71;
       --brand-green-light: #e8f8f0;
@@ -1694,7 +1729,7 @@
   </div>
 
   <!-- STRENGTH STATISTICS MODAL -->
-  <div id="strength-modal" class="vocab-modal-mask" style="display: none;">
+  <div id="strength-modal" class="vocab-modal-mask">
     <div class="vocab-modal-box">
       <div class="vocab-modal-header">
         <h3 id="modal-title">📊 Vocabulary Strengths</h3>
@@ -1707,15 +1742,15 @@
   </div>
 
   <!-- STUDENT NAME INPUT MODAL -->
-  <div id="name-modal" class="vocab-modal-mask" style="display: none; z-index: 3000;">
-    <div class="vocab-modal-box" style="padding: 24px; text-align: center; max-width: 360px;">
-      <span style="font-size: 4rem; display: block; animation: bounceMASCOT 1.5s infinite;">🦉</span>
-      <h3 style="font-size: 1.5rem; font-weight: 800; margin-top: 12px; font-family: var(--font-heading);">¡Bienvenido a Buhísimo!</h3>
-      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px; margin-bottom: 20px;">Please enter your First & Last name. You will not be able to change this without resetting your progress data.</p>
+  <div id="name-modal" class="vocab-modal-mask name-modal-mask">
+    <div class="vocab-modal-box welcome-modal-box">
+      <span class="welcome-mascot">🦉</span>
+      <h3 class="welcome-title">¡Bienvenido a Buhísimo!</h3>
+      <p class="welcome-desc">Please enter your First & Last name. You will not be able to change this without resetting your progress data.</p>
       
-      <input type="text" id="student-name-input" class="typing-input" placeholder="Your Name" style="margin-bottom: 20px; text-align: center;">
+      <input type="text" id="student-name-input" class="typing-input welcome-input" placeholder="Your Name">
       
-      <button class="btn btn-green btn-full" onclick="saveStudentName()" style="width: 100%;">Get Started</button>
+      <button class="btn btn-green btn-full" onclick="saveStudentName()">Get Started</button>
     </div>
   </div>
 
