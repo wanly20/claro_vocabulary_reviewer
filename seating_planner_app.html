@@ -1087,13 +1087,17 @@
                 el.className = 'group flex items-center justify-between p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm';
                 el.onclick = () => applyTemplate(t.id);
                 el.innerHTML = `
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                    <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg shrink-0">
                             <i data-lucide="layout" class="w-4 h-4"></i>
                         </div>
                         <span class="text-sm font-semibold text-slate-700 truncate" title="${t.name}">${t.name}</span>
                     </div>
-                    ${state.templates.length > 1 ? `<button onclick="event.stopPropagation(); deleteTemplate('${t.id}')" class="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 p-1" title="Delete Layout Template"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="event.stopPropagation(); updateTemplateLayout('${t.id}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-1" title="Overwrite template with current canvas layout"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="event.stopPropagation(); renameTemplate('${t.id}')" class="text-slate-400 hover:text-indigo-600 transition-colors p-1" title="Rename template"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                        ${state.templates.length > 1 ? `<button onclick="event.stopPropagation(); deleteTemplate('${t.id}')" class="text-slate-400 hover:text-red-500 transition-colors p-1" title="Delete Layout Template"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>` : ''}
+                    </div>
                 `;
                 listEl.appendChild(el);
             });
@@ -1171,6 +1175,42 @@
                 saveState();
                 renderAll();
             }
+        }
+
+        function updateTemplateLayout(id) {
+            const room = getActiveRoom();
+            if (!room) {
+                alert("Please select a class and room first.");
+                return;
+            }
+
+            const tpl = state.templates.find(t => t.id === id);
+            if (!tpl) return;
+
+            if (confirm(`Overwrite layout template "${tpl.name}" with the current canvas desk arrangement?`)) {
+                tpl.desks = room.desks.map(d => ({
+                    x: d.x,
+                    y: d.y,
+                    isTeacher: d.isTeacher
+                }));
+                saveState();
+                renderTemplates();
+                lucide.createIcons();
+                alert(`Template "${tpl.name}" updated successfully!`);
+            }
+        }
+
+        function renameTemplate(id) {
+            const tpl = state.templates.find(t => t.id === id);
+            if (!tpl) return;
+
+            const newName = prompt(`Enter a new name for template "${tpl.name}":`, tpl.name);
+            if (!newName || newName.trim().length === 0) return;
+
+            tpl.name = newName.trim();
+            saveState();
+            renderTemplates();
+            lucide.createIcons();
         }
 
         function deleteTemplate(id) {
@@ -1394,7 +1434,8 @@
             
             const nameInput = document.getElementById('roomNameInput');
             if (nameInput) {
-                nameInput.value = `Room ${ac.rooms.length + 1}`;
+                nameInput.value = '';
+                nameInput.placeholder = "Leave blank to use template name";
             }
 
             const selectEl = document.getElementById('roomLayoutSelect');
@@ -1439,42 +1480,52 @@
             if (!ac) return;
 
             const nameInput = document.getElementById('roomNameInput');
-            const name = nameInput.value.trim();
-            if (!name) {
-                alert("Please enter a classroom name.");
-                return;
-            }
-
+            let name = nameInput.value.trim();
             const layoutSource = document.getElementById('roomLayoutSelect').value;
-            let newDesks = [];
 
-            if (layoutSource === 'current') {
-                const currentRoom = getActiveRoom();
-                if (currentRoom) {
-                    newDesks = currentRoom.desks.map(d => ({
-                        id: uuid(),
-                        x: d.x,
-                        y: d.y,
-                        isTeacher: d.isTeacher,
-                        student: d.student
-                    }));
+            const currentRoom = getActiveRoom();
+            const tpl = state.templates ? state.templates.find(t => t.id === layoutSource) : null;
+
+            // Default room name if left blank by user
+            if (!name) {
+                if (layoutSource === 'current' && currentRoom) {
+                    name = currentRoom.name;
+                } else if (tpl) {
+                    name = tpl.name;
                 } else {
-                    newDesks = generateStandardLayout();
-                }
-            } else {
-                const tpl = state.templates.find(t => t.id === layoutSource);
-                if (tpl) {
-                    newDesks = tpl.desks.map(d => ({
-                        id: uuid(),
-                        x: d.x,
-                        y: d.y,
-                        isTeacher: d.isTeacher,
-                        student: null
-                    }));
-                } else {
-                    newDesks = generateStandardLayout();
+                    name = `Room ${ac.rooms.length + 1}`;
                 }
             }
+
+            // Gather currently seated students from active room
+            const seatedStudents = currentRoom && currentRoom.desks
+                ? currentRoom.desks.filter(d => !d.isTeacher && d.student).map(d => d.student)
+                : [];
+
+            let sourceDesks = [];
+            if (layoutSource === 'current') {
+                sourceDesks = currentRoom ? currentRoom.desks : generateStandardLayout();
+            } else if (tpl) {
+                sourceDesks = tpl.desks;
+            } else {
+                sourceDesks = generateStandardLayout();
+            }
+
+            let studentIdx = 0;
+            const newDesks = sourceDesks.map(d => {
+                let assignedStudent = null;
+                if (!d.isTeacher && studentIdx < seatedStudents.length) {
+                    assignedStudent = seatedStudents[studentIdx];
+                    studentIdx++;
+                }
+                return {
+                    id: uuid(),
+                    x: d.x,
+                    y: d.y,
+                    isTeacher: d.isTeacher,
+                    student: assignedStudent
+                };
+            });
 
             const newRoom = {
                 id: uuid(),
