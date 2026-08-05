@@ -91,6 +91,72 @@
       text-align: center;
     }
 
+    .completion-panel {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .completion-emoji {
+      font-size: 5rem;
+      display: block;
+      animation: bounceMASCOT 1.5s infinite;
+    }
+
+    .completion-title {
+      font-size: 2.2rem;
+      font-weight: 850;
+      margin-top: 16px;
+      font-family: var(--font-heading);
+    }
+
+    .completion-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-top: 8px;
+    }
+
+    .completion-stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 32px 0;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .completion-stat-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      flex: 1;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .completion-stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .completion-stat-value.gold {
+      color: var(--brand-gold);
+    }
+
+    .completion-stat-value.danger {
+      color: var(--danger-color);
+    }
+
+    .completion-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
     :root {
       --brand-green: #2ecc71;
       --brand-green-light: #e8f8f0;
@@ -434,7 +500,7 @@
       inset: 0;
       background: var(--bg-color);
       z-index: 1000;
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       padding: 24px;
@@ -482,7 +548,7 @@
 
     /* Heart Containers for Zelda Life bar */
     .hearts-container {
-      display: flex;
+      display: none;
       gap: 4px;
       font-size: 1.25rem;
     }
@@ -749,7 +815,7 @@
     }
 
     .feedback-banner {
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 4px;
       padding: 12px;
@@ -1685,14 +1751,14 @@
   </div>
 
   <!-- LESSON PLAY OVERLAY -->
-  <div id="lesson-overlay" class="overlay-view" style="display: none;">
+  <div id="lesson-overlay" class="overlay-view">
     <div class="overlay-content">
       <div class="lesson-header">
         <button class="close-lesson-btn" onclick="quitLesson()">✕</button>
         <div class="progress-bar-container">
           <div id="lesson-progress-fill" class="progress-bar-fill"></div>
         </div>
-        <div id="lesson-lives-box" class="hearts-container" style="display: none;"></div>
+        <div id="lesson-lives-box" class="hearts-container"></div>
       </div>
 
       <div class="question-panel" id="question-area">
@@ -1700,25 +1766,25 @@
       </div>
 
       <!-- LESSON COMPLETE SCREEN -->
-      <div class="question-panel" id="completion-screen" style="display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-        <span id="completion-emoji" style="font-size: 5rem; display: block; animation: bounceMASCOT 1.5s infinite;">👑</span>
-        <h2 style="font-size: 2.2rem; font-weight: 850; margin-top: 16px; font-family: var(--font-heading);" id="complete-title">Lesson Complete!</h2>
-        <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 8px;" id="complete-subtitle">Saludos y Países is now Level 1/3</p>
+      <div class="question-panel completion-panel" id="completion-screen">
+        <span id="completion-emoji" class="completion-emoji">👑</span>
+        <h2 class="completion-title" id="complete-title">Lesson Complete!</h2>
+        <p class="completion-subtitle" id="complete-subtitle">Saludos y Países is now Level 1/3</p>
         
-        <div style="display: flex; justify-content: center; gap: 16px; margin: 32px 0; width: 100%; max-width: 320px;">
-          <div style="background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 16px; flex: 1; box-shadow: var(--shadow-sm);">
-            <div style="font-size: 1.5rem; font-weight: 800; color: var(--brand-gold);" id="earned-xp">+30⚡</div>
-            <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 700; margin-top: 4px; text-transform: uppercase;">XP Earned</div>
+        <div class="completion-stats-row">
+          <div class="completion-stat-card">
+            <div class="completion-stat-value gold" id="earned-xp">+30⚡</div>
+            <div class="completion-stat-label">XP Earned</div>
           </div>
-          <div style="background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 16px; flex: 1; box-shadow: var(--shadow-sm);">
-            <div style="font-size: 1.5rem; font-weight: 800; color: var(--danger-color);" id="current-streak">🔥 1</div>
-            <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 700; margin-top: 4px; text-transform: uppercase;">Day Streak</div>
+          <div class="completion-stat-card">
+            <div class="completion-stat-value danger" id="current-streak">🔥 1</div>
+            <div class="completion-stat-label">Day Streak</div>
           </div>
         </div>
       </div>
 
       <div class="footer-action-banner">
-        <div id="feedback-banner" class="feedback-banner" style="display: none;"></div>
+        <div id="feedback-banner" class="feedback-banner"></div>
         <div class="submit-row">
           <button id="skip-btn" class="btn btn-grey btn-full" onclick="skipQuestion()" hidden>Skip</button>
           <button id="forgot-btn" class="btn btn-grey btn-full" onclick="forgotQuestion()" hidden>I forgot</button>
