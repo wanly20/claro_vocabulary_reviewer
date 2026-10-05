@@ -139,6 +139,23 @@
             border-color: #0f172a;
             transform: scale(1.1);
         }
+        /* Instant hover hint (title="" tooltips are too slow), anchored right so it never runs off screen */
+        [data-tip] { position: relative; }
+        [data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 0;
+            white-space: nowrap;
+            background: #0f172a;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
         .away-striped {
             background-color: #fef2f2 !important;
             background-image: repeating-linear-gradient(45deg, #fee2e2, #fee2e2 10px, #fef2f2 10px, #fef2f2 20px) !important;
@@ -206,45 +223,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Cold Calling Panel (Shown only in coldcall mode) -->
-            <div id="coldCallSidebarPanel" class="hidden flex flex-col gap-4">
-                <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Cold Call Setup</div>
-                
-                <!-- Questions box -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Question Bank (1 per line)</label>
-                    <textarea id="coldCallQuestions" class="w-full h-32 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none font-sans" placeholder="E.g. ¿Cómo te llamas?&#10;¿De dónde eres?&#10;¿Cómo estás?"></textarea>
-                </div>
-
-                <!-- Call Setup Modes -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Select Student Group</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="1" checked class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">1 Student (Respond)</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="2a" class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">2 Students (Ask & Respond)</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="2b" class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">2 Students (Read & Respond)</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="3" class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">3 Students (Read, Translate, Respond)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Run Cold Call Button -->
-                <button onclick="triggerColdCall()" class="w-full py-3 px-4 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-2 transition-all shadow-md active:scale-98">
-                    <i data-lucide="target" class="w-5 h-5"></i> Call Student(s)
-                </button>
             </div>
         </div>
 
@@ -317,13 +295,20 @@
         </header>
 
         <!-- Cold Call Active HUD Bar -->
-        <div id="coldCallHUD" class="bg-indigo-950 text-white px-8 py-6 flex flex-col items-center text-center justify-center border-b border-indigo-900 hidden shrink-0 shadow-lg">
-            <div class="w-full max-w-4xl">
-                <div class="text-xs uppercase tracking-widest text-indigo-300 font-extrabold mb-1">Pregunta Activa</div>
-                <div id="hudQuestionText" class="text-2xl font-black text-white leading-tight">No questions loaded. Enter them in the sidebar.</div>
+        <!-- Fixed height (question + one row of names) so the plan below never jumps between calls -->
+        <div id="coldCallHUD" class="bg-indigo-950 text-white px-8 py-5 flex flex-col items-center text-center justify-center border-b border-indigo-900 hidden shrink-0 shadow-lg">
+            <div class="w-full max-w-5xl">
+                <div class="flex items-center justify-center gap-3 text-xs uppercase tracking-widest text-indigo-300 font-extrabold mb-1">
+                    <span id="hudQuestionLabel">Pregunta Activa</span>
+                    <span id="hudQuestionCounter" class="normal-case tracking-normal font-semibold text-indigo-400"></span>
+                    <span id="hudComeBack" class="normal-case tracking-normal font-semibold text-amber-300"></span>
+                </div>
+                <div id="hudQuestionText" class="text-2xl font-black text-white leading-tight min-h-[2rem]"></div>
+                <!-- Space is always reserved so revealing an answer doesn't push the plan down -->
+                <div id="hudAnswer" class="text-xl font-bold text-emerald-300 leading-tight min-h-[1.75rem] mt-1 invisible"></div>
             </div>
-            <div id="hudSelectedStudents" class="flex flex-col gap-3 mt-4 items-center justify-center w-full">
-                <!-- Injected Student Roles & Names on second and third line centered -->
+            <div id="hudSelectedStudents" class="flex flex-wrap gap-3 mt-4 items-center justify-center w-full min-h-[2.75rem]">
+                <!-- Injected Student Roles & Names, side by side -->
             </div>
         </div>
 
@@ -345,6 +330,22 @@
             <div id="unassignedList" class="p-4 flex-1 overflow-y-auto space-y-2 bg-slate-50/50" ondragover="allowDrop(event)" ondrop="dropOnUnassigned(event)">
                 <!-- Unassigned student pills -->
             </div>
+        </div>
+
+        <!-- Cold Call Dock (floats over the plan, never pushes it) -->
+        <div id="coldCallDock" class="absolute bottom-6 right-6 z-20 hidden items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
+            <button onclick="this.blur(); openColdCallModal()" data-tip="Questions & setup" class="w-12 h-12 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 shadow-lg flex items-center justify-center transition-colors">
+                <i data-lucide="settings-2" class="w-5 h-5"></i>
+            </button>
+            <button onclick="this.blur(); revealAnswer()" data-tip="Show / hide answer · or press R" class="w-12 h-12 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-emerald-600 shadow-lg flex items-center justify-center transition-colors">
+                <i data-lucide="eye" class="w-5 h-5"></i>
+            </button>
+            <button onclick="this.blur(); comeBack()" data-tip="Forgot? Ask someone else, then come back · or press B" class="w-12 h-12 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-amber-600 shadow-lg flex items-center justify-center transition-colors">
+                <i data-lucide="corner-up-left" class="w-5 h-5"></i>
+            </button>
+            <button onclick="this.blur(); triggerColdCall()" data-tip="Tip: just press Space" class="h-14 px-7 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xl flex items-center gap-2 transition-colors">
+                <i data-lucide="target" class="w-5 h-5"></i> Call
+            </button>
         </div>
     </main>
 
@@ -429,6 +430,177 @@
             </div>
         </div>
     </div>
+
+    <!-- Cold Call Setup Modal -->
+    <div id="coldCallModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Cold Call Setup</h2>
+                    <p id="coldCallModalClass" class="text-sm text-slate-500"></p>
+                </div>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto space-y-5">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="coldCallQuestions" class="text-xs font-semibold text-slate-600 uppercase">Questions <span class="normal-case font-normal text-slate-400">· 1 per line · optional answer after |</span></label>
+                        <div class="flex gap-2">
+                            <button onclick="clearColdCallQuestions()" class="px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors">Clear</button>
+                            <button onclick="openLoadSetModal()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors">
+                                <i data-lucide="folder-open" class="w-4 h-4"></i> Load
+                            </button>
+                            <button onclick="openSaveSetModal()" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 flex items-center gap-2 shadow-sm transition-colors">
+                                <i data-lucide="save" class="w-4 h-4"></i> Save
+                            </button>
+                        </div>
+                    </div>
+                    <div id="coldCallSources" class="flex flex-wrap gap-1.5 mb-2"></div>
+                    <textarea id="coldCallQuestions" oninput="updateColdCallCount()" class="w-full h-56 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none resize-none font-sans leading-relaxed" placeholder="E.g.&#10;¿Cómo te llamas? | Me llamo...&#10;¿Capital de Chile? | Santiago&#10;¿Cómo estás?&#10;&#10;The answer after | is optional (press R to show it).&#10;Leave empty to call names only."></textarea>
+                    <p id="coldCallCount" class="text-xs text-slate-400 mt-1"></p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Student Group</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="1" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">1 Student (Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="2a" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">2 Students (Ask & Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="2b" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">2 Students (Read & Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="3" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">3 Students (Read, Translate, Respond)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-3 shrink-0">
+                <span class="text-xs text-slate-500">Tip: press <kbd class="font-semibold bg-white border border-slate-200 px-1.5 py-0.5 rounded">Space</kbd> to call</span>
+                <div class="flex gap-3">
+                    <button onclick="closeModals()" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Close</button>
+                    <button id="coldCallStartBtn" onclick="startColdCall()" class="px-5 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                        <i data-lucide="target" class="w-4 h-4"></i> Start
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Question Set Modal (stacks above the setup modal) -->
+    <div id="saveSetModal" class="fixed inset-0 modal-overlay hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-slate-800">Save to Library</h2>
+                <button onclick="closeSubModal('saveSetModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Subject</label>
+                    <select id="saveSubject" onchange="renderSaveSelectors('subject')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                    <input id="saveSubjectNew" type="text" placeholder="New subject name, e.g. Spanish" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Topic</label>
+                    <select id="saveTopic" onchange="renderSaveSelectors('topic')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                    <input id="saveTopicNew" type="text" placeholder="New topic name, e.g. 1.1 El español global" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Subtopic <span class="text-slate-400 font-normal">(optional)</span></label>
+                    <select id="saveSubtopic" onchange="renderSaveSelectors('subtopic')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                    <input id="saveSubtopicNew" type="text" placeholder="New subtopic name, e.g. Countries" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div id="saveExistingInfo" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900 space-y-2">
+                    <p id="saveExistingText"></p>
+                    <label class="flex items-center gap-2"><input type="radio" name="saveMergeMode" value="add" checked> Add these to them (duplicates skipped)</label>
+                    <label class="flex items-center gap-2"><input type="radio" name="saveMergeMode" value="replace"> Replace them</label>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeSubModal('saveSetModal')" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="confirmSaveSet()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Question Sets Modal (tick several for wider revision) -->
+    <div id="loadSetModal" class="fixed inset-0 modal-overlay hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Load from Library</h2>
+                    <p class="text-sm text-slate-500">Tick one or more folders. Mix units for wider revision.</p>
+                </div>
+                <button onclick="closeSubModal('loadSetModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div id="libraryTree" class="p-4 flex-1 overflow-y-auto space-y-3 min-h-[8rem]"></div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-3 shrink-0">
+                <span id="loadSelectedCount" class="text-sm text-slate-500"></span>
+                <div class="flex gap-2">
+                    <button onclick="loadSelectedSets('add')" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Add to current</button>
+                    <button onclick="loadSelectedSets('replace')" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Replace current</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Answer Modal (R pressed on a question with no answer) -->
+    <div id="answerModal" class="fixed inset-0 modal-overlay hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-start gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Add an answer</h2>
+                    <p id="answerModalQuestion" class="text-sm text-slate-500 mt-1"></p>
+                </div>
+                <button onclick="closeSubModal('answerModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6">
+                <input id="answerModalInput" type="text" onkeydown="if(event.key === 'Enter') saveAnswer()" placeholder="Type the answer..." class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <p class="text-xs text-slate-400 mt-2">Saved with this question (in the library too) so it's there next time.</p>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeSubModal('answerModal')" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="saveAnswer()" class="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-medium transition-colors">Save & show</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Library Folder Modal (stacks above the load modal) -->
+    <div id="editFolderModal" class="fixed inset-0 modal-overlay hidden z-[65] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Edit Folder</h2>
+                    <p id="editFolderPath" class="text-sm text-slate-500"></p>
+                </div>
+                <button onclick="closeSubModal('editFolderModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto space-y-4">
+                <div>
+                    <label for="editFolderName" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                    <input id="editFolderName" type="text" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div id="editFolderQuestionsWrap">
+                    <label for="editFolderQuestions" class="block text-sm font-medium text-slate-700 mb-1">Questions <span class="text-slate-400 font-normal">· 1 per line · optional answer after |</span></label>
+                    <textarea id="editFolderQuestions" class="w-full h-64 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none resize-none font-sans leading-relaxed"></textarea>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 shrink-0">
+                <button onclick="closeSubModal('editFolderModal')" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="saveFolderEdit()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl hidden"></div>
 
     <script>
         // --- CONSTANTS & DEFAULTS ---
@@ -850,9 +1022,29 @@
 
         function centerCanvas() {
             const wrapper = document.getElementById('canvasWrapper');
-            // Center around (1100, 800) which is where we spawn default layout
-            wrapper.scrollLeft = 1100 - (wrapper.clientWidth / 2) + 300;
-            wrapper.scrollTop = 800 - (wrapper.clientHeight / 2) + 100;
+            const room = getActiveRoom();
+            if (!room || room.desks.length === 0) {
+                // Center around (1100, 800) which is where we spawn default layout
+                wrapper.scrollLeft = 1100 - (wrapper.clientWidth / 2) + 300;
+                wrapper.scrollTop = 800 - (wrapper.clientHeight / 2) + 100;
+                return;
+            }
+            // Center on the bounding box of the room's desks
+            const xs = room.desks.flatMap(d => [d.x, d.x + (d.isTeacher ? 180 : 130)]);
+            const ys = room.desks.flatMap(d => [d.y, d.y + 80]);
+            wrapper.scrollLeft = (Math.min(...xs) + Math.max(...xs)) / 2 - wrapper.clientWidth / 2;
+            wrapper.scrollTop = (Math.min(...ys) + Math.max(...ys)) / 2 - wrapper.clientHeight / 2;
+        }
+
+        // Run a UI change that resizes the canvas area (sidebar, HUD) while keeping
+        // whatever was in the middle of the view in the middle, so the plan doesn't jump.
+        function keepViewCentered(fn) {
+            const wrapper = document.getElementById('canvasWrapper');
+            const cx = wrapper.scrollLeft + wrapper.clientWidth / 2;
+            const cy = wrapper.scrollTop + wrapper.clientHeight / 2;
+            fn();
+            wrapper.scrollLeft = cx - wrapper.clientWidth / 2;
+            wrapper.scrollTop = cy - wrapper.clientHeight / 2;
         }
 
         // --- GETTERS ---
@@ -1260,21 +1452,90 @@
                 toggleUnassignedDrawer();
             }
 
-            // Toggle sidebar panels
+            // Cold call HUD + floating dock
             const isColdCall = newMode === 'coldcall';
-            document.getElementById('standardSidebarContent').classList.toggle('hidden', isColdCall);
-            document.getElementById('coldCallSidebarPanel').classList.toggle('hidden', !isColdCall);
-            document.getElementById('coldCallHUD').classList.toggle('hidden', !isColdCall);
+            keepViewCentered(() => document.getElementById('coldCallHUD').classList.toggle('hidden', !isColdCall));
+            document.getElementById('coldCallDock').classList.toggle('hidden', !isColdCall);
+            document.getElementById('coldCallDock').classList.toggle('flex', isColdCall);
 
             if (!isColdCall) {
                 state.coldCallSelected = null;
             } else {
-                state.coldCallSelected = [];
-                document.getElementById('hudQuestionText').textContent = "Click 'Call Student(s)' to begin.";
-                document.getElementById('hudSelectedStudents').innerHTML = '';
+                resetColdCallHUD();
+                openColdCallModal();
             }
 
             renderCanvas();
+        }
+
+        function resetColdCallHUD() {
+            state.coldCallSelected = [];
+            state.currentQuestion = null;
+            state.answerShown = false;
+            state.comeBack = [];
+            document.getElementById('hudQuestionLabel').textContent = 'Cold Call';
+            document.getElementById('hudQuestionCounter').textContent = '';
+            document.getElementById('hudComeBack').textContent = '';
+            document.getElementById('hudQuestionText').textContent = 'Press Space (or Call) to begin.';
+            document.getElementById('hudAnswer').classList.add('invisible');
+            document.getElementById('hudSelectedStudents').innerHTML = '';
+        }
+
+        const ROLE_SETS = {
+            '1': [['Respond', '#10b981']],
+            '2a': [['Ask', '#10b981'], ['Respond', '#f59e0b']],
+            '2b': [['Read', '#10b981'], ['Respond', '#f59e0b']],
+            '3': [['Read', '#10b981'], ['Translate', '#f59e0b'], ['Respond', '#8b5cf6']]
+        };
+
+        // Present (not away), seated students in the active room
+        function getPresentSeated(ac, room) {
+            // Repurpose highlightedStudents to mean 'Away'
+            const awaySet = new Set(ac.highlightedStudents || []);
+            return room.desks
+                .filter(d => !d.isTeacher && d.student && !awaySet.has(d.student))
+                .map(d => d.student);
+        }
+
+        // Gentle tilt: anyone can be called at any time (even twice in a row),
+        // but someone not called for a full round of the class is up to 2x as likely.
+        // Weighted roulette wheel choosing n unique students from candidates.
+        function pickStudents(ac, candidates, n, classSize) {
+            if (!ac.lastCalled) ac.lastCalled = {};
+            ac.callSeq = ac.callSeq || 0;
+            const selected = [];
+            const pool = [...candidates];
+
+            for (let step = 0; step < n && pool.length > 0; step++) {
+                const weights = pool.map(student => {
+                    const last = ac.lastCalled[student];
+                    const gap = last === undefined ? Infinity : ac.callSeq - last;
+                    return 1 + Math.min(gap / classSize, 1);
+                });
+                let r = Math.random() * weights.reduce((sum, w) => sum + w, 0);
+                let selectedIdx = 0;
+                for (let i = 0; i < pool.length; i++) {
+                    r -= weights[i];
+                    if (r <= 0) {
+                        selectedIdx = i;
+                        break;
+                    }
+                }
+                selected.push(pool[selectedIdx]);
+                pool.splice(selectedIdx, 1);
+            }
+            return selected;
+        }
+
+        function markCalled(ac, students) {
+            ac.callSeq = (ac.callSeq || 0) + 1;
+            students.forEach(s => ac.lastCalled[s] = ac.callSeq);
+        }
+
+        // The responder is always the last role
+        function assignRoles(mode, students) {
+            const roles = ROLE_SETS[mode].slice(-students.length);
+            return students.map((student, i) => ({ student, role: roles[i][0], color: roles[i][1] }));
         }
 
         function triggerColdCall() {
@@ -1285,121 +1546,655 @@
                 return;
             }
 
-            // Repurpose highlightedStudents to mean 'Away'
-            const awaySet = new Set(ac.highlightedStudents || []);
-            
-            // Gather all present, assigned students in the classroom
-            const presentSeatedStudents = room.desks
-                .filter(d => !d.isTeacher && d.student && !awaySet.has(d.student))
-                .map(d => d.student);
-
-            if (presentSeatedStudents.length === 0) {
+            const present = getPresentSeated(ac, room);
+            if (present.length === 0) {
                 alert("No present seated students available for cold calling!");
                 return;
             }
 
-            // Get selected cold call mode
-            const radioMode = document.querySelector('input[name="coldCallMode"]:checked').value;
-            let N = 1;
-            if (radioMode === '2a' || radioMode === '2b') N = 2;
-            else if (radioMode === '3') N = 3;
-
-            if (presentSeatedStudents.length < N) {
-                alert(`Not enough present seated students to allocate ${N} roles! Calling ${presentSeatedStudents.length} student(s) instead.`);
-                N = presentSeatedStudents.length;
+            const cc = getColdCall(ac);
+            let N = ROLE_SETS[cc.mode].length;
+            if (present.length < N) {
+                alert(`Not enough present seated students to allocate ${N} roles! Calling ${present.length} student(s) instead.`);
+                N = present.length;
             }
 
-            // Fair-Random Selection Heuristic
-            if (!ac.callCounts) ac.callCounts = {};
-            
-            // Ensure all present students have a callCount entry
-            presentSeatedStudents.forEach(student => {
-                if (ac.callCounts[student] === undefined) {
-                    ac.callCounts[student] = 0;
-                }
-            });
-
-            // Weighted Roulette Wheel selection to choose N unique students
-            const selected = [];
-            const pool = [...presentSeatedStudents];
-
-            for (let step = 0; step < N; step++) {
-                if (pool.length === 0) break;
-
-                // Calculate weights: probability is 1 / (1.8 ^ callCount)
-                const weights = pool.map(student => {
-                    const count = ac.callCounts[student] || 0;
-                    return 1 / Math.pow(1.8, count);
-                });
-
-                const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-                let r = Math.random() * totalWeight;
-                let selectedIdx = 0;
-
-                for (let i = 0; i < pool.length; i++) {
-                    r -= weights[i];
-                    if (r <= 0) {
-                        selectedIdx = i;
-                        break;
-                    }
-                }
-
-                selected.push(pool[selectedIdx]);
-                pool.splice(selectedIdx, 1);
+            if (!state.comeBack) state.comeBack = [];
+            // Students who "forgot" get the same question again, in order, before normal calling resumes
+            while (state.comeBack.length > 0 && !present.includes(state.comeBack[0].student)) {
+                state.comeBack.shift();
             }
 
-            // Increment call count for chosen students
-            selected.forEach(student => {
-                ac.callCounts[student] = (ac.callCounts[student] || 0) + 1;
-            });
-
-            // Select random question from question bank
-            const qInput = document.getElementById('coldCallQuestions').value;
-            const questions = qInput.split('\n').map(q => q.trim()).filter(q => q.length > 0);
-            let activeQuestion = "No active question. Enter questions in the sidebar.";
-            if (questions.length > 0) {
-                activeQuestion = questions[Math.floor(Math.random() * questions.length)];
+            if (state.comeBack.length > 0) {
+                const back = state.comeBack.shift();
+                const others = pickStudents(ac, present.filter(s => s !== back.student), N - 1, present.length);
+                markCalled(ac, [...others, back.student]);
+                state.coldCallSelected = assignRoles(cc.mode, [...others, back.student]);
+                state.coldCallSelected[state.coldCallSelected.length - 1].returning = true;
+                state.currentQuestion = back.question;
+                state.returningCall = true;
+            } else {
+                const selected = pickStudents(ac, present, N, present.length);
+                markCalled(ac, selected);
+                state.coldCallSelected = assignRoles(cc.mode, selected);
+                // Deal the next question from a shuffled deck (no repeats until all are used)
+                state.currentQuestion = nextQuestion(parseQuestions(cc.questions).map(splitQA));
+                state.returningCall = false;
             }
-            document.getElementById('hudQuestionText').textContent = activeQuestion;
+            state.answerShown = false;
 
-            // Map selected students to roles & colors
-            state.coldCallSelected = [];
-            if (radioMode === '1') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Respond', color: '#10b981' });
-            } else if (radioMode === '2a') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Ask', color: '#10b981' });
-                state.coldCallSelected.push({ student: selected[1], role: 'Respond', color: '#f59e0b' });
-            } else if (radioMode === '2b') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Read', color: '#10b981' });
-                state.coldCallSelected.push({ student: selected[1], role: 'Respond', color: '#f59e0b' });
-            } else if (radioMode === '3') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Read', color: '#10b981' });
-                state.coldCallSelected.push({ student: selected[1], role: 'Translate', color: '#f59e0b' });
-                state.coldCallSelected.push({ student: selected[2], role: 'Respond', color: '#8b5cf6' });
-            }
-
-            // Display in HUD
-            const hudList = document.getElementById('hudSelectedStudents');
-            hudList.innerHTML = '';
-            state.coldCallSelected.forEach(sel => {
-                const badge = document.createElement('div');
-                badge.className = 'flex items-center justify-center gap-3 bg-slate-900 border border-slate-700 px-6 py-2 rounded-xl text-lg font-bold shadow-md w-full max-w-md';
-                badge.innerHTML = `
-                    <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${sel.color};"></span>
-                    <span class="text-slate-400 uppercase tracking-widest text-xs">${sel.role}:</span>
-                    <span class="text-white">${sel.student}</span>
-                `;
-                hudList.appendChild(badge);
-            });
-
+            renderColdCallHUD();
             renderCanvas();
             saveState();
         }
+
+        // B: the responder forgot. Keep the question, ask someone else, come back to them later.
+        function comeBack() {
+            const ac = getActiveClass();
+            const room = getActiveRoom();
+            const roles = state.coldCallSelected || [];
+            if (!ac || !room || roles.length === 0) return showToast('Call someone first.');
+
+            const responder = roles[roles.length - 1];
+            if (!state.comeBack) state.comeBack = [];
+            state.comeBack.push({ student: responder.student, question: state.currentQuestion });
+
+            const present = getPresentSeated(ac, room);
+            const exclude = new Set([...roles.map(r => r.student), ...state.comeBack.map(c => c.student)]);
+            const candidates = present.filter(s => !exclude.has(s));
+            if (candidates.length === 0) {
+                state.comeBack.pop();
+                return showToast('No one else left to ask.');
+            }
+
+            const [next] = pickStudents(ac, candidates, 1, present.length);
+            markCalled(ac, [next]);
+            state.coldCallSelected = [...roles.slice(0, -1), { ...responder, student: next, returning: false }];
+            state.answerShown = false;
+
+            renderColdCallHUD();
+            renderCanvas();
+            saveState();
+        }
+
+        function renderColdCallHUD() {
+            const q = state.currentQuestion;
+            const cc = getColdCall(getActiveClass());
+            const total = parseQuestions(cc.questions).length;
+
+            document.getElementById('hudQuestionLabel').textContent = q ? 'Pregunta Activa' : 'Cold Call';
+            document.getElementById('hudQuestionCounter').textContent = q && !state.returningCall && questionDeck.dealt <= total
+                ? `${questionDeck.dealt} / ${total}` : '';
+            document.getElementById('hudQuestionText').textContent = q ? q.q : '';
+
+            const queue = state.comeBack || [];
+            document.getElementById('hudComeBack').textContent = queue.length
+                ? `↩ Back to: ${queue.map(c => c.student).join(', ')}` : '';
+
+            const answerEl = document.getElementById('hudAnswer');
+            answerEl.textContent = q && q.a ? q.a : '';
+            answerEl.classList.toggle('invisible', !(state.answerShown && q && q.a));
+
+            const hudList = document.getElementById('hudSelectedStudents');
+            hudList.innerHTML = '';
+            (state.coldCallSelected || []).forEach(sel => {
+                const badge = document.createElement('div');
+                badge.className = 'flex items-center justify-center gap-3 bg-slate-900 border border-slate-700 px-6 py-2 rounded-xl text-lg font-bold shadow-md';
+                badge.innerHTML = `
+                    <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${sel.color};"></span>
+                    <span class="text-slate-400 uppercase tracking-widest text-xs">${sel.role}:</span>
+                    <span class="text-white">${esc(sel.student)}</span>
+                    ${sel.returning ? '<span class="text-amber-300 text-sm">↩</span>' : ''}
+                `;
+                hudList.appendChild(badge);
+            });
+        }
+
+        // R: show/hide the answer, or ask the teacher for one if there isn't one yet
+        function revealAnswer() {
+            const q = state.currentQuestion;
+            if (!q) return showToast('No question on screen.');
+            if (!q.a) return openAnswerModal();
+            state.answerShown = !state.answerShown;
+            renderColdCallHUD();
+        }
+
+        function openAnswerModal() {
+            document.getElementById('answerModalQuestion').textContent = state.currentQuestion.q;
+            document.getElementById('answerModalInput').value = '';
+            document.getElementById('answerModal').classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => document.getElementById('answerModalInput').focus(), 50);
+        }
+
+        function saveAnswer() {
+            const answer = document.getElementById('answerModalInput').value.trim();
+            const q = state.currentQuestion;
+            if (!answer || !q) return showToast('Type an answer first.');
+
+            // Same question object is shared with any come-back entries, so they get it too
+            q.a = answer;
+            const key = q.q.toLowerCase();
+            const withAnswer = line => splitQA(line).q.toLowerCase() === key ? joinQA(q) : line;
+
+            const cc = getColdCall(getActiveClass());
+            cc.questions = parseQuestions(cc.questions).map(withAnswer).join('\n');
+            saveState();
+
+            const lib = getLibrary();
+            lib.subjects.forEach(s => s.topics.forEach(t => {
+                t.questions = t.questions.map(withAnswer);
+                t.subtopics.forEach(st => st.questions = st.questions.map(withAnswer));
+            }));
+            saveLibrary();
+
+            closeSubModal('answerModal');
+            state.answerShown = true;
+            renderColdCallHUD();
+        }
+
+        // --- COLD CALL SETUP (per class) ---
+        // Each class keeps its own working questions + mode; the library is shared by all classes.
+        function getColdCall(ac) {
+            if (!ac.coldCall) ac.coldCall = { questions: '', mode: '1', sources: [] };
+            return ac.coldCall;
+        }
+
+        function parseQuestions(text) {
+            return (text || '').split('\n').map(q => q.trim()).filter(q => q.length > 0);
+        }
+
+        // "Question | Answer" (the answer part is optional)
+        function splitQA(line) {
+            const i = line.indexOf('|');
+            return i === -1 ? { q: line.trim(), a: '' } : { q: line.slice(0, i).trim(), a: line.slice(i + 1).trim() };
+        }
+
+        function joinQA({ q, a }) {
+            return a ? `${q} | ${a}` : q;
+        }
+
+        // Dedupe by question text; if one copy has an answer, keep that one
+        function uniqueQuestions(list) {
+            const byKey = new Map();
+            list.forEach(line => {
+                const key = splitQA(line).q.toLowerCase();
+                const kept = byKey.get(key);
+                if (kept === undefined || (!splitQA(kept).a && splitQA(line).a)) byKey.set(key, line);
+            });
+            return [...byKey.values()];
+        }
+
+        let questionDeck = { key: null, queue: [], last: -1, dealt: 0 };
+
+        // questions: [{q, a}]. Keyed on question text only, so adding an answer doesn't restart the round.
+        function nextQuestion(questions) {
+            if (questions.length === 0) return null;
+            const key = questions.map(x => x.q).join('\n');
+            if (questionDeck.key !== key) {
+                questionDeck = { key, queue: [], last: -1, dealt: 0 };
+            }
+            if (questionDeck.queue.length === 0) {
+                const order = questions.map((_, i) => i);
+                for (let i = order.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [order[i], order[j]] = [order[j], order[i]];
+                }
+                // Don't start a new round with the question that just ended the last one
+                if (order.length > 1 && order[0] === questionDeck.last) {
+                    [order[0], order[order.length - 1]] = [order[order.length - 1], order[0]];
+                }
+                questionDeck.queue = order;
+                questionDeck.dealt = 0;
+            }
+            const idx = questionDeck.queue.shift();
+            questionDeck.last = idx;
+            questionDeck.dealt++;
+            return questions[idx];
+        }
+
+        function openColdCallModal() {
+            const ac = getActiveClass();
+            if (!ac) return;
+            const cc = getColdCall(ac);
+            document.getElementById('coldCallModalClass').textContent = ac.name;
+            document.getElementById('coldCallQuestions').value = cc.questions;
+            document.querySelectorAll('input[name="coldCallMode"]').forEach(r => r.checked = r.value === cc.mode);
+            renderColdCallSources();
+            updateColdCallCount();
+            document.getElementById('coldCallModal').classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => document.getElementById('coldCallStartBtn').focus(), 50);
+        }
+
+        // Copy the modal's contents back into the active class
+        function syncColdCallFromModal() {
+            const ac = getActiveClass();
+            if (!ac) return;
+            const cc = getColdCall(ac);
+            cc.questions = document.getElementById('coldCallQuestions').value;
+            const checked = document.querySelector('input[name="coldCallMode"]:checked');
+            if (checked) cc.mode = checked.value;
+            saveState();
+        }
+
+        function startColdCall() {
+            syncColdCallFromModal();
+            closeModals();
+            toggleSidebar(false);
+            centerCanvas();
+        }
+
+        function clearColdCallQuestions() {
+            document.getElementById('coldCallQuestions').value = '';
+            const ac = getActiveClass();
+            if (ac) getColdCall(ac).sources = [];
+            renderColdCallSources();
+            updateColdCallCount();
+        }
+
+        function updateColdCallCount() {
+            const n = parseQuestions(document.getElementById('coldCallQuestions').value).length;
+            document.getElementById('coldCallCount').textContent = n === 0
+                ? 'No questions: names only.'
+                : `${n} question${n === 1 ? '' : 's'}`;
+        }
+
+        function renderColdCallSources() {
+            const ac = getActiveClass();
+            const el = document.getElementById('coldCallSources');
+            const sources = ac ? getColdCall(ac).sources : [];
+            el.innerHTML = sources.map(s =>
+                `<span class="inline-flex items-center gap-1 text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full"><i data-lucide="folder" class="w-3 h-3"></i>${esc(s)}</span>`
+            ).join('');
+            el.classList.toggle('hidden', sources.length === 0);
+            lucide.createIcons();
+        }
+
+        // --- QUESTION LIBRARY (Subject > Topic > optional Subtopic) ---
+        const NEW = '__new__';
+
+        function getLibrary() {
+            if (!window._library) {
+                try {
+                    window._library = JSON.parse(localStorage.getItem('coldCallLibrary')) || { subjects: [] };
+                } catch (e) {
+                    window._library = { subjects: [] };
+                }
+            }
+            return window._library;
+        }
+
+        function saveLibrary() {
+            localStorage.setItem('coldCallLibrary', JSON.stringify(getLibrary()));
+        }
+
+        function findByName(list, name) {
+            return list.find(item => item.name.toLowerCase() === name.toLowerCase());
+        }
+
+        function findOrCreate(list, name, extra) {
+            let item = findByName(list, name);
+            if (!item) {
+                item = { id: uuid(), name, ...extra };
+                list.push(item);
+            }
+            return item;
+        }
+
+        function esc(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function fillSelect(selectEl, items, { noneLabel, newLabel, selected }) {
+            selectEl.innerHTML = '';
+            if (noneLabel) selectEl.add(new Option(noneLabel, ''));
+            items.forEach(it => selectEl.add(new Option(it.name, it.id)));
+            selectEl.add(new Option(newLabel, NEW));
+            const values = Array.from(selectEl.options).map(o => o.value);
+            selectEl.value = values.includes(selected) ? selected : values[0];
+        }
+
+        function showNewInput(id, show) {
+            const input = document.getElementById(id);
+            input.classList.toggle('hidden', !show);
+            if (!show) input.value = '';
+        }
+
+        function openSaveSetModal() {
+            if (parseQuestions(document.getElementById('coldCallQuestions').value).length === 0) {
+                showToast('Type or load some questions first.');
+                return;
+            }
+            // Pre-select the folder these questions were loaded from (if just one)
+            const lib = getLibrary();
+            const ac = getActiveClass();
+            const sources = ac ? getColdCall(ac).sources : [];
+            let pre = {};
+            if (sources.length === 1) {
+                const [sName, tName, stName] = sources[0].split(' › ');
+                const sub = sName && findByName(lib.subjects, sName);
+                const top = sub && tName && findByName(sub.topics, tName);
+                const st = top && stName && findByName(top.subtopics, stName);
+                pre = { subject: sub && sub.id, topic: top && top.id, subtopic: st ? st.id : '' };
+            }
+            renderSaveSelectors(null, pre);
+            document.getElementById('saveSetModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // Rebuild the Subject/Topic/Subtopic selects; `changed` is which one the user just touched.
+        function renderSaveSelectors(changed, pre = {}) {
+            const lib = getLibrary();
+            const subjSel = document.getElementById('saveSubject');
+            const topSel = document.getElementById('saveTopic');
+            const subSel = document.getElementById('saveSubtopic');
+
+            if (!changed) {
+                fillSelect(subjSel, lib.subjects, { newLabel: '+ New subject…', selected: pre.subject });
+            }
+            const subject = lib.subjects.find(s => s.id === subjSel.value);
+            showNewInput('saveSubjectNew', subjSel.value === NEW);
+
+            if (changed !== 'topic' && changed !== 'subtopic') {
+                fillSelect(topSel, subject ? subject.topics : [], { newLabel: '+ New topic…', selected: pre.topic });
+            }
+            const topic = subject && subject.topics.find(t => t.id === topSel.value);
+            showNewInput('saveTopicNew', topSel.value === NEW);
+
+            if (changed !== 'subtopic') {
+                fillSelect(subSel, topic ? topic.subtopics : [], { noneLabel: '— None (save in topic) —', newLabel: '+ New subtopic…', selected: pre.subtopic || '' });
+            }
+            const subtopic = topic && topic.subtopics.find(st => st.id === subSel.value);
+            showNewInput('saveSubtopicNew', subSel.value === NEW);
+
+            // Focus the new-name box the user just asked for
+            const focusMap = { subject: 'saveSubjectNew', topic: 'saveTopicNew', subtopic: 'saveSubtopicNew' };
+            if (changed && document.getElementById(changed === 'subject' ? 'saveSubject' : changed === 'topic' ? 'saveTopic' : 'saveSubtopic').value === NEW) {
+                setTimeout(() => document.getElementById(focusMap[changed]).focus(), 0);
+            }
+
+            // Warn when the destination folder already has questions
+            const target = subtopic || (subSel.value === '' ? topic : null);
+            const info = document.getElementById('saveExistingInfo');
+            if (target && target.questions.length > 0) {
+                document.getElementById('saveExistingText').textContent = `This folder already has ${target.questions.length} question${target.questions.length === 1 ? '' : 's'}.`;
+                info.classList.remove('hidden');
+            } else {
+                info.classList.add('hidden');
+            }
+        }
+
+        function resolveName(selectId, inputId, list) {
+            const sel = document.getElementById(selectId);
+            if (sel.value === NEW) return document.getElementById(inputId).value.trim();
+            const item = list.find(i => i.id === sel.value);
+            return item ? item.name : '';
+        }
+
+        function confirmSaveSet() {
+            const lib = getLibrary();
+            const subjectName = resolveName('saveSubject', 'saveSubjectNew', lib.subjects);
+            if (!subjectName) return showToast('Choose or name a subject.');
+            const existingSubject = findByName(lib.subjects, subjectName);
+            const topicName = resolveName('saveTopic', 'saveTopicNew', existingSubject ? existingSubject.topics : []);
+            if (!topicName) return showToast('Choose or name a topic.');
+            const existingTopic = existingSubject && findByName(existingSubject.topics, topicName);
+            const subtopicName = resolveName('saveSubtopic', 'saveSubtopicNew', existingTopic ? existingTopic.subtopics : []);
+            if (document.getElementById('saveSubtopic').value === NEW && !subtopicName) return showToast('Name the subtopic, or choose None.');
+
+            const subject = findOrCreate(lib.subjects, subjectName, { topics: [] });
+            const topic = findOrCreate(subject.topics, topicName, { questions: [], subtopics: [] });
+            const target = subtopicName ? findOrCreate(topic.subtopics, subtopicName, { questions: [] }) : topic;
+
+            const incoming = parseQuestions(document.getElementById('coldCallQuestions').value);
+            const replace = document.querySelector('input[name="saveMergeMode"]:checked').value === 'replace';
+            target.questions = replace ? uniqueQuestions(incoming) : uniqueQuestions([...target.questions, ...incoming]);
+            saveLibrary();
+
+            const path = [subject.name, topic.name, subtopicName ? target.name : null].filter(Boolean).join(' › ');
+            const ac = getActiveClass();
+            if (ac) getColdCall(ac).sources = [path];
+            syncColdCallFromModal();
+            renderColdCallSources();
+            closeSubModal('saveSetModal');
+            showToast(`Saved ${target.questions.length} questions to ${path}`);
+        }
+
+        // --- LOAD (multi-select tree) ---
+        let librarySelection = new Set();   // ids of topics/subtopics whose own questions are ticked
+        let collapsedSubjects = new Set();
+
+        // Every folder under a node that actually holds questions
+        function selectableIds(node) {
+            if (node.topics) return node.topics.flatMap(selectableIds);
+            const ids = node.questions.length > 0 ? [node.id] : [];
+            return node.subtopics ? ids.concat(node.subtopics.flatMap(selectableIds)) : ids;
+        }
+
+        function countQuestions(node) {
+            if (node.topics) return node.topics.reduce((n, t) => n + countQuestions(t), 0);
+            return node.questions.length + (node.subtopics ? node.subtopics.reduce((n, st) => n + st.questions.length, 0) : 0);
+        }
+
+        function checkState(node) {
+            const ids = selectableIds(node);
+            const n = ids.filter(id => librarySelection.has(id)).length;
+            return n === 0 ? 'none' : n === ids.length ? 'all' : 'some';
+        }
+
+        // Locate a subject/topic/subtopic by id, with the list it lives in and its path
+        function findLibraryNode(id) {
+            for (const s of getLibrary().subjects) {
+                if (s.id === id) return { node: s, siblings: getLibrary().subjects, kind: 'subject', path: [] };
+                for (const t of s.topics) {
+                    if (t.id === id) return { node: t, siblings: s.topics, kind: 'topic', path: [s.name] };
+                    const st = t.subtopics.find(x => x.id === id);
+                    if (st) return { node: st, siblings: t.subtopics, kind: 'subtopic', path: [s.name, t.name] };
+                }
+            }
+            return null;
+        }
+
+        function toggleNode(kind, id) {
+            const found = findLibraryNode(id);
+            if (!found) return;
+            const ids = selectableIds(found.node);
+            const selectAll = checkState(found.node) !== 'all';
+            ids.forEach(i => selectAll ? librarySelection.add(i) : librarySelection.delete(i));
+            renderLibraryTree();
+        }
+
+        function toggleSubjectCollapse(id) {
+            collapsedSubjects.has(id) ? collapsedSubjects.delete(id) : collapsedSubjects.add(id);
+            renderLibraryTree();
+        }
+
+        function deleteLibraryNode(id) {
+            const found = findLibraryNode(id);
+            if (!found) return;
+            const what = { subject: 'the whole subject', topic: 'topic', subtopic: 'subtopic' }[found.kind];
+            if (!confirm(`Delete ${what} "${found.node.name}" and all its questions?`)) return;
+            found.siblings.splice(found.siblings.indexOf(found.node), 1);
+            saveLibrary();
+            renderLibraryTree();
+        }
+
+        let editingNodeId = null;
+
+        function editLibraryNode(id) {
+            const found = findLibraryNode(id);
+            if (!found) return;
+            editingNodeId = id;
+            const hasQuestions = found.kind !== 'subject';
+            document.getElementById('editFolderPath').textContent = found.path.length ? found.path.join(' › ') : 'Subject';
+            document.getElementById('editFolderName').value = found.node.name;
+            document.getElementById('editFolderQuestionsWrap').classList.toggle('hidden', !hasQuestions);
+            document.getElementById('editFolderQuestions').value = hasQuestions ? found.node.questions.join('\n') : '';
+            document.getElementById('editFolderModal').classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => document.getElementById(hasQuestions ? 'editFolderQuestions' : 'editFolderName').focus(), 50);
+        }
+
+        function saveFolderEdit() {
+            const found = findLibraryNode(editingNodeId);
+            if (!found) return closeSubModal('editFolderModal');
+            const name = document.getElementById('editFolderName').value.trim();
+            if (!name) return showToast('The folder needs a name.');
+            const clash = findByName(found.siblings, name);
+            if (clash && clash !== found.node) return showToast(`There's already a folder called "${clash.name}" here.`);
+
+            found.node.name = name;
+            if (found.kind !== 'subject') {
+                found.node.questions = uniqueQuestions(parseQuestions(document.getElementById('editFolderQuestions').value));
+            }
+            saveLibrary();
+            closeSubModal('editFolderModal');
+            renderLibraryTree();
+            showToast('Folder saved');
+        }
+
+        function openLoadSetModal() {
+            librarySelection = new Set();
+            renderLibraryTree();
+            document.getElementById('loadSetModal').classList.remove('hidden');
+        }
+
+        function renderLibraryTree() {
+            const lib = getLibrary();
+            const tree = document.getElementById('libraryTree');
+
+            if (lib.subjects.length === 0) {
+                tree.innerHTML = `<div class="text-center text-sm text-slate-500 p-6">Your library is empty.<br>Type some questions, then press <b>Save</b> to file them under a subject and topic.</div>`;
+            } else {
+                const box = (node, kind) => {
+                    const st = checkState(node);
+                    const disabled = selectableIds(node).length === 0;
+                    return `<input type="checkbox" ${st === 'all' ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-indeterminate="${st === 'some'}" onchange="toggleNode('${kind}', '${node.id}')" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 shrink-0">`;
+                };
+                const trash = (id) => `
+                    <button onclick="event.preventDefault(); editLibraryNode('${id}')" class="text-slate-300 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity p-1" title="Edit"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                    <button onclick="event.preventDefault(); deleteLibraryNode('${id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+                const count = (n) => `<span class="text-xs text-slate-400 tabular-nums">${n}</span>`;
+
+                tree.innerHTML = lib.subjects.map(s => {
+                    const collapsed = collapsedSubjects.has(s.id);
+                    const topics = collapsed ? '' : s.topics.map(t => `
+                        <label class="group flex items-center gap-2.5 py-1.5 pl-8 pr-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                            ${box(t, 'topic')}
+                            <span class="flex-1 text-sm font-medium text-slate-700 truncate">${esc(t.name)}</span>
+                            ${count(countQuestions(t))}${trash(t.id)}
+                        </label>
+                        ${t.subtopics.map(st => `
+                            <label class="group flex items-center gap-2.5 py-1 pl-14 pr-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                                ${box(st, 'subtopic')}
+                                <span class="flex-1 text-sm text-slate-600 truncate">${esc(st.name)}</span>
+                                ${count(st.questions.length)}${trash(st.id)}
+                            </label>`).join('')}
+                    `).join('');
+                    return `
+                        <div class="border border-slate-200 rounded-xl p-2">
+                            <div class="group flex items-center gap-2.5 py-1.5 px-2">
+                                <button onclick="toggleSubjectCollapse('${s.id}')" class="text-slate-400 hover:text-slate-700"><i data-lucide="${collapsed ? 'chevron-right' : 'chevron-down'}" class="w-4 h-4"></i></button>
+                                ${box(s, 'subject')}
+                                <span class="flex-1 font-semibold text-slate-800 truncate">${esc(s.name)}</span>
+                                ${count(countQuestions(s))}${trash(s.id)}
+                            </div>
+                            ${topics}
+                        </div>`;
+                }).join('');
+                tree.querySelectorAll('input[data-indeterminate="true"]').forEach(cb => cb.indeterminate = true);
+            }
+
+            const n = uniqueQuestions(collectSelectedQuestions()).length;
+            document.getElementById('loadSelectedCount').textContent = n ? `${n} question${n === 1 ? '' : 's'} selected` : 'Nothing selected';
+            lucide.createIcons();
+        }
+
+        function collectSelectedQuestions() {
+            const out = [];
+            getLibrary().subjects.forEach(s => s.topics.forEach(t => {
+                if (librarySelection.has(t.id)) out.push(...t.questions);
+                t.subtopics.forEach(st => { if (librarySelection.has(st.id)) out.push(...st.questions); });
+            }));
+            return out;
+        }
+
+        // Short labels for what was loaded, e.g. "Spanish › 1.1" rather than every subtopic
+        function selectionLabels() {
+            const labels = [];
+            getLibrary().subjects.forEach(s => {
+                if (checkState(s) === 'all') return labels.push(s.name);
+                s.topics.forEach(t => {
+                    const tState = checkState(t);
+                    if (tState === 'all') return labels.push(`${s.name} › ${t.name}`);
+                    if (librarySelection.has(t.id)) labels.push(`${s.name} › ${t.name}`);
+                    t.subtopics.forEach(st => { if (librarySelection.has(st.id)) labels.push(`${s.name} › ${t.name} › ${st.name}`); });
+                });
+            });
+            return labels;
+        }
+
+        function loadSelectedSets(mode) {
+            const picked = collectSelectedQuestions();
+            if (picked.length === 0) return showToast('Tick at least one folder.');
+            const ta = document.getElementById('coldCallQuestions');
+            const ac = getActiveClass();
+            const cc = ac ? getColdCall(ac) : { sources: [] };
+            const labels = selectionLabels();
+            if (mode === 'replace') {
+                ta.value = uniqueQuestions(picked).join('\n');
+                cc.sources = labels;
+            } else {
+                ta.value = uniqueQuestions([...parseQuestions(ta.value), ...picked]).join('\n');
+                cc.sources = [...new Set([...cc.sources, ...labels])];
+            }
+            syncColdCallFromModal();
+            renderColdCallSources();
+            updateColdCallCount();
+            closeSubModal('loadSetModal');
+        }
+
+        function closeSubModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.add('hidden'), 2500);
+        }
+
+        // --- KEYBOARD ---
+        window.addEventListener('keydown', (e) => {
+            const anyModalOpen = Array.from(document.querySelectorAll('.modal-overlay')).some(m => !m.classList.contains('hidden'));
+            if (e.key === 'Escape') {
+                // Close the top-most layer only
+                const top = ['editFolderModal', 'answerModal', 'saveSetModal', 'loadSetModal']
+                    .find(id => !document.getElementById(id).classList.contains('hidden'));
+                if (top) return closeSubModal(top);
+                if (anyModalOpen) return closeModals();
+            }
+
+            // Board shortcuts: Space = call, R = answer, B = come back
+            if (state.mode !== 'coldcall' || anyModalOpen || e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.target.closest('input, textarea, select')) return;
+            const action = { Space: triggerColdCall, KeyR: revealAnswer, KeyB: comeBack }[e.code];
+            if (!action) return;
+            e.preventDefault();
+            // Stop Space also "clicking" whichever toolbar button still has focus
+            if (document.activeElement && document.activeElement.tagName === 'BUTTON') document.activeElement.blur();
+            if (!e.repeat) action();
+        });
 
         function selectClass(id) {
             state.activeClassId = id;
             const ac = getActiveClass();
             state.activeRoomId = ac.rooms.length > 0 ? ac.rooms[0].id : null;
+            if (state.mode === 'coldcall') resetColdCallHUD();
             renderAll();
             saveState();
         }
@@ -1808,9 +2603,10 @@
             }
         }
 
-        function toggleSidebar() {
+        function toggleSidebar(show) {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('hidden');
+            const hide = show === undefined ? !sidebar.classList.contains('hidden') : !show;
+            keepViewCentered(() => sidebar.classList.toggle('hidden', hide));
         }
 
         // --- MODALS & FORMS ---
@@ -1920,9 +2716,11 @@
         }
 
         function closeModals() {
-            document.getElementById('classModal').classList.add('hidden');
-            document.getElementById('rosterModal').classList.add('hidden');
-            document.getElementById('addRoomModal').classList.add('hidden');
+            if (!document.getElementById('coldCallModal').classList.contains('hidden')) {
+                syncColdCallFromModal();
+            }
+            ['classModal', 'rosterModal', 'addRoomModal', 'coldCallModal', 'saveSetModal', 'loadSetModal', 'answerModal', 'editFolderModal']
+                .forEach(id => document.getElementById(id).classList.add('hidden'));
         }
 
 
@@ -1934,6 +2732,7 @@
             Student, ClassID, , , Name
             Room, ClassID, RoomID, , Name
             Desk, ClassID, RoomID, DeskID, X, Y, IsTeacher, StudentName
+            Question, , , , Subject, Topic, Subtopic, QuestionText   (cold call library)
         */
 
         function escapeCSV(str) {
@@ -1967,6 +2766,13 @@
                     });
                 });
             });
+
+            getLibrary().subjects.forEach(s => s.topics.forEach(t => {
+                t.questions.forEach(q => rows.push(["Question", "", "", "", s.name, t.name, "", q].map(escapeCSV).join(",")));
+                t.subtopics.forEach(st => st.questions.forEach(q => {
+                    rows.push(["Question", "", "", "", s.name, t.name, st.name, q].map(escapeCSV).join(","));
+                }));
+            }));
 
             const csvString = rows.join("\n");
             const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
@@ -2008,15 +2814,24 @@
                     if (lines.length < 2) return alert("Invalid CSV file.");
 
                     let newClassesMap = new Map();
+                    const importedLibrary = { subjects: [] };
+                    let importedQuestionCount = 0;
 
                     for (let i = 1; i < lines.length; i++) {
                         const cols = parseCSVLine(lines[i]);
                         if(cols.length < 5) continue;
-                        
+
                         const type = cols[0];
                         const cId = cols[1];
 
-                        if (type === 'Class') {
+                        if (type === 'Question') {
+                            if (!cols[4] || !cols[5] || !cols[7]) continue;
+                            const subject = findOrCreate(importedLibrary.subjects, cols[4], { topics: [] });
+                            const topic = findOrCreate(subject.topics, cols[5], { questions: [], subtopics: [] });
+                            const target = cols[6] ? findOrCreate(topic.subtopics, cols[6], { questions: [] }) : topic;
+                            target.questions.push(cols[7]);
+                            importedQuestionCount++;
+                        } else if (type === 'Class') {
                             newClassesMap.set(cId, {
                                 id: cId,
                                 name: cols[4],
@@ -2063,6 +2878,12 @@
                         }
                     }
 
+                    // Older backups have no Question rows: leave the library alone in that case
+                    if (importedQuestionCount > 0) {
+                        window._library = importedLibrary;
+                        saveLibrary();
+                    }
+
                     const loadedClasses = Array.from(newClassesMap.values());
                     if (loadedClasses.length > 0) {
                         state.classes = loadedClasses;
@@ -2072,7 +2893,7 @@
                         saveState();
                         alert("Data loaded successfully!");
                     } else {
-                        alert("No valid data found in CSV.");
+                        alert(importedQuestionCount > 0 ? "Question library loaded!" : "No valid data found in CSV.");
                     }
 
                 } catch (err) {
@@ -2091,6 +2912,9 @@
             if (e.key === 'teacherClasses' || e.key === 'teacherCurrentClass' || e.key === 'seatingPlannerState') {
                 loadState();
                 renderAll();
+            }
+            if (e.key === 'coldCallLibrary') {
+                window._library = null; // re-read on next use
             }
         });
 
