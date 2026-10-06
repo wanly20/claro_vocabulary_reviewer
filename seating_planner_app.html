@@ -162,6 +162,13 @@
             top: calc(100% + 8px);
             left: 0;
         }
+        [data-tip-pos="below-right"]:hover::after {
+            bottom: auto;
+            top: calc(100% + 8px);
+        }
+        /* Notes: hover button on desks */
+        .note-btn { opacity: 0; transition: opacity 0.15s; }
+        .desk:hover .note-btn { opacity: 1; }
         .away-striped {
             background-color: #fef2f2 !important;
             background-image: repeating-linear-gradient(45deg, #fee2e2, #fee2e2 10px, #fef2f2 10px, #fef2f2 20px) !important;
@@ -257,13 +264,13 @@
             <!-- Mode Toggle (left padding grows to clear the fixed menu button when the sidebar is hidden) -->
             <div class="flex items-center gap-4">
                 <div class="flex bg-slate-100 p-1 rounded-lg">
-                    <button id="btnModeLayout" onclick="setMode('layout')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all active-mode shadow-sm bg-white text-slate-800">
+                    <button id="btnModeLayout" onclick="setMode('layout')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap active-mode shadow-sm bg-white text-slate-800">
                         <i data-lucide="move" class="w-4 h-4 inline mr-1"></i> Edit Layout
                     </button>
-                    <button id="btnModeSeating" onclick="setMode('seating')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-500 hover:text-slate-700">
+                    <button id="btnModeSeating" onclick="setMode('seating')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap text-slate-500 hover:text-slate-700">
                         <i data-lucide="users" class="w-4 h-4 inline mr-1"></i> Assign Seats
                     </button>
-                    <button id="btnModeColdCall" onclick="setMode('coldcall')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-500 hover:text-slate-700">
+                    <button id="btnModeColdCall" onclick="setMode('coldcall')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap text-slate-500 hover:text-slate-700">
                         <i data-lucide="target" class="w-4 h-4 inline mr-1"></i> Cold Call
                     </button>
                 </div>
@@ -273,29 +280,27 @@
             <div class="flex items-center gap-3">
                 <!-- Layout Tools -->
                 <div id="layoutTools" class="flex gap-2">
-                    <button onclick="addStudentDesk()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors">
+                    <button onclick="addStudentDesk()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
                         <i data-lucide="plus-square" class="w-4 h-4"></i> Add Desk
                     </button>
                 </div>
                 <!-- Seating Tools -->
                 <div id="seatingTools" class="flex gap-2 hidden">
-                    <button onclick="clearHighlights()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors" title="Reset Student Colors">
-                        <i data-lucide="eraser" class="w-4 h-4"></i>
+                    <button onclick="clearHighlights()" data-tip="Clear absences for a new lesson (notes are kept)" data-tip-pos="below-right" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
+                        <i data-lucide="eraser" class="w-4 h-4"></i> Clear roll
                     </button>
-                    <button onclick="openRosterModal()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors">
-                        <i data-lucide="list" class="w-4 h-4"></i> Edit Roster
+                    <button onclick="openRosterModal()" title="Edit Roster" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
+                        <i data-lucide="list" class="w-4 h-4"></i><span class="hidden min-[1400px]:inline">Edit Roster</span>
                     </button>
-                    <button onclick="randomizeSeating()" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 flex items-center gap-2 shadow-sm transition-colors">
+                    <button onclick="randomizeSeating()" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
                         <i data-lucide="shuffle" class="w-4 h-4"></i> Randomize
                     </button>
-                    <button onclick="toggleUnassignedDrawer()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors relative">
-                        <i data-lucide="users-2" class="w-4 h-4"></i> Unassigned
+                    <button onclick="toggleUnassignedDrawer()" title="Unassigned students" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors relative">
+                        <i data-lucide="users-2" class="w-4 h-4"></i><span class="hidden min-[1400px]:inline">Unassigned</span>
                         <span id="unassignedCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
                     </button>
                 </div>
-                <a href="index.html" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 shadow-sm transition-colors" title="Go to Vocabulary App">
-                    <i data-lucide="book-open" class="w-4 h-4"></i> Vocab App
-                </a>
+                <button id="viewToggle" onclick="this.blur(); toggleStudentView()" data-tip-pos="below-right" class="px-3 py-1.5 text-sm font-medium rounded-lg flex items-center gap-2 shadow-sm transition-colors border"></button>
             </div>
         </header>
 
@@ -604,6 +609,27 @@
         </div>
     </div>
 
+    <!-- Student Notes Modal -->
+    <div id="notesModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-start gap-4 shrink-0">
+                <div>
+                    <h2 id="notesStudentName" class="text-xl font-bold text-slate-800"></h2>
+                    <button id="notesViewLabel" onclick="toggleStudentView()" class="text-xs font-medium mt-0.5"></button>
+                </div>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div id="notesList" class="p-3 flex-1 overflow-y-auto min-h-[6rem]"></div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 space-y-3 shrink-0">
+                <div id="noteColorPicker" class="flex flex-wrap gap-1.5"></div>
+                <div class="flex gap-2">
+                    <input id="noteInput" type="text" onkeydown="if(event.key === 'Enter') addNoteFromInput()" placeholder="Add a note... put private bits in [brackets]" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <button onclick="addNoteFromInput()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl hidden"></div>
 
@@ -783,6 +809,7 @@
             loadState();
 
             renderAll();
+            renderViewToggle();
             centerCanvas();
             
             // Setup Global Drag and Pan Events
@@ -1224,9 +1251,11 @@
                             innerHTML = `
                                 <div class="draggable-student w-full h-full flex flex-col items-center justify-center rounded-xl transition-colors ${bgClass}" 
                                      draggable="true" 
-                                     onclick="toggleHighlight('${desk.student}')"
-                                     ondragstart="dragStart(event, '${desk.student}', '${desk.id}')">
-                                    <span class="text-xs font-semibold text-center px-2 truncate w-full" title="${desk.student}">${desk.student}</span>
+                                     data-student="${esc(desk.student)}"
+                                     onclick="toggleHighlight(this.dataset.student)"
+                                     ondragstart="dragStart(event, this.dataset.student, '${desk.id}')">
+                                    ${noteBadge(ac, desk.student)}
+                                    <span class="text-xs font-semibold text-center px-2 truncate w-full" title="${esc(desk.student)}">${esc(desk.student)}</span>
                                     ${isAway ? `<span class="text-3xs font-extrabold uppercase bg-red-200 text-red-800 px-1.5 py-0.2 mt-0.5 rounded">AWAY</span>` : ''}
                                 </div>
                             `;
@@ -1244,7 +1273,8 @@
                             el.style.boxShadow = `0 0 16px ${roleColor}`;
                             innerHTML = `
                                 <div class="w-full h-full flex flex-col items-center justify-center p-2 bg-slate-50 text-slate-900 rounded-lg">
-                                    <span class="text-sm font-bold text-center truncate w-full" title="${desk.student}">${desk.student}</span>
+                                    ${noteBadge(ac, desk.student)}
+                                    <span class="text-sm font-bold text-center truncate w-full" title="${esc(desk.student)}">${esc(desk.student)}</span>
                                     <span class="text-3xs font-extrabold uppercase px-1.5 py-0.5 mt-1 rounded text-white" style="background-color: ${roleColor};">${selection.role}</span>
                                 </div>
                             `;
@@ -1254,7 +1284,8 @@
                             el.style.border = '1px solid #cbd5e1';
                             innerHTML = `
                                 <div class="w-full h-full flex items-center justify-center rounded-xl bg-white text-slate-400">
-                                    <span class="text-xs font-medium text-center px-2 truncate w-full" title="${desk.student}">${desk.student}</span>
+                                    ${noteBadge(ac, desk.student)}
+                                    <span class="text-xs font-medium text-center px-2 truncate w-full" title="${esc(desk.student)}">${esc(desk.student)}</span>
                                 </div>
                             `;
                         } else {
@@ -2237,6 +2268,13 @@
             if (anyModalOpen || e.ctrlKey || e.metaKey || e.altKey) return;
             if (e.target.closest('input, textarea, select')) return;
 
+            // V = student / teacher view (any mode)
+            if (e.code === 'KeyV') {
+                e.preventDefault();
+                if (!e.repeat) toggleStudentView();
+                return;
+            }
+
             // H = menu (any mode)
             if (e.code === 'KeyH') {
                 e.preventDefault();
@@ -2609,23 +2647,231 @@
             if (!ac) return;
             
             if (!ac.highlightedStudents) ac.highlightedStudents = [];
-            
+            if (!ac.currentRoll) ac.currentRoll = {}; // student -> id of the Absent note made in this roll
+
             if (ac.highlightedStudents.includes(student)) {
+                // Unmarked before the roll is cleared = arrived late: drop today's Absent note too
                 ac.highlightedStudents = ac.highlightedStudents.filter(s => s !== student);
+                const noteId = ac.currentRoll[student];
+                if (noteId) {
+                    ac.notes[student] = getNotes(ac, student).filter(n => n.id !== noteId);
+                    delete ac.currentRoll[student];
+                }
             } else {
                 ac.highlightedStudents.push(student);
+                ac.currentRoll[student] = addNote(ac, student, 'Absent', 'absent').id;
             }
             renderAll();
             saveState();
         }
 
+        // Clears the red desks for a new lesson. The dated Absent notes stay.
         function clearHighlights() {
             const ac = getActiveClass();
             if (ac) {
                 ac.highlightedStudents = [];
+                ac.currentRoll = {};
                 renderAll();
                 saveState();
+                showToast('Roll cleared. Absences are kept in notes.');
             }
+        }
+
+        // --- STUDENT NOTES ---
+        // ac.notes = { studentName: [{ id, text, date: 'YYYY-MM-DD', color, done }] }
+        // Text inside [brackets] is private: hidden while Student view is on (the default).
+        const NOTE_COLORS = {
+            general:   { hex: '#64748b', label: 'General' },
+            absent:    { hex: '#ef4444', label: 'Absent / catch-up' },
+            homework:  { hex: '#f97316', label: 'Homework / work' },
+            check:     { hex: '#eab308', label: 'Check understanding' },
+            wellbeing: { hex: '#a855f7', label: 'Wellbeing' },
+            home:      { hex: '#3b82f6', label: 'Contact home' },
+            praise:    { hex: '#22c55e', label: 'Praise' }
+        };
+
+        let studentView = true;       // never persisted: the app always opens safe for projecting
+        let notesStudent = null;
+        let noteColor = 'general';
+        let editingNoteId = null;
+
+        function todayISO() {
+            const d = new Date(); // local date, not UTC (Melbourne mornings are still "yesterday" in UTC)
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatNoteDate(iso) {
+            const [y, m, d] = iso.split('-').map(Number);
+            return new Date(y, m - 1, d).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+        }
+
+        // Remove [private] parts; an unclosed "[" hides the rest of the line
+        function stripPrivate(text) {
+            return text.replace(/\[[^\]]*(\]|$)/g, '').replace(/\s{2,}/g, ' ').trim();
+        }
+
+        function getNotes(ac, student) {
+            if (!ac.notes) ac.notes = {};
+            return ac.notes[student] || [];
+        }
+
+        function addNote(ac, student, text, color) {
+            if (!ac.notes) ac.notes = {};
+            if (!ac.notes[student]) ac.notes[student] = [];
+            const note = { id: uuid(), text, date: todayISO(), color, done: false };
+            ac.notes[student].push(note);
+            return note;
+        }
+
+        // Notes the current view is allowed to show
+        function visibleNotes(ac, student) {
+            return getNotes(ac, student).filter(n => !studentView || stripPrivate(n.text) !== '');
+        }
+
+        // Small coloured dots (one per colour of open notes) + a hover button to open notes
+        function noteBadge(ac, student) {
+            if (!ac) return '';
+            const colors = [...new Set(visibleNotes(ac, student).filter(n => !n.done).map(n => n.color))];
+            const dots = colors.map(c => `<span class="w-2.5 h-2.5 rounded-full ring-2 ring-white" style="background-color: ${(NOTE_COLORS[c] || NOTE_COLORS.general).hex}"></span>`).join('');
+            return `
+                <div class="absolute top-1.5 right-1.5 flex items-center gap-0.5 cursor-pointer z-10" data-student="${esc(student)}" onclick="event.stopPropagation(); openNotes(this.dataset.student)">
+                    ${dots}
+                    <button class="note-btn ml-0.5 p-0.5 rounded bg-white/90 text-slate-400 hover:text-indigo-600 shadow-sm" title="Notes"><i data-lucide="notebook-pen" class="w-3.5 h-3.5"></i></button>
+                </div>`;
+        }
+
+        function openNotes(student) {
+            notesStudent = student;
+            noteColor = 'general';
+            editingNoteId = null;
+            document.getElementById('noteInput').value = '';
+            renderNotes();
+            document.getElementById('notesModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('noteInput').focus(), 50);
+        }
+
+        function renderNoteText(text) {
+            if (studentView) return esc(stripPrivate(text));
+            // Teacher view: show private parts, clearly marked
+            return esc(text).replace(/\[[^\]]*(\]|$)/g, m =>
+                `<span class="text-amber-800 bg-amber-50 border border-amber-200 rounded px-1">🔒 ${m}</span>`);
+        }
+
+        function renderNotes() {
+            const ac = getActiveClass();
+            if (!ac || notesStudent === null) return;
+            document.getElementById('notesStudentName').textContent = notesStudent;
+            const label = document.getElementById('notesViewLabel');
+            label.textContent = studentView ? 'Student view: private [notes] hidden · show' : 'Teacher view: private notes visible · hide';
+            label.className = `text-xs font-medium mt-0.5 hover:underline ${studentView ? 'text-slate-400' : 'text-amber-600'}`;
+
+            const notes = visibleNotes(ac, notesStudent);
+            const open = notes.filter(n => !n.done);
+            const done = notes.filter(n => n.done);
+
+            const row = (n) => {
+                const color = (NOTE_COLORS[n.color] || NOTE_COLORS.general);
+                const text = editingNoteId === n.id
+                    ? `<input id="noteEditInput" type="text" value="${esc(n.text)}" onkeydown="noteEditKey(event, '${n.id}')" class="w-full border border-indigo-300 rounded px-2 py-0.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">`
+                    : `<span class="text-xs text-slate-400 mr-1.5 tabular-nums">${formatNoteDate(n.date)}</span><span class="text-sm ${n.done ? 'line-through text-slate-400' : 'text-slate-800'}">${renderNoteText(n.text)}</span>`;
+                return `
+                    <div class="group flex items-start gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-50">
+                        <input type="checkbox" ${n.done ? 'checked' : ''} onchange="toggleNoteDone('${n.id}')" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 shrink-0" title="Mark as done">
+                        <span class="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0" style="background-color: ${color.hex}" title="${color.label}"></span>
+                        <div class="flex-1 min-w-0 break-words">${text}</div>
+                        ${studentView ? '' : `<button onclick="editNote('${n.id}')" class="text-slate-300 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity p-0.5" title="Edit"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>`}
+                        <button onclick="deleteNote('${n.id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`;
+            };
+
+            const list = document.getElementById('notesList');
+            list.innerHTML = notes.length === 0
+                ? `<div class="text-center text-sm text-slate-400 p-6">No notes yet.</div>`
+                : open.map(row).join('') + (done.length ? `<div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 pt-3 pb-1">Done</div>` + done.map(row).join('') : '');
+
+            document.getElementById('noteColorPicker').innerHTML = Object.entries(NOTE_COLORS).map(([key, c]) => `
+                <button onclick="noteColor='${key}'; renderNotes()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border transition-colors ${noteColor === key ? 'bg-white border-slate-400 text-slate-800 shadow-sm' : 'border-transparent text-slate-500 hover:bg-white'}">
+                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${c.hex}"></span>${c.label}
+                </button>`).join('');
+
+            lucide.createIcons();
+            if (editingNoteId) {
+                const input = document.getElementById('noteEditInput');
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+            }
+        }
+
+        function findNote(id) {
+            return getNotes(getActiveClass(), notesStudent).find(n => n.id === id);
+        }
+
+        function notesChanged() {
+            saveState();
+            renderNotes();
+            renderCanvas();
+        }
+
+        function addNoteFromInput() {
+            const input = document.getElementById('noteInput');
+            const text = input.value.trim();
+            if (!text) return;
+            addNote(getActiveClass(), notesStudent, text, noteColor);
+            input.value = '';
+            notesChanged();
+            input.focus();
+        }
+
+        function toggleNoteDone(id) {
+            const note = findNote(id);
+            if (!note) return;
+            note.done = !note.done;
+            notesChanged();
+        }
+
+        function deleteNote(id) {
+            const ac = getActiveClass();
+            const note = findNote(id);
+            if (!note || !confirm(`Delete this note?\n\n${studentView ? stripPrivate(note.text) : note.text}`)) return;
+            ac.notes[notesStudent] = getNotes(ac, notesStudent).filter(n => n.id !== id);
+            notesChanged();
+        }
+
+        function editNote(id) {
+            editingNoteId = id;
+            renderNotes();
+        }
+
+        function noteEditKey(e, id) {
+            if (e.key === 'Escape') {
+                e.stopPropagation(); // cancel the edit, don't close the modal
+                editingNoteId = null;
+                return renderNotes();
+            }
+            if (e.key !== 'Enter') return;
+            const text = e.target.value.trim();
+            const note = findNote(id);
+            if (note && text) note.text = text;
+            editingNoteId = null;
+            notesChanged();
+        }
+
+        function toggleStudentView() {
+            studentView = !studentView;
+            editingNoteId = null;
+            renderViewToggle();
+            renderCanvas();
+            if (!document.getElementById('notesModal').classList.contains('hidden')) renderNotes();
+        }
+
+        function renderViewToggle() {
+            const btn = document.getElementById('viewToggle');
+            btn.innerHTML = studentView
+                ? '<i data-lucide="eye" class="w-4 h-4"></i> Student view'
+                : '<i data-lucide="eye-off" class="w-4 h-4"></i> Teacher view';
+            btn.className = `px-3 py-1.5 text-sm font-medium rounded-lg flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors border ${studentView ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200'}`;
+            btn.dataset.tip = studentView ? 'Private [notes] hidden · press V to show' : 'Private notes VISIBLE · press V to hide';
+            lucide.createIcons();
         }
 
         function randomizeSeating() {
@@ -2784,7 +3030,7 @@
             if (!document.getElementById('coldCallModal').classList.contains('hidden')) {
                 syncColdCallFromModal();
             }
-            ['classModal', 'rosterModal', 'addRoomModal', 'coldCallModal', 'saveSetModal', 'loadSetModal', 'answerModal', 'editFolderModal']
+            ['classModal', 'rosterModal', 'addRoomModal', 'coldCallModal', 'saveSetModal', 'loadSetModal', 'answerModal', 'editFolderModal', 'notesModal']
                 .forEach(closeSubModal);
         }
 
@@ -2798,6 +3044,7 @@
             Room, ClassID, RoomID, , Name
             Desk, ClassID, RoomID, DeskID, X, Y, IsTeacher, StudentName
             Question, , , , Subject, Topic, Subtopic, QuestionText   (cold call library)
+            Note, ClassID, NoteID, , Student, Date, Color[|done], Text
         */
 
         function escapeCSV(str) {
@@ -2822,6 +3069,10 @@
                         rows.push(["Highlight", c.id, "", "", s, "", "", ""].map(escapeCSV).join(","));
                     });
                 }
+
+                Object.entries(c.notes || {}).forEach(([student, notes]) => notes.forEach(n => {
+                    rows.push(["Note", c.id, n.id, "", student, n.date, n.color + (n.done ? '|done' : ''), n.text].map(escapeCSV).join(","));
+                }));
 
                 c.rooms.forEach(r => {
                     rows.push(["Room", c.id, r.id, "", r.name, "", "", ""].map(escapeCSV).join(","));
@@ -2914,6 +3165,14 @@
                             if (newClassesMap.has(cId)) {
                                 if (!newClassesMap.get(cId).highlightedStudents) newClassesMap.get(cId).highlightedStudents = [];
                                 newClassesMap.get(cId).highlightedStudents.push(cols[4]);
+                            }
+                        } else if (type === 'Note') {
+                            if (newClassesMap.has(cId) && cols[7]) {
+                                const cls = newClassesMap.get(cId);
+                                if (!cls.notes) cls.notes = {};
+                                if (!cls.notes[cols[4]]) cls.notes[cols[4]] = [];
+                                const [color, done] = (cols[6] || 'general').split('|');
+                                cls.notes[cols[4]].push({ id: cols[2] || uuid(), text: cols[7], date: cols[5], color, done: done === 'done' });
                             }
                         } else if (type === 'Room') {
                             const rId = cols[2];
