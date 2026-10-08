@@ -439,6 +439,10 @@
                     <select id="roomLayoutSelect" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
                         <!-- Options injected by JS -->
                     </select>
+                    <p class="text-xs text-slate-500 mt-2 flex items-start gap-1.5">
+                        <i data-lucide="users" class="w-3.5 h-3.5 shrink-0 mt-px text-indigo-500"></i>
+                        <span id="roomSeatingSource"></span>
+                    </p>
                 </div>
             </div>
             <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
@@ -1483,33 +1487,24 @@
             const tpl = state.templates.find(t => t.id === id);
             if (!tpl) return;
 
-            // Preserve currently assigned students in order of student desks
-            const seatedStudents = room.desks
-                .filter(d => !d.isTeacher && d.student)
-                .map(d => d.student);
+            // Keep this room's students, front to back and left to right (not by desk array order)
+            const order = seatingOrder(room);
+            const seatedCount = order.filter(Boolean).length;
 
-            const confirmMsg = seatedStudents.length > 0
-                ? `Apply layout template "${tpl.name}" to "${room.name}"?\n\nThe ${seatedStudents.length} assigned student(s) will automatically move to their respective desks in the new layout.`
+            const confirmMsg = seatedCount > 0
+                ? `Apply layout template "${tpl.name}" to "${room.name}"?\n\nThe ${seatedCount} assigned student(s) will keep their places (front to back, left to right) in the new layout.`
                 : `Apply layout template "${tpl.name}" to "${room.name}"?`;
 
             if (confirm(confirmMsg)) {
-                let studentIdx = 0;
-
-                // Rebuild desks array from template, automatically mapping seated students
-                room.desks = tpl.desks.map(d => {
-                    let assignedStudent = null;
-                    if (!d.isTeacher && studentIdx < seatedStudents.length) {
-                        assignedStudent = seatedStudents[studentIdx];
-                        studentIdx++;
-                    }
-                    return {
-                        id: uuid(),
-                        x: d.x,
-                        y: d.y,
-                        isTeacher: d.isTeacher,
-                        student: assignedStudent
-                    };
-                });
+                room.desks = tpl.desks.map(d => ({
+                    id: uuid(),
+                    x: d.x,
+                    y: d.y,
+                    isTeacher: d.isTeacher,
+                    student: null
+                }));
+                seatInOrder(room.desks, order);
+                rememberSeating(getActiveClass(), room);
 
                 saveState();
                 renderAll();
@@ -2356,6 +2351,7 @@
         });
 
         function selectClass(id) {
+            rememberSeating(getActiveClass(), getActiveRoom()); // the room being left counts as current
             state.activeClassId = id;
             const ac = getActiveClass();
             state.activeRoomId = ac.rooms.length > 0 ? ac.rooms[0].id : null;
@@ -2365,6 +2361,7 @@
         }
 
         function selectRoom(id) {
+            rememberSeating(getActiveClass(), getActiveRoom()); // the room being left counts as current
             state.activeRoomId = id;
             renderAll();
             saveState();
@@ -2381,6 +2378,92 @@
                 renderAll();
                 saveState();
             }
+        }
+
+        // --- SEATING MEMORY (per class) ---
+        // ac.lastSeating = { fromRoomName, at: timestamp, order: [name | null] }
+        // order = the student desks in reading order (front row first, then left to right);
+        // null = an empty desk, so gaps stay where they were. Updated whenever seating changes
+        // or a room is left; deleting a room never touches it. New rooms are seated from it.
+        const ROW_TOLERANCE = 40; // about half a desk height
+
+        // Student desks in reading order: rows by y (top = front, where the teacher desk is), then by x
+        function spatialStudentDesks(desks) {
+            const rows = [];
+            desks.filter(d => !d.isTeacher)
+                .sort((a, b) => a.y - b.y || a.x - b.x)
+                .forEach(d => {
+                    const row = rows[rows.length - 1];
+                    if (row && d.y - row[0].y <= ROW_TOLERANCE) row.push(d);
+                    else rows.push([d]);
+                });
+            return rows.flatMap(row => row.sort((a, b) => a.x - b.x));
+        }
+
+        function seatingOrder(room) {
+            const order = room ? spatialStudentDesks(room.desks).map(d => d.student || null) : [];
+            while (order.length && order[order.length - 1] === null) order.pop();
+            return order;
+        }
+
+        function rememberSeating(ac, room) {
+            if (!ac || !room || !ac.rooms.includes(room)) return;
+            ac.lastSeating = { fromRoomName: room.name, at: Date.now(), order: seatingOrder(room) };
+        }
+
+        // After any seating change in the room on screen
+        function seatingChanged() {
+            rememberSeating(getActiveClass(), getActiveRoom());
+        }
+
+        // Seat `order` into `desks` in reading order. Names not in `roster` (if given) leave their desk empty.
+        // Gaps are kept when there's room for them; otherwise they close up so nobody loses a seat.
+        // Anyone beyond the desk count stays unassigned.
+        function seatInOrder(desks, order, roster) {
+            const allowed = roster ? new Set(roster) : null;
+            const seen = new Set();
+            let names = order.map(n => {
+                if (!n || seen.has(n) || (allowed && !allowed.has(n))) return null;
+                seen.add(n);
+                return n;
+            });
+            const seats = spatialStudentDesks(desks);
+            if (names.length > seats.length) names = names.filter(Boolean);
+            seats.forEach((d, i) => d.student = names[i] || null);
+        }
+
+        // Where a new classroom's seating comes from: the class's latest arrangement,
+        // or (older data with none saved yet) the active room
+        function newRoomSeatingSource(ac) {
+            if (ac.lastSeating && Array.isArray(ac.lastSeating.order)) return ac.lastSeating;
+            const room = getActiveRoom();
+            return room ? { fromRoomName: room.name, at: null, order: seatingOrder(room) } : null;
+        }
+
+        function formatSeatingTime(ts) {
+            const d = new Date(ts);
+            const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const days = Math.round((today - day) / 86400000);
+            if (days === 0) return `today ${time}`;
+            if (days === 1) return `yesterday ${time}`;
+            return `${d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })} ${time}`;
+        }
+
+        function renderRoomSeatingSource(ac) {
+            const src = newRoomSeatingSource(ac);
+            const roster = new Set(ac.students);
+            const count = src ? src.order.filter(n => n && roster.has(n)).length : 0;
+            let text;
+            if (count === 0) {
+                text = 'No seated students to copy: everyone will start in Unassigned.';
+            } else if (src.at) {
+                text = `Students will be seated as in your latest arrangement (${src.fromRoomName} · ${formatSeatingTime(src.at)})`;
+            } else {
+                text = `Students will be seated as in the active room (${src.fromRoomName})`;
+            }
+            document.getElementById('roomSeatingSource').textContent = text;
         }
 
         function addRoom() {
@@ -2423,6 +2506,8 @@
                 }
             }
 
+            renderRoomSeatingSource(ac);
+
             const modal = document.getElementById('addRoomModal');
             if (modal) {
                 modal.classList.remove('hidden');
@@ -2457,11 +2542,6 @@
                 }
             }
 
-            // Gather currently seated students from active room
-            const seatedStudents = currentRoom && currentRoom.desks
-                ? currentRoom.desks.filter(d => !d.isTeacher && d.student).map(d => d.student)
-                : [];
-
             let sourceDesks = [];
             if (layoutSource === 'current') {
                 sourceDesks = currentRoom ? currentRoom.desks : generateStandardLayout();
@@ -2471,21 +2551,18 @@
                 sourceDesks = generateStandardLayout();
             }
 
-            let studentIdx = 0;
-            const newDesks = sourceDesks.map(d => {
-                let assignedStudent = null;
-                if (!d.isTeacher && studentIdx < seatedStudents.length) {
-                    assignedStudent = seatedStudents[studentIdx];
-                    studentIdx++;
-                }
-                return {
-                    id: uuid(),
-                    x: d.x,
-                    y: d.y,
-                    isTeacher: d.isTeacher,
-                    student: assignedStudent
-                };
-            });
+            const newDesks = sourceDesks.map(d => ({
+                id: uuid(),
+                x: d.x,
+                y: d.y,
+                isTeacher: d.isTeacher,
+                student: null
+            }));
+
+            // Seat everyone as in the class's latest arrangement (not whichever room happens to be active),
+            // front to back and left to right. New roster names stay in Unassigned.
+            const source = newRoomSeatingSource(ac);
+            if (source) seatInOrder(newDesks, source.order, ac.students);
 
             const newRoom = {
                 id: uuid(),
@@ -2494,6 +2571,7 @@
             };
 
             ac.rooms.push(newRoom);
+            rememberSeating(ac, newRoom);
             state.activeRoomId = newRoom.id;
             closeModals();
             renderAll();
@@ -2505,6 +2583,9 @@
             if(!ac || ac.rooms.length <= 1) return;
             
             if(confirm('Delete this classroom?')) {
+                // The room on screen is the current arrangement: remember it before it goes, so a room
+                // made next gets it. Deleting a room that isn't on screen leaves ac.lastSeating alone.
+                if (state.activeRoomId === id) rememberSeating(ac, getActiveRoom());
                 ac.rooms = ac.rooms.filter(r => r.id !== id);
                 if(state.activeRoomId === id) {
                     state.activeRoomId = ac.rooms[0].id;
@@ -2531,6 +2612,7 @@
                 isTeacher: false,
                 student: null
             });
+            seatingChanged();
             renderCanvas();
             saveState();
         }
@@ -2546,6 +2628,7 @@
             }
 
             room.desks = room.desks.filter(d => d.id !== deskId);
+            seatingChanged();
             renderAll();
             saveState();
         }
@@ -2618,6 +2701,7 @@
                 const el = document.querySelector(`.desk[data-id="${draggingDesk.id}"]`);
                 if(el) el.style.zIndex = '';
                 draggingDesk = null;
+                seatingChanged(); // moving a desk moves whoever sits there
                 saveState();
             }
             if (isPanning) {
@@ -2679,6 +2763,7 @@
                 }
                 
                 targetDesk.student = data.student;
+                seatingChanged();
                 renderAll();
                 saveState();
 
@@ -2697,6 +2782,7 @@
                     const sourceDesk = room.desks.find(d => d.id === data.sourceId);
                     if (sourceDesk) {
                         sourceDesk.student = null;
+                        seatingChanged();
                         renderAll();
                         saveState();
                     }
@@ -3220,6 +3306,7 @@
                 availableDesks[i].student = pool[i];
             }
 
+            seatingChanged();
             renderAll();
             saveState();
         }
@@ -3300,6 +3387,7 @@
                     }
                 ]
             };
+            rememberSeating(getActiveClass(), getActiveRoom()); // the room being left counts as current
             state.classes.push(newClass);
             state.activeClassId = newClass.id;
             state.activeRoomId = newClass.rooms[0].id;
@@ -3329,13 +3417,16 @@
 
             // Remove students from desks if they were deleted from the roster
             const studentSet = new Set(cleanStudents);
+            let unseated = false;
             ac.rooms.forEach(room => {
                 room.desks.forEach(desk => {
                     if (desk.student && !studentSet.has(desk.student)) {
                         desk.student = null; // Unassign removed student
+                        unseated = true;
                     }
                 });
             });
+            if (unseated) seatingChanged();
 
             // Clean up highlights
             if (ac.highlightedStudents) {
