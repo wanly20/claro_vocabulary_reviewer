@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 30 350 250" width="700" height="500">
+  <style>
+    .o { stroke: #33241a; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+    .line { fill: none; }
+    .fur, .dark, .snout, .bird, .wing, .beak { fill: #fff; }
+    .nose { fill: #33241a; } .cheek, .shadow { display: none; }
+  </style>
+  <!-- Chigüi the chigüiro (capybara) with a little bird on his head. Same shapes for colour + line art. -->
+  <ellipse class="shadow" cx="200" cy="262" rx="150" ry="14"/>
+  <!-- back legs -->
+  <path class="o dark" d="M92,200 L88,252 Q88,260 98,260 L118,260 Q126,260 126,252 L130,205 Z"/>
+  <path class="o dark" d="M128,206 L126,250 Q126,258 136,258 L150,258 Q157,258 157,250 L160,210 Z"/>
+  <!-- ear (behind head) -->
+  <circle class="o dark" cx="258" cy="96" r="13"/>
+  <!-- body -->
+  <path class="o fur" d="M66,188 C64,132 118,112 182,112 C246,112 280,138 284,182 C288,228 246,246 178,246 C108,246 68,236 66,188 Z"/>
+  <!-- front legs -->
+  <path class="o dark" d="M226,212 L222,254 Q222,262 232,262 L250,262 Q258,262 258,254 L262,214 Z"/>
+  <path class="o fur" d="M252,206 L250,252 Q250,260 260,260 L276,260 Q284,260 284,252 L286,204 Z"/>
+  <!-- head -->
+  <path class="o fur" d="M232,122 C236,92 270,78 308,84 C346,90 366,114 366,146 C366,178 338,194 302,194 C264,194 238,178 234,152 Z"/>
+  <!-- blunt snout -->
+  <path class="o snout" d="M322,112 C346,110 368,124 368,150 C368,176 346,190 322,186 C308,170 306,128 322,112 Z"/>
+  <ellipse class="nose" cx="352" cy="134" rx="5" ry="7"/>
+  <path class="o line" d="M340,168 q10,6 20,-2"/>
+  <!-- small calm eye with a sleepy lid -->
+  <ellipse class="nose" cx="290" cy="128" rx="5.5" ry="6.5"/>
+  <circle cx="292" cy="126" r="1.8" fill="#fff"/>
+  <path class="o line" d="M279,119 q11,-6 22,0"/>
+  <ellipse class="cheek" cx="296" cy="156" rx="11" ry="7"/>
+  <!-- little bird on his head -->
+  <path class="o line" d="M286,84 l-2,8 M296,84 l1,8"/>
+  <ellipse class="o bird" cx="290" cy="70" rx="19" ry="14"/>
+  <path class="o wing" d="M276,70 q12,-12 24,2 q-12,10 -24,-2 Z"/>
+  <circle class="o bird" cx="306" cy="55" r="11"/>
+  <path class="o beak" d="M316,53 l12,4 l-12,5 Z"/>
+  <circle class="nose" cx="309" cy="52" r="2.6"/>
+</svg>

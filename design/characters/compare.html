@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Chigüi style test</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px; background: #f6f3ee; color: #2b2118; }
+  h1 { margin: 0 0 4px; } p { margin: 4px 0 16px; max-width: 70ch; }
+  h2 { margin: 28px 0 8px; }
+  .row { display: flex; flex-wrap: wrap; gap: 14px; }
+  figure { margin: 0; background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  img { width: 300px; height: auto; display: block; }
+  figcaption { font-size: 13px; color: #6b5a4b; margin-top: 6px; }
+</style></head><body>
+<h1>Chigüi: style test</h1>
+<p>Same character in two methods. <b>A</b> is hand-coded vector (SVG): one drawing gives both the colour and the printable version, and it never changes. <b>B</b> is AI (Z-Image Turbo, on your laptop): cuter, but every generation differs a little, and the line art is a different drawing.</p>
+
+<h2>A · Vector (SVG): colour + line art from the same drawing</h2>
+<div class="row">
+  <figure><img src="chiguiro_flat.svg"><figcaption>App version</figcaption></figure>
+  <figure><img src="chiguiro_lineart.svg"><figcaption>Worksheet version (same drawing, colours removed)</figcaption></figure>
+</div>
+
+<h2>B · AI (Z-Image Turbo): 3 tries at the same description</h2>
+<div class="row">
+  <figure><img src="chiguiro_ai_flat_s1.png"><figcaption>seed 1</figcaption></figure>
+  <figure><img src="chiguiro_ai_flat_s2.png"><figcaption>seed 2</figcaption></figure>
+  <figure><img src="chiguiro_ai_flat_s3.png"><figcaption>seed 3 (faces the other way)</figcaption></figure>
+</div>
+<h2>B · AI line art: 2 tries</h2>
+<div class="row">
+  <figure><img src="chiguiro_ai_lineart_s1.png"><figcaption>seed 1</figcaption></figure>
+  <figure><img src="chiguiro_ai_lineart_s2.png"><figcaption>seed 2</figcaption></figure>
+</div>
+</body></html>
