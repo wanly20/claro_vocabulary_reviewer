@@ -139,6 +139,40 @@
             border-color: #0f172a;
             transform: scale(1.1);
         }
+        /* Instant hover hint (title="" tooltips are too slow), anchored right so it never runs off screen */
+        [data-tip] { position: relative; }
+        [data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 0;
+            white-space: nowrap;
+            background: #0f172a;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+        [data-tip-pos="below"]:hover::after {
+            bottom: auto;
+            right: auto;
+            top: calc(100% + 8px);
+            left: 0;
+        }
+        [data-tip-pos="above-left"]:hover::after {
+            right: auto;
+            left: 0;
+        }
+        [data-tip-pos="below-right"]:hover::after {
+            bottom: auto;
+            top: calc(100% + 8px);
+        }
+        /* Notes: hover button on desks */
+        .note-btn { opacity: 0; transition: opacity 0.15s; }
+        .desk:hover .note-btn { opacity: 1; }
         .away-striped {
             background-color: #fef2f2 !important;
             background-image: repeating-linear-gradient(45deg, #fee2e2, #fee2e2 10px, #fef2f2 10px, #fef2f2 20px) !important;
@@ -147,16 +181,18 @@
 </head>
 <body class="h-screen w-full flex bg-slate-50 text-slate-800">
 
+    <!-- Menu button: fixed top-left so it never moves when the sidebar opens/closes -->
+    <button id="menuButton" onclick="this.blur(); toggleSidebar()" data-tip="Menu · press H" data-tip-pos="below" class="fixed top-3 left-4 z-30 w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+
     <!-- Sidebar -->
     <aside id="sidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col z-20 shadow-sm shrink-0">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleSidebar()" title="Hide Sidebar">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-indigo-100 text-indigo-600 rounded-xl">
-                    <i data-lucide="layout-dashboard"></i>
-                </div>
-                <h1 class="text-xl font-bold text-slate-800 tracking-tight">ClassPlanner</h1>
+        <div class="h-16 shrink-0 pl-16 pr-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="p-1.5 bg-indigo-100 text-indigo-600 rounded-lg">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
             </div>
-            <i data-lucide="chevron-left" class="w-5 h-5 text-slate-400"></i>
+            <h1 class="text-xl font-bold text-slate-800 tracking-tight">ClassPlanner</h1>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
@@ -207,45 +243,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Cold Calling Panel (Shown only in coldcall mode) -->
-            <div id="coldCallSidebarPanel" class="hidden flex flex-col gap-4">
-                <div class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Cold Call Setup</div>
-                
-                <!-- Questions box -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Question Bank (1 per line)</label>
-                    <textarea id="coldCallQuestions" class="w-full h-32 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none font-sans" placeholder="E.g. ¿Cómo te llamas?&#10;¿De dónde eres?&#10;¿Cómo estás?"></textarea>
-                </div>
-
-                <!-- Call Setup Modes -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Select Student Group</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="1" checked class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">1 Student (Respond)</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="2a" class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">2 Students (Ask & Respond)</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="2b" class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">2 Students (Read & Respond)</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
-                            <input type="radio" name="coldCallMode" value="3" class="text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-sm font-medium text-slate-700">3 Students (Read, Translate, Respond)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Run Cold Call Button -->
-                <button onclick="triggerColdCall()" class="w-full py-3 px-4 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-2 transition-all shadow-md active:scale-98">
-                    <i data-lucide="target" class="w-5 h-5"></i> Call Student(s)
-                </button>
-            </div>
         </div>
 
         <!-- Data Management -->
@@ -267,20 +264,17 @@
     <main class="flex-1 flex flex-col relative overflow-hidden bg-slate-100">
         
         <!-- Top Toolbar -->
-        <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-10 shadow-sm shrink-0">
-            <!-- Mode Toggle & Sidebar Toggle -->
+        <header id="topHeader" class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-10 shadow-sm shrink-0">
+            <!-- Mode Toggle (left padding grows to clear the fixed menu button when the sidebar is hidden) -->
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="text-slate-400 hover:text-slate-700 transition-colors" title="Toggle Sidebar">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
                 <div class="flex bg-slate-100 p-1 rounded-lg">
-                    <button id="btnModeLayout" onclick="setMode('layout')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all active-mode shadow-sm bg-white text-slate-800">
+                    <button id="btnModeLayout" onclick="setMode('layout')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap active-mode shadow-sm bg-white text-slate-800">
                         <i data-lucide="move" class="w-4 h-4 inline mr-1"></i> Edit Layout
                     </button>
-                    <button id="btnModeSeating" onclick="setMode('seating')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-500 hover:text-slate-700">
+                    <button id="btnModeSeating" onclick="setMode('seating')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap text-slate-500 hover:text-slate-700">
                         <i data-lucide="users" class="w-4 h-4 inline mr-1"></i> Assign Seats
                     </button>
-                    <button id="btnModeColdCall" onclick="setMode('coldcall')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-500 hover:text-slate-700">
+                    <button id="btnModeColdCall" onclick="setMode('coldcall')" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap text-slate-500 hover:text-slate-700">
                         <i data-lucide="target" class="w-4 h-4 inline mr-1"></i> Cold Call
                     </button>
                 </div>
@@ -290,40 +284,45 @@
             <div class="flex items-center gap-3">
                 <!-- Layout Tools -->
                 <div id="layoutTools" class="flex gap-2">
-                    <button onclick="addStudentDesk()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors">
+                    <button onclick="addStudentDesk()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
                         <i data-lucide="plus-square" class="w-4 h-4"></i> Add Desk
                     </button>
                 </div>
                 <!-- Seating Tools -->
                 <div id="seatingTools" class="flex gap-2 hidden">
-                    <button onclick="clearHighlights()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors" title="Reset Student Colors">
-                        <i data-lucide="eraser" class="w-4 h-4"></i>
+                    <button onclick="this.blur(); recordLesson()" data-tip="Save this lesson + roll, then clear the desks (Absent notes are kept)" data-tip-pos="below-right" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
+                        <i data-lucide="clipboard-check" class="w-4 h-4"></i> Record lesson
                     </button>
-                    <button onclick="openRosterModal()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors">
-                        <i data-lucide="list" class="w-4 h-4"></i> Edit Roster
+                    <button onclick="openRosterModal()" title="Edit Roster" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
+                        <i data-lucide="list" class="w-4 h-4"></i><span class="hidden min-[1400px]:inline">Edit Roster</span>
                     </button>
-                    <button onclick="randomizeSeating()" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 flex items-center gap-2 shadow-sm transition-colors">
+                    <button onclick="randomizeSeating()" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
                         <i data-lucide="shuffle" class="w-4 h-4"></i> Randomize
                     </button>
-                    <button onclick="toggleUnassignedDrawer()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors relative">
-                        <i data-lucide="users-2" class="w-4 h-4"></i> Unassigned
+                    <button onclick="toggleUnassignedDrawer()" title="Unassigned students" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors relative">
+                        <i data-lucide="users-2" class="w-4 h-4"></i><span class="hidden min-[1400px]:inline">Unassigned</span>
                         <span id="unassignedCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
                     </button>
                 </div>
-                <a href="index.html" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 shadow-sm transition-colors" title="Go to Vocabulary App">
-                    <i data-lucide="book-open" class="w-4 h-4"></i> Vocab App
-                </a>
+                <button id="viewToggle" onclick="this.blur(); toggleStudentView()" data-tip-pos="below-right" class="px-3 py-1.5 text-sm font-medium rounded-lg flex items-center gap-2 shadow-sm transition-colors border"></button>
             </div>
         </header>
 
         <!-- Cold Call Active HUD Bar -->
-        <div id="coldCallHUD" class="bg-indigo-950 text-white px-8 py-6 flex flex-col items-center text-center justify-center border-b border-indigo-900 hidden shrink-0 shadow-lg">
-            <div class="w-full max-w-4xl">
-                <div class="text-xs uppercase tracking-widest text-indigo-300 font-extrabold mb-1">Pregunta Activa</div>
-                <div id="hudQuestionText" class="text-2xl font-black text-white leading-tight">No questions loaded. Enter them in the sidebar.</div>
+        <!-- Fixed height (question + one row of names) so the plan below never jumps between calls -->
+        <div id="coldCallHUD" class="bg-indigo-950 text-white px-8 py-5 flex flex-col items-center text-center justify-center border-b border-indigo-900 hidden shrink-0 shadow-lg">
+            <div class="w-full max-w-5xl">
+                <div class="flex items-center justify-center gap-3 text-xs uppercase tracking-widest text-indigo-300 font-extrabold mb-1">
+                    <span id="hudQuestionLabel">Pregunta Activa</span>
+                    <span id="hudQuestionCounter" class="normal-case tracking-normal font-semibold text-indigo-400"></span>
+                    <span id="hudComeBack" class="normal-case tracking-normal font-semibold text-amber-300"></span>
+                </div>
+                <div id="hudQuestionText" class="text-2xl font-black text-white leading-tight min-h-[2rem]"></div>
+                <!-- Space is always reserved so revealing an answer doesn't push the plan down -->
+                <div id="hudAnswer" class="text-xl font-bold text-emerald-300 leading-tight min-h-[1.75rem] mt-1 invisible"></div>
             </div>
-            <div id="hudSelectedStudents" class="flex flex-col gap-3 mt-4 items-center justify-center w-full">
-                <!-- Injected Student Roles & Names on second and third line centered -->
+            <div id="hudSelectedStudents" class="flex flex-wrap gap-3 mt-4 items-center justify-center w-full min-h-[2.75rem]">
+                <!-- Injected Student Roles & Names, side by side -->
             </div>
         </div>
 
@@ -346,6 +345,25 @@
                 <!-- Unassigned student pills -->
             </div>
         </div>
+
+        <!-- Cold Call Dock (floats over the plan, never pushes it) -->
+        <div id="coldCallDock" class="absolute bottom-6 right-6 z-20 hidden items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
+            <button onclick="this.blur(); openColdCallModal()" data-tip="Questions & setup" class="w-12 h-12 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 shadow-lg flex items-center justify-center transition-colors">
+                <i data-lucide="settings-2" class="w-5 h-5"></i>
+            </button>
+            <button onclick="this.blur(); revealAnswer()" data-tip="Show / hide answer · or press R" class="w-12 h-12 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-emerald-600 shadow-lg flex items-center justify-center transition-colors">
+                <i data-lucide="eye" class="w-5 h-5"></i>
+            </button>
+            <button onclick="this.blur(); comeBack()" data-tip="Forgot? Ask someone else, then come back · or press B" class="w-12 h-12 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-amber-600 shadow-lg flex items-center justify-center transition-colors">
+                <i data-lucide="corner-up-left" class="w-5 h-5"></i>
+            </button>
+            <button onclick="this.blur(); triggerColdCall()" data-tip="Tip: just press Space" class="h-14 px-7 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xl flex items-center gap-2 transition-colors">
+                <i data-lucide="target" class="w-5 h-5"></i> Call
+            </button>
+        </div>
+
+        <!-- Lesson counter for the active class (floats over the plan like the dock, so it never moves it; the header is full) -->
+        <button id="lessonPill" onclick="this.blur(); openLessonsModal()" data-tip="Lessons & units" data-tip-pos="above-left" class="absolute bottom-6 left-6 z-20 flex items-center gap-1.5 max-w-[calc(100%-3rem)] px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-md text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap opacity-80 hover:opacity-100 transition-opacity"></button>
     </main>
 
     <!-- MODALS -->
@@ -421,6 +439,10 @@
                     <select id="roomLayoutSelect" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
                         <!-- Options injected by JS -->
                     </select>
+                    <p class="text-xs text-slate-500 mt-2 flex items-start gap-1.5">
+                        <i data-lucide="users" class="w-3.5 h-3.5 shrink-0 mt-px text-indigo-500"></i>
+                        <span id="roomSeatingSource"></span>
+                    </p>
                 </div>
             </div>
             <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
@@ -429,6 +451,253 @@
             </div>
         </div>
     </div>
+
+    <!-- Cold Call Setup Modal -->
+    <div id="coldCallModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Cold Call Setup</h2>
+                    <p id="coldCallModalClass" class="text-sm text-slate-500"></p>
+                </div>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto space-y-5">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="coldCallQuestions" class="text-xs font-semibold text-slate-600 uppercase">Questions <span class="normal-case font-normal text-slate-400">· 1 per line · optional answer after |</span></label>
+                        <div class="flex gap-2">
+                            <button onclick="clearColdCallQuestions()" class="px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors">Clear</button>
+                            <button onclick="openLoadSetModal()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2 shadow-sm transition-colors">
+                                <i data-lucide="folder-open" class="w-4 h-4"></i> Load
+                            </button>
+                            <button onclick="openSaveSetModal()" class="px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 flex items-center gap-2 shadow-sm transition-colors">
+                                <i data-lucide="save" class="w-4 h-4"></i> Save
+                            </button>
+                        </div>
+                    </div>
+                    <div id="coldCallSources" class="flex flex-wrap gap-1.5 mb-2"></div>
+                    <textarea id="coldCallQuestions" oninput="updateColdCallCount()" class="w-full h-56 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none resize-none font-sans leading-relaxed" placeholder="E.g.&#10;¿Cómo te llamas? | Me llamo...&#10;¿Capital de Chile? | Santiago&#10;¿Cómo estás?&#10;&#10;The answer after | is optional (press R to show it).&#10;Leave empty to call names only."></textarea>
+                    <p id="coldCallCount" class="text-xs text-slate-400 mt-1"></p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Student Group</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="1" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">1 Student (Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="2a" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">2 Students (Ask & Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="2b" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">2 Students (Read & Respond)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors">
+                            <input type="radio" name="coldCallMode" value="3" class="text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-slate-700">3 Students (Read, Translate, Respond)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-3 shrink-0">
+                <span class="text-xs text-slate-500">Tip: press <kbd class="font-semibold bg-white border border-slate-200 px-1.5 py-0.5 rounded">Space</kbd> to call</span>
+                <div class="flex gap-3">
+                    <button onclick="closeModals()" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Close</button>
+                    <button id="coldCallStartBtn" onclick="startColdCall()" class="px-5 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold flex items-center gap-2 transition-colors">
+                        <i data-lucide="target" class="w-4 h-4"></i> Start
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Question Set Modal (stacks above the setup modal) -->
+    <div id="saveSetModal" class="fixed inset-0 modal-overlay hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-slate-800">Save to Library</h2>
+                <button onclick="closeSubModal('saveSetModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Subject</label>
+                    <select id="saveSubject" onchange="renderSaveSelectors('subject')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                    <input id="saveSubjectNew" type="text" placeholder="New subject name, e.g. Spanish" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Topic</label>
+                    <select id="saveTopic" onchange="renderSaveSelectors('topic')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                    <input id="saveTopicNew" type="text" placeholder="New topic name, e.g. 1.1 El español global" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Subtopic <span class="text-slate-400 font-normal">(optional)</span></label>
+                    <select id="saveSubtopic" onchange="renderSaveSelectors('subtopic')" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                    <input id="saveSubtopicNew" type="text" placeholder="New subtopic name, e.g. Countries" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div id="saveExistingInfo" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900 space-y-2">
+                    <p id="saveExistingText"></p>
+                    <label class="flex items-center gap-2"><input type="radio" name="saveMergeMode" value="add" checked> Add these to them (duplicates skipped)</label>
+                    <label class="flex items-center gap-2"><input type="radio" name="saveMergeMode" value="replace"> Replace them</label>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeSubModal('saveSetModal')" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="confirmSaveSet()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Question Sets Modal (tick several for wider revision) -->
+    <div id="loadSetModal" class="fixed inset-0 modal-overlay hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Load from Library</h2>
+                    <p class="text-sm text-slate-500">Tick one or more folders. Mix units for wider revision.</p>
+                </div>
+                <button onclick="closeSubModal('loadSetModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div id="libraryTree" class="p-4 flex-1 overflow-y-auto space-y-3 min-h-[8rem]"></div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-between items-center gap-3 shrink-0">
+                <span id="loadSelectedCount" class="text-sm text-slate-500"></span>
+                <div class="flex gap-2">
+                    <button onclick="loadSelectedSets('add')" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Add to current</button>
+                    <button onclick="loadSelectedSets('replace')" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Replace current</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Answer Modal (R pressed on a question with no answer) -->
+    <div id="answerModal" class="fixed inset-0 modal-overlay hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-start gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Add an answer</h2>
+                    <p id="answerModalQuestion" class="text-sm text-slate-500 mt-1"></p>
+                </div>
+                <button onclick="closeSubModal('answerModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6">
+                <input id="answerModalInput" type="text" onkeydown="if(event.key === 'Enter') saveAnswer()" placeholder="Type the answer..." class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <p class="text-xs text-slate-400 mt-2">Saved with this question (in the library too) so it's there next time.</p>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeSubModal('answerModal')" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="saveAnswer()" class="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-medium transition-colors">Save & show</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Library Folder Modal (stacks above the load modal) -->
+    <div id="editFolderModal" class="fixed inset-0 modal-overlay hidden z-[65] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Edit Folder</h2>
+                    <p id="editFolderPath" class="text-sm text-slate-500"></p>
+                </div>
+                <button onclick="closeSubModal('editFolderModal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto space-y-4">
+                <div>
+                    <label for="editFolderName" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                    <input id="editFolderName" type="text" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div id="editFolderQuestionsWrap">
+                    <label for="editFolderQuestions" class="block text-sm font-medium text-slate-700 mb-1">Questions <span class="text-slate-400 font-normal">· 1 per line · optional answer after |</span></label>
+                    <textarea id="editFolderQuestions" class="w-full h-64 p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none resize-none font-sans leading-relaxed"></textarea>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 shrink-0">
+                <button onclick="closeSubModal('editFolderModal')" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button onclick="saveFolderEdit()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Notes Modal -->
+    <div id="notesModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-start gap-4 shrink-0">
+                <div>
+                    <h2 id="notesStudentName" class="text-xl font-bold text-slate-800"></h2>
+                    <button id="notesViewLabel" onclick="toggleStudentView()" class="text-xs font-medium mt-0.5"></button>
+                </div>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div id="notesList" class="p-3 flex-1 overflow-y-auto min-h-[6rem]"></div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 space-y-3 shrink-0">
+                <div id="noteColorPicker" class="flex flex-wrap gap-1.5"></div>
+                <div class="flex gap-2">
+                    <input id="noteInput" type="text" onkeydown="if(event.key === 'Enter') addNoteFromInput()" placeholder="Add a note... put private bits in [brackets]" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <button onclick="addNoteFromInput()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lessons & Units Modal (opened from the lesson counter in the header) -->
+    <div id="lessonsModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-start gap-4 shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Lessons & units</h2>
+                    <p id="lessonsModalClass" class="text-sm text-slate-500"></p>
+                </div>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                <!-- Current unit -->
+                <div class="p-5 border-b border-slate-100 space-y-3">
+                    <div class="flex items-end gap-4">
+                        <div class="flex-1 min-w-0">
+                            <label for="unitNameInput" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Current unit</label>
+                            <input id="unitNameInput" type="text" list="unitNameSuggestions" onchange="renameCurrentUnit(this.value)" onkeydown="if(event.key === 'Enter') this.blur()" placeholder="No unit · type a name, e.g. 3.4 El tiempo" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div id="unitLessonCount" class="text-2xl font-bold text-slate-800 tabular-nums leading-none"></div>
+                            <div id="unitLessonLabel" class="text-xs text-slate-400 mt-1"></div>
+                        </div>
+                    </div>
+                    <div id="finishUnitRow" class="flex justify-between items-center gap-3">
+                        <span id="unitSince" class="text-xs text-slate-400"></span>
+                        <button id="finishUnitBtn" onclick="showFinishUnit(true)" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors">
+                            <i data-lucide="flag" class="w-4 h-4"></i> Finish unit
+                        </button>
+                    </div>
+                    <div id="finishUnitForm" class="hidden p-3 bg-indigo-50 border border-indigo-100 rounded-xl space-y-2">
+                        <label for="nextUnitInput" class="block text-sm font-medium text-indigo-900">Finish <span id="finishUnitName" class="font-semibold"></span> and start the next unit:</label>
+                        <div class="flex gap-2">
+                            <input id="nextUnitInput" type="text" list="unitNameSuggestions" onkeydown="if(event.key === 'Enter') finishUnit(); if(event.key === 'Escape') { event.stopPropagation(); showFinishUnit(false); }" placeholder="Next unit name (optional)" class="flex-1 min-w-0 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <button onclick="showFinishUnit(false)" class="px-3 py-2 text-slate-600 hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors">Cancel</button>
+                            <button onclick="finishUnit()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Start unit</button>
+                        </div>
+                    </div>
+                    <datalist id="unitNameSuggestions"></datalist>
+                </div>
+
+                <!-- Unit history -->
+                <div class="p-5 border-b border-slate-100">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Units</div>
+                    <div id="unitHistory" class="space-y-0.5"></div>
+                </div>
+
+                <!-- Recorded lessons, newest first -->
+                <div class="p-5">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Recorded lessons</div>
+                    <div id="lessonList" class="space-y-0.5"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl hidden"></div>
 
     <script>
         // --- CONSTANTS & DEFAULTS ---
@@ -606,6 +875,7 @@
             loadState();
 
             renderAll();
+            renderViewToggle();
             centerCanvas();
             
             // Setup Global Drag and Pan Events
@@ -850,9 +1120,29 @@
 
         function centerCanvas() {
             const wrapper = document.getElementById('canvasWrapper');
-            // Center around (1100, 800) which is where we spawn default layout
-            wrapper.scrollLeft = 1100 - (wrapper.clientWidth / 2) + 300;
-            wrapper.scrollTop = 800 - (wrapper.clientHeight / 2) + 100;
+            const room = getActiveRoom();
+            if (!room || room.desks.length === 0) {
+                // Center around (1100, 800) which is where we spawn default layout
+                wrapper.scrollLeft = 1100 - (wrapper.clientWidth / 2) + 300;
+                wrapper.scrollTop = 800 - (wrapper.clientHeight / 2) + 100;
+                return;
+            }
+            // Center on the bounding box of the room's desks
+            const xs = room.desks.flatMap(d => [d.x, d.x + (d.isTeacher ? 180 : 130)]);
+            const ys = room.desks.flatMap(d => [d.y, d.y + 80]);
+            wrapper.scrollLeft = (Math.min(...xs) + Math.max(...xs)) / 2 - wrapper.clientWidth / 2;
+            wrapper.scrollTop = (Math.min(...ys) + Math.max(...ys)) / 2 - wrapper.clientHeight / 2;
+        }
+
+        // Run a UI change that resizes the canvas area (sidebar, HUD) while keeping
+        // whatever was in the middle of the view in the middle, so the plan doesn't jump.
+        function keepViewCentered(fn) {
+            const wrapper = document.getElementById('canvasWrapper');
+            const cx = wrapper.scrollLeft + wrapper.clientWidth / 2;
+            const cy = wrapper.scrollTop + wrapper.clientHeight / 2;
+            fn();
+            wrapper.scrollLeft = cx - wrapper.clientWidth / 2;
+            wrapper.scrollTop = cy - wrapper.clientHeight / 2;
         }
 
         // --- GETTERS ---
@@ -871,6 +1161,7 @@
             renderTemplates();
             renderCanvas();
             renderUnassigned();
+            renderLessonPill();
             updateAppColor();
             lucide.createIcons();
         }
@@ -891,6 +1182,7 @@
                 const el = document.createElement('div');
                 el.className = `flex items-center gap-2.5 p-1.5 px-2.5 rounded-lg text-sm cursor-pointer transition-all border ${isActive ? 'bg-indigo-50/80 border-indigo-200 text-indigo-700 font-semibold shadow-2xs' : 'border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-200/60'}`;
                 el.onclick = () => selectClass(c.id);
+                makeClassDraggable(el, c.id);
                 el.innerHTML = `
                     <div class="w-6 h-6 rounded-md flex items-center justify-center text-white shrink-0 shadow-2xs" style="background-color: ${c.color}">
                         <i data-lucide="${c.icon}" class="w-3.5 h-3.5"></i>
@@ -904,6 +1196,53 @@
             });
             
             document.getElementById('roomsContainer').classList.toggle('hidden', state.classes.length === 0);
+        }
+
+        // Drag a class onto another to reorder. Uses its own data type so a class can't be dropped onto a desk.
+        const CLASS_DRAG_TYPE = 'application/x-class-id';
+
+        function makeClassDraggable(el, classId) {
+            el.draggable = true;
+            const dropAfter = (e) => {
+                const r = el.getBoundingClientRect();
+                return e.clientY > r.top + r.height / 2;
+            };
+            el.ondragstart = (e) => {
+                e.dataTransfer.setData(CLASS_DRAG_TYPE, classId);
+                e.dataTransfer.effectAllowed = 'move';
+                el.classList.add('opacity-40');
+            };
+            el.ondragend = () => {
+                el.classList.remove('opacity-40');
+                document.querySelectorAll('#classList > div').forEach(d => d.style.boxShadow = '');
+            };
+            el.ondragover = (e) => {
+                if (!e.dataTransfer.types.includes(CLASS_DRAG_TYPE)) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                // Indigo line above or below to show where it will land
+                el.style.boxShadow = dropAfter(e) ? '0 3px 0 -1px #6366f1' : '0 -3px 0 -1px #6366f1';
+            };
+            el.ondragleave = () => el.style.boxShadow = '';
+            el.ondrop = (e) => {
+                const draggedId = e.dataTransfer.getData(CLASS_DRAG_TYPE);
+                if (!draggedId) return;
+                e.preventDefault();
+                el.style.boxShadow = '';
+                moveClass(draggedId, classId, dropAfter(e));
+            };
+        }
+
+        function moveClass(draggedId, targetId, after) {
+            if (draggedId === targetId) return;
+            const from = state.classes.findIndex(c => c.id === draggedId);
+            if (from === -1) return;
+            const [moved] = state.classes.splice(from, 1);
+            const to = state.classes.findIndex(c => c.id === targetId) + (after ? 1 : 0);
+            state.classes.splice(to, 0, moved);
+            saveState();
+            renderSidebarClasses();
+            lucide.createIcons();
         }
 
         function renderSidebarRooms() {
@@ -979,9 +1318,11 @@
                             innerHTML = `
                                 <div class="draggable-student w-full h-full flex flex-col items-center justify-center rounded-xl transition-colors ${bgClass}" 
                                      draggable="true" 
-                                     onclick="toggleHighlight('${desk.student}')"
-                                     ondragstart="dragStart(event, '${desk.student}', '${desk.id}')">
-                                    <span class="text-xs font-semibold text-center px-2 truncate w-full" title="${desk.student}">${desk.student}</span>
+                                     data-student="${esc(desk.student)}"
+                                     onclick="toggleHighlight(this.dataset.student)"
+                                     ondragstart="dragStart(event, this.dataset.student, '${desk.id}')">
+                                    ${noteBadge(ac, desk.student)}
+                                    <span class="text-xs font-semibold text-center px-2 truncate w-full" title="${esc(desk.student)}">${esc(desk.student)}</span>
                                     ${isAway ? `<span class="text-3xs font-extrabold uppercase bg-red-200 text-red-800 px-1.5 py-0.2 mt-0.5 rounded">AWAY</span>` : ''}
                                 </div>
                             `;
@@ -999,7 +1340,8 @@
                             el.style.boxShadow = `0 0 16px ${roleColor}`;
                             innerHTML = `
                                 <div class="w-full h-full flex flex-col items-center justify-center p-2 bg-slate-50 text-slate-900 rounded-lg">
-                                    <span class="text-sm font-bold text-center truncate w-full" title="${desk.student}">${desk.student}</span>
+                                    ${noteBadge(ac, desk.student)}
+                                    <span class="text-sm font-bold text-center truncate w-full" title="${esc(desk.student)}">${esc(desk.student)}</span>
                                     <span class="text-3xs font-extrabold uppercase px-1.5 py-0.5 mt-1 rounded text-white" style="background-color: ${roleColor};">${selection.role}</span>
                                 </div>
                             `;
@@ -1009,7 +1351,8 @@
                             el.style.border = '1px solid #cbd5e1';
                             innerHTML = `
                                 <div class="w-full h-full flex items-center justify-center rounded-xl bg-white text-slate-400">
-                                    <span class="text-xs font-medium text-center px-2 truncate w-full" title="${desk.student}">${desk.student}</span>
+                                    ${noteBadge(ac, desk.student)}
+                                    <span class="text-xs font-medium text-center px-2 truncate w-full" title="${esc(desk.student)}">${esc(desk.student)}</span>
                                 </div>
                             `;
                         } else {
@@ -1144,33 +1487,24 @@
             const tpl = state.templates.find(t => t.id === id);
             if (!tpl) return;
 
-            // Preserve currently assigned students in order of student desks
-            const seatedStudents = room.desks
-                .filter(d => !d.isTeacher && d.student)
-                .map(d => d.student);
+            // Keep this room's students, front to back and left to right (not by desk array order)
+            const order = seatingOrder(room);
+            const seatedCount = order.filter(Boolean).length;
 
-            const confirmMsg = seatedStudents.length > 0
-                ? `Apply layout template "${tpl.name}" to "${room.name}"?\n\nThe ${seatedStudents.length} assigned student(s) will automatically move to their respective desks in the new layout.`
+            const confirmMsg = seatedCount > 0
+                ? `Apply layout template "${tpl.name}" to "${room.name}"?\n\nThe ${seatedCount} assigned student(s) will keep their places (front to back, left to right) in the new layout.`
                 : `Apply layout template "${tpl.name}" to "${room.name}"?`;
 
             if (confirm(confirmMsg)) {
-                let studentIdx = 0;
-
-                // Rebuild desks array from template, automatically mapping seated students
-                room.desks = tpl.desks.map(d => {
-                    let assignedStudent = null;
-                    if (!d.isTeacher && studentIdx < seatedStudents.length) {
-                        assignedStudent = seatedStudents[studentIdx];
-                        studentIdx++;
-                    }
-                    return {
-                        id: uuid(),
-                        x: d.x,
-                        y: d.y,
-                        isTeacher: d.isTeacher,
-                        student: assignedStudent
-                    };
-                });
+                room.desks = tpl.desks.map(d => ({
+                    id: uuid(),
+                    x: d.x,
+                    y: d.y,
+                    isTeacher: d.isTeacher,
+                    student: null
+                }));
+                seatInOrder(room.desks, order);
+                rememberSeating(getActiveClass(), room);
 
                 saveState();
                 renderAll();
@@ -1260,21 +1594,90 @@
                 toggleUnassignedDrawer();
             }
 
-            // Toggle sidebar panels
+            // Cold call HUD + floating dock
             const isColdCall = newMode === 'coldcall';
-            document.getElementById('standardSidebarContent').classList.toggle('hidden', isColdCall);
-            document.getElementById('coldCallSidebarPanel').classList.toggle('hidden', !isColdCall);
-            document.getElementById('coldCallHUD').classList.toggle('hidden', !isColdCall);
+            keepViewCentered(() => document.getElementById('coldCallHUD').classList.toggle('hidden', !isColdCall));
+            document.getElementById('coldCallDock').classList.toggle('hidden', !isColdCall);
+            document.getElementById('coldCallDock').classList.toggle('flex', isColdCall);
 
             if (!isColdCall) {
                 state.coldCallSelected = null;
             } else {
-                state.coldCallSelected = [];
-                document.getElementById('hudQuestionText').textContent = "Click 'Call Student(s)' to begin.";
-                document.getElementById('hudSelectedStudents').innerHTML = '';
+                resetColdCallHUD();
+                openColdCallModal();
             }
 
             renderCanvas();
+        }
+
+        function resetColdCallHUD() {
+            state.coldCallSelected = [];
+            state.currentQuestion = null;
+            state.answerShown = false;
+            state.comeBack = [];
+            document.getElementById('hudQuestionLabel').textContent = 'Cold Call';
+            document.getElementById('hudQuestionCounter').textContent = '';
+            document.getElementById('hudComeBack').textContent = '';
+            document.getElementById('hudQuestionText').textContent = 'Press Space (or Call) to begin.';
+            document.getElementById('hudAnswer').classList.add('invisible');
+            document.getElementById('hudSelectedStudents').innerHTML = '';
+        }
+
+        const ROLE_SETS = {
+            '1': [['Respond', '#10b981']],
+            '2a': [['Ask', '#10b981'], ['Respond', '#f59e0b']],
+            '2b': [['Read', '#10b981'], ['Respond', '#f59e0b']],
+            '3': [['Read', '#10b981'], ['Translate', '#f59e0b'], ['Respond', '#8b5cf6']]
+        };
+
+        // Present (not away), seated students in the active room
+        function getPresentSeated(ac, room) {
+            // Repurpose highlightedStudents to mean 'Away'
+            const awaySet = new Set(ac.highlightedStudents || []);
+            return room.desks
+                .filter(d => !d.isTeacher && d.student && !awaySet.has(d.student))
+                .map(d => d.student);
+        }
+
+        // Gentle tilt: anyone can be called at any time (even twice in a row),
+        // but someone not called for a full round of the class is up to 2x as likely.
+        // Weighted roulette wheel choosing n unique students from candidates.
+        function pickStudents(ac, candidates, n, classSize) {
+            if (!ac.lastCalled) ac.lastCalled = {};
+            ac.callSeq = ac.callSeq || 0;
+            const selected = [];
+            const pool = [...candidates];
+
+            for (let step = 0; step < n && pool.length > 0; step++) {
+                const weights = pool.map(student => {
+                    const last = ac.lastCalled[student];
+                    const gap = last === undefined ? Infinity : ac.callSeq - last;
+                    return 1 + Math.min(gap / classSize, 1);
+                });
+                let r = Math.random() * weights.reduce((sum, w) => sum + w, 0);
+                let selectedIdx = 0;
+                for (let i = 0; i < pool.length; i++) {
+                    r -= weights[i];
+                    if (r <= 0) {
+                        selectedIdx = i;
+                        break;
+                    }
+                }
+                selected.push(pool[selectedIdx]);
+                pool.splice(selectedIdx, 1);
+            }
+            return selected;
+        }
+
+        function markCalled(ac, students) {
+            ac.callSeq = (ac.callSeq || 0) + 1;
+            students.forEach(s => ac.lastCalled[s] = ac.callSeq);
+        }
+
+        // The responder is always the last role
+        function assignRoles(mode, students) {
+            const roles = ROLE_SETS[mode].slice(-students.length);
+            return students.map((student, i) => ({ student, role: roles[i][0], color: roles[i][1] }));
         }
 
         function triggerColdCall() {
@@ -1285,126 +1688,680 @@
                 return;
             }
 
-            // Repurpose highlightedStudents to mean 'Away'
-            const awaySet = new Set(ac.highlightedStudents || []);
-            
-            // Gather all present, assigned students in the classroom
-            const presentSeatedStudents = room.desks
-                .filter(d => !d.isTeacher && d.student && !awaySet.has(d.student))
-                .map(d => d.student);
-
-            if (presentSeatedStudents.length === 0) {
+            const present = getPresentSeated(ac, room);
+            if (present.length === 0) {
                 alert("No present seated students available for cold calling!");
                 return;
             }
 
-            // Get selected cold call mode
-            const radioMode = document.querySelector('input[name="coldCallMode"]:checked').value;
-            let N = 1;
-            if (radioMode === '2a' || radioMode === '2b') N = 2;
-            else if (radioMode === '3') N = 3;
-
-            if (presentSeatedStudents.length < N) {
-                alert(`Not enough present seated students to allocate ${N} roles! Calling ${presentSeatedStudents.length} student(s) instead.`);
-                N = presentSeatedStudents.length;
+            const cc = getColdCall(ac);
+            let N = ROLE_SETS[cc.mode].length;
+            if (present.length < N) {
+                alert(`Not enough present seated students to allocate ${N} roles! Calling ${present.length} student(s) instead.`);
+                N = present.length;
             }
 
-            // Fair-Random Selection Heuristic
-            if (!ac.callCounts) ac.callCounts = {};
-            
-            // Ensure all present students have a callCount entry
-            presentSeatedStudents.forEach(student => {
-                if (ac.callCounts[student] === undefined) {
-                    ac.callCounts[student] = 0;
-                }
-            });
-
-            // Weighted Roulette Wheel selection to choose N unique students
-            const selected = [];
-            const pool = [...presentSeatedStudents];
-
-            for (let step = 0; step < N; step++) {
-                if (pool.length === 0) break;
-
-                // Calculate weights: probability is 1 / (1.8 ^ callCount)
-                const weights = pool.map(student => {
-                    const count = ac.callCounts[student] || 0;
-                    return 1 / Math.pow(1.8, count);
-                });
-
-                const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-                let r = Math.random() * totalWeight;
-                let selectedIdx = 0;
-
-                for (let i = 0; i < pool.length; i++) {
-                    r -= weights[i];
-                    if (r <= 0) {
-                        selectedIdx = i;
-                        break;
-                    }
-                }
-
-                selected.push(pool[selectedIdx]);
-                pool.splice(selectedIdx, 1);
+            if (!state.comeBack) state.comeBack = [];
+            // Students who "forgot" get the same question again, in order, before normal calling resumes
+            while (state.comeBack.length > 0 && !present.includes(state.comeBack[0].student)) {
+                state.comeBack.shift();
             }
 
-            // Increment call count for chosen students
-            selected.forEach(student => {
-                ac.callCounts[student] = (ac.callCounts[student] || 0) + 1;
-            });
-
-            // Select random question from question bank
-            const qInput = document.getElementById('coldCallQuestions').value;
-            const questions = qInput.split('\n').map(q => q.trim()).filter(q => q.length > 0);
-            let activeQuestion = "No active question. Enter questions in the sidebar.";
-            if (questions.length > 0) {
-                activeQuestion = questions[Math.floor(Math.random() * questions.length)];
+            if (state.comeBack.length > 0) {
+                const back = state.comeBack.shift();
+                const others = pickStudents(ac, present.filter(s => s !== back.student), N - 1, present.length);
+                markCalled(ac, [...others, back.student]);
+                state.coldCallSelected = assignRoles(cc.mode, [...others, back.student]);
+                state.coldCallSelected[state.coldCallSelected.length - 1].returning = true;
+                state.currentQuestion = back.question;
+                state.returningCall = true;
+            } else {
+                const selected = pickStudents(ac, present, N, present.length);
+                markCalled(ac, selected);
+                state.coldCallSelected = assignRoles(cc.mode, selected);
+                // Deal the next question from a shuffled deck (no repeats until all are used)
+                state.currentQuestion = nextQuestion(parseQuestions(cc.questions).map(splitQA));
+                state.returningCall = false;
             }
-            document.getElementById('hudQuestionText').textContent = activeQuestion;
+            state.answerShown = false;
 
-            // Map selected students to roles & colors
-            state.coldCallSelected = [];
-            if (radioMode === '1') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Respond', color: '#10b981' });
-            } else if (radioMode === '2a') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Ask', color: '#10b981' });
-                state.coldCallSelected.push({ student: selected[1], role: 'Respond', color: '#f59e0b' });
-            } else if (radioMode === '2b') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Read', color: '#10b981' });
-                state.coldCallSelected.push({ student: selected[1], role: 'Respond', color: '#f59e0b' });
-            } else if (radioMode === '3') {
-                state.coldCallSelected.push({ student: selected[0], role: 'Read', color: '#10b981' });
-                state.coldCallSelected.push({ student: selected[1], role: 'Translate', color: '#f59e0b' });
-                state.coldCallSelected.push({ student: selected[2], role: 'Respond', color: '#8b5cf6' });
-            }
-
-            // Display in HUD
-            const hudList = document.getElementById('hudSelectedStudents');
-            hudList.innerHTML = '';
-            state.coldCallSelected.forEach(sel => {
-                const badge = document.createElement('div');
-                badge.className = 'flex items-center justify-center gap-3 bg-slate-900 border border-slate-700 px-6 py-2 rounded-xl text-lg font-bold shadow-md w-full max-w-md';
-                badge.innerHTML = `
-                    <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${sel.color};"></span>
-                    <span class="text-slate-400 uppercase tracking-widest text-xs">${sel.role}:</span>
-                    <span class="text-white">${sel.student}</span>
-                `;
-                hudList.appendChild(badge);
-            });
-
+            renderColdCallHUD();
             renderCanvas();
             saveState();
         }
 
+        // B: the responder forgot. Keep the question, ask someone else, come back to them later.
+        function comeBack() {
+            const ac = getActiveClass();
+            const room = getActiveRoom();
+            const roles = state.coldCallSelected || [];
+            if (!ac || !room || roles.length === 0) return showToast('Call someone first.');
+
+            const responder = roles[roles.length - 1];
+            if (!state.comeBack) state.comeBack = [];
+            state.comeBack.push({ student: responder.student, question: state.currentQuestion });
+
+            const present = getPresentSeated(ac, room);
+            const exclude = new Set([...roles.map(r => r.student), ...state.comeBack.map(c => c.student)]);
+            const candidates = present.filter(s => !exclude.has(s));
+            if (candidates.length === 0) {
+                state.comeBack.pop();
+                return showToast('No one else left to ask.');
+            }
+
+            const [next] = pickStudents(ac, candidates, 1, present.length);
+            markCalled(ac, [next]);
+            state.coldCallSelected = [...roles.slice(0, -1), { ...responder, student: next, returning: false }];
+            state.answerShown = false;
+
+            renderColdCallHUD();
+            renderCanvas();
+            saveState();
+        }
+
+        function renderColdCallHUD() {
+            const q = state.currentQuestion;
+            const cc = getColdCall(getActiveClass());
+            const total = parseQuestions(cc.questions).length;
+
+            document.getElementById('hudQuestionLabel').textContent = q ? 'Pregunta Activa' : 'Cold Call';
+            document.getElementById('hudQuestionCounter').textContent = q && !state.returningCall && questionDeck.dealt <= total
+                ? `${questionDeck.dealt} / ${total}` : '';
+            document.getElementById('hudQuestionText').textContent = q ? q.q : '';
+
+            const queue = state.comeBack || [];
+            document.getElementById('hudComeBack').textContent = queue.length
+                ? `↩ Back to: ${queue.map(c => c.student).join(', ')}` : '';
+
+            const answerEl = document.getElementById('hudAnswer');
+            answerEl.textContent = q && q.a ? q.a : '';
+            answerEl.classList.toggle('invisible', !(state.answerShown && q && q.a));
+
+            const hudList = document.getElementById('hudSelectedStudents');
+            hudList.innerHTML = '';
+            (state.coldCallSelected || []).forEach(sel => {
+                const badge = document.createElement('div');
+                badge.className = 'flex items-center justify-center gap-3 bg-slate-900 border border-slate-700 px-6 py-2 rounded-xl text-lg font-bold shadow-md';
+                badge.innerHTML = `
+                    <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${sel.color};"></span>
+                    <span class="text-slate-400 uppercase tracking-widest text-xs">${sel.role}:</span>
+                    <span class="text-white">${esc(sel.student)}</span>
+                    ${sel.returning ? '<span class="text-amber-300 text-sm">↩</span>' : ''}
+                `;
+                hudList.appendChild(badge);
+            });
+        }
+
+        // R: show/hide the answer, or ask the teacher for one if there isn't one yet
+        function revealAnswer() {
+            const q = state.currentQuestion;
+            if (!q) return showToast('No question on screen.');
+            if (!q.a) return openAnswerModal();
+            state.answerShown = !state.answerShown;
+            renderColdCallHUD();
+        }
+
+        function openAnswerModal() {
+            document.getElementById('answerModalQuestion').textContent = state.currentQuestion.q;
+            document.getElementById('answerModalInput').value = '';
+            document.getElementById('answerModal').classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => document.getElementById('answerModalInput').focus(), 50);
+        }
+
+        function saveAnswer() {
+            const answer = document.getElementById('answerModalInput').value.trim();
+            const q = state.currentQuestion;
+            if (!answer || !q) return showToast('Type an answer first.');
+
+            // Same question object is shared with any come-back entries, so they get it too
+            q.a = answer;
+            const key = q.q.toLowerCase();
+            const withAnswer = line => splitQA(line).q.toLowerCase() === key ? joinQA(q) : line;
+
+            const cc = getColdCall(getActiveClass());
+            cc.questions = parseQuestions(cc.questions).map(withAnswer).join('\n');
+            saveState();
+
+            const lib = getLibrary();
+            lib.subjects.forEach(s => s.topics.forEach(t => {
+                t.questions = t.questions.map(withAnswer);
+                t.subtopics.forEach(st => st.questions = st.questions.map(withAnswer));
+            }));
+            saveLibrary();
+
+            closeSubModal('answerModal');
+            state.answerShown = true;
+            renderColdCallHUD();
+        }
+
+        // --- COLD CALL SETUP (per class) ---
+        // Each class keeps its own working questions + mode; the library is shared by all classes.
+        function getColdCall(ac) {
+            if (!ac.coldCall) ac.coldCall = { questions: '', mode: '1', sources: [] };
+            return ac.coldCall;
+        }
+
+        function parseQuestions(text) {
+            return (text || '').split('\n').map(q => q.trim()).filter(q => q.length > 0);
+        }
+
+        // "Question | Answer" (the answer part is optional)
+        function splitQA(line) {
+            const i = line.indexOf('|');
+            return i === -1 ? { q: line.trim(), a: '' } : { q: line.slice(0, i).trim(), a: line.slice(i + 1).trim() };
+        }
+
+        function joinQA({ q, a }) {
+            return a ? `${q} | ${a}` : q;
+        }
+
+        // Dedupe by question text; if one copy has an answer, keep that one
+        function uniqueQuestions(list) {
+            const byKey = new Map();
+            list.forEach(line => {
+                const key = splitQA(line).q.toLowerCase();
+                const kept = byKey.get(key);
+                if (kept === undefined || (!splitQA(kept).a && splitQA(line).a)) byKey.set(key, line);
+            });
+            return [...byKey.values()];
+        }
+
+        let questionDeck = { key: null, queue: [], last: -1, dealt: 0 };
+
+        // questions: [{q, a}]. Keyed on question text only, so adding an answer doesn't restart the round.
+        function nextQuestion(questions) {
+            if (questions.length === 0) return null;
+            const key = questions.map(x => x.q).join('\n');
+            if (questionDeck.key !== key) {
+                questionDeck = { key, queue: [], last: -1, dealt: 0 };
+            }
+            if (questionDeck.queue.length === 0) {
+                const order = questions.map((_, i) => i);
+                for (let i = order.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [order[i], order[j]] = [order[j], order[i]];
+                }
+                // Don't start a new round with the question that just ended the last one
+                if (order.length > 1 && order[0] === questionDeck.last) {
+                    [order[0], order[order.length - 1]] = [order[order.length - 1], order[0]];
+                }
+                questionDeck.queue = order;
+                questionDeck.dealt = 0;
+            }
+            const idx = questionDeck.queue.shift();
+            questionDeck.last = idx;
+            questionDeck.dealt++;
+            return questions[idx];
+        }
+
+        function openColdCallModal() {
+            const ac = getActiveClass();
+            if (!ac) return;
+            const cc = getColdCall(ac);
+            document.getElementById('coldCallModalClass').textContent = ac.name;
+            document.getElementById('coldCallQuestions').value = cc.questions;
+            document.querySelectorAll('input[name="coldCallMode"]').forEach(r => r.checked = r.value === cc.mode);
+            renderColdCallSources();
+            updateColdCallCount();
+            document.getElementById('coldCallModal').classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => document.getElementById('coldCallStartBtn').focus(), 50);
+        }
+
+        // Copy the modal's contents back into the active class
+        function syncColdCallFromModal() {
+            const ac = getActiveClass();
+            if (!ac) return;
+            const cc = getColdCall(ac);
+            cc.questions = document.getElementById('coldCallQuestions').value;
+            const checked = document.querySelector('input[name="coldCallMode"]:checked');
+            if (checked) cc.mode = checked.value;
+            saveState();
+        }
+
+        function startColdCall() {
+            syncColdCallFromModal();
+            closeModals();
+            toggleSidebar(false);
+            centerCanvas();
+        }
+
+        function clearColdCallQuestions() {
+            document.getElementById('coldCallQuestions').value = '';
+            const ac = getActiveClass();
+            if (ac) getColdCall(ac).sources = [];
+            renderColdCallSources();
+            updateColdCallCount();
+        }
+
+        function updateColdCallCount() {
+            const n = parseQuestions(document.getElementById('coldCallQuestions').value).length;
+            document.getElementById('coldCallCount').textContent = n === 0
+                ? 'No questions: names only.'
+                : `${n} question${n === 1 ? '' : 's'}`;
+        }
+
+        function renderColdCallSources() {
+            const ac = getActiveClass();
+            const el = document.getElementById('coldCallSources');
+            const sources = ac ? getColdCall(ac).sources : [];
+            el.innerHTML = sources.map(s =>
+                `<span class="inline-flex items-center gap-1 text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full"><i data-lucide="folder" class="w-3 h-3"></i>${esc(s)}</span>`
+            ).join('');
+            el.classList.toggle('hidden', sources.length === 0);
+            lucide.createIcons();
+        }
+
+        // --- QUESTION LIBRARY (Subject > Topic > optional Subtopic) ---
+        const NEW = '__new__';
+
+        function getLibrary() {
+            if (!window._library) {
+                try {
+                    window._library = JSON.parse(localStorage.getItem('coldCallLibrary')) || { subjects: [] };
+                } catch (e) {
+                    window._library = { subjects: [] };
+                }
+            }
+            return window._library;
+        }
+
+        function saveLibrary() {
+            localStorage.setItem('coldCallLibrary', JSON.stringify(getLibrary()));
+        }
+
+        function findByName(list, name) {
+            return list.find(item => item.name.toLowerCase() === name.toLowerCase());
+        }
+
+        function findOrCreate(list, name, extra) {
+            let item = findByName(list, name);
+            if (!item) {
+                item = { id: uuid(), name, ...extra };
+                list.push(item);
+            }
+            return item;
+        }
+
+        function esc(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function fillSelect(selectEl, items, { noneLabel, newLabel, selected }) {
+            selectEl.innerHTML = '';
+            if (noneLabel) selectEl.add(new Option(noneLabel, ''));
+            items.forEach(it => selectEl.add(new Option(it.name, it.id)));
+            selectEl.add(new Option(newLabel, NEW));
+            const values = Array.from(selectEl.options).map(o => o.value);
+            selectEl.value = values.includes(selected) ? selected : values[0];
+        }
+
+        function showNewInput(id, show) {
+            const input = document.getElementById(id);
+            input.classList.toggle('hidden', !show);
+            if (!show) input.value = '';
+        }
+
+        function openSaveSetModal() {
+            if (parseQuestions(document.getElementById('coldCallQuestions').value).length === 0) {
+                showToast('Type or load some questions first.');
+                return;
+            }
+            // Pre-select the folder these questions were loaded from (if just one)
+            const lib = getLibrary();
+            const ac = getActiveClass();
+            const sources = ac ? getColdCall(ac).sources : [];
+            let pre = {};
+            if (sources.length === 1) {
+                const [sName, tName, stName] = sources[0].split(' › ');
+                const sub = sName && findByName(lib.subjects, sName);
+                const top = sub && tName && findByName(sub.topics, tName);
+                const st = top && stName && findByName(top.subtopics, stName);
+                pre = { subject: sub && sub.id, topic: top && top.id, subtopic: st ? st.id : '' };
+            }
+            renderSaveSelectors(null, pre);
+            document.getElementById('saveSetModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // Rebuild the Subject/Topic/Subtopic selects; `changed` is which one the user just touched.
+        function renderSaveSelectors(changed, pre = {}) {
+            const lib = getLibrary();
+            const subjSel = document.getElementById('saveSubject');
+            const topSel = document.getElementById('saveTopic');
+            const subSel = document.getElementById('saveSubtopic');
+
+            if (!changed) {
+                fillSelect(subjSel, lib.subjects, { newLabel: '+ New subject…', selected: pre.subject });
+            }
+            const subject = lib.subjects.find(s => s.id === subjSel.value);
+            showNewInput('saveSubjectNew', subjSel.value === NEW);
+
+            if (changed !== 'topic' && changed !== 'subtopic') {
+                fillSelect(topSel, subject ? subject.topics : [], { newLabel: '+ New topic…', selected: pre.topic });
+            }
+            const topic = subject && subject.topics.find(t => t.id === topSel.value);
+            showNewInput('saveTopicNew', topSel.value === NEW);
+
+            if (changed !== 'subtopic') {
+                fillSelect(subSel, topic ? topic.subtopics : [], { noneLabel: '— None (save in topic) —', newLabel: '+ New subtopic…', selected: pre.subtopic || '' });
+            }
+            const subtopic = topic && topic.subtopics.find(st => st.id === subSel.value);
+            showNewInput('saveSubtopicNew', subSel.value === NEW);
+
+            // Focus the new-name box the user just asked for
+            const focusMap = { subject: 'saveSubjectNew', topic: 'saveTopicNew', subtopic: 'saveSubtopicNew' };
+            if (changed && document.getElementById(changed === 'subject' ? 'saveSubject' : changed === 'topic' ? 'saveTopic' : 'saveSubtopic').value === NEW) {
+                setTimeout(() => document.getElementById(focusMap[changed]).focus(), 0);
+            }
+
+            // Warn when the destination folder already has questions
+            const target = subtopic || (subSel.value === '' ? topic : null);
+            const info = document.getElementById('saveExistingInfo');
+            if (target && target.questions.length > 0) {
+                document.getElementById('saveExistingText').textContent = `This folder already has ${target.questions.length} question${target.questions.length === 1 ? '' : 's'}.`;
+                info.classList.remove('hidden');
+            } else {
+                info.classList.add('hidden');
+            }
+        }
+
+        function resolveName(selectId, inputId, list) {
+            const sel = document.getElementById(selectId);
+            if (sel.value === NEW) return document.getElementById(inputId).value.trim();
+            const item = list.find(i => i.id === sel.value);
+            return item ? item.name : '';
+        }
+
+        function confirmSaveSet() {
+            const lib = getLibrary();
+            const subjectName = resolveName('saveSubject', 'saveSubjectNew', lib.subjects);
+            if (!subjectName) return showToast('Choose or name a subject.');
+            const existingSubject = findByName(lib.subjects, subjectName);
+            const topicName = resolveName('saveTopic', 'saveTopicNew', existingSubject ? existingSubject.topics : []);
+            if (!topicName) return showToast('Choose or name a topic.');
+            const existingTopic = existingSubject && findByName(existingSubject.topics, topicName);
+            const subtopicName = resolveName('saveSubtopic', 'saveSubtopicNew', existingTopic ? existingTopic.subtopics : []);
+            if (document.getElementById('saveSubtopic').value === NEW && !subtopicName) return showToast('Name the subtopic, or choose None.');
+
+            const subject = findOrCreate(lib.subjects, subjectName, { topics: [] });
+            const topic = findOrCreate(subject.topics, topicName, { questions: [], subtopics: [] });
+            const target = subtopicName ? findOrCreate(topic.subtopics, subtopicName, { questions: [] }) : topic;
+
+            const incoming = parseQuestions(document.getElementById('coldCallQuestions').value);
+            const replace = document.querySelector('input[name="saveMergeMode"]:checked').value === 'replace';
+            target.questions = replace ? uniqueQuestions(incoming) : uniqueQuestions([...target.questions, ...incoming]);
+            saveLibrary();
+
+            const path = [subject.name, topic.name, subtopicName ? target.name : null].filter(Boolean).join(' › ');
+            const ac = getActiveClass();
+            if (ac) getColdCall(ac).sources = [path];
+            syncColdCallFromModal();
+            renderColdCallSources();
+            closeSubModal('saveSetModal');
+            showToast(`Saved ${target.questions.length} questions to ${path}`);
+        }
+
+        // --- LOAD (multi-select tree) ---
+        let librarySelection = new Set();   // ids of topics/subtopics whose own questions are ticked
+        let collapsedSubjects = new Set();
+
+        // Every folder under a node that actually holds questions
+        function selectableIds(node) {
+            if (node.topics) return node.topics.flatMap(selectableIds);
+            const ids = node.questions.length > 0 ? [node.id] : [];
+            return node.subtopics ? ids.concat(node.subtopics.flatMap(selectableIds)) : ids;
+        }
+
+        function countQuestions(node) {
+            if (node.topics) return node.topics.reduce((n, t) => n + countQuestions(t), 0);
+            return node.questions.length + (node.subtopics ? node.subtopics.reduce((n, st) => n + st.questions.length, 0) : 0);
+        }
+
+        function checkState(node) {
+            const ids = selectableIds(node);
+            const n = ids.filter(id => librarySelection.has(id)).length;
+            return n === 0 ? 'none' : n === ids.length ? 'all' : 'some';
+        }
+
+        // Locate a subject/topic/subtopic by id, with the list it lives in and its path
+        function findLibraryNode(id) {
+            for (const s of getLibrary().subjects) {
+                if (s.id === id) return { node: s, siblings: getLibrary().subjects, kind: 'subject', path: [] };
+                for (const t of s.topics) {
+                    if (t.id === id) return { node: t, siblings: s.topics, kind: 'topic', path: [s.name] };
+                    const st = t.subtopics.find(x => x.id === id);
+                    if (st) return { node: st, siblings: t.subtopics, kind: 'subtopic', path: [s.name, t.name] };
+                }
+            }
+            return null;
+        }
+
+        function toggleNode(kind, id) {
+            const found = findLibraryNode(id);
+            if (!found) return;
+            const ids = selectableIds(found.node);
+            const selectAll = checkState(found.node) !== 'all';
+            ids.forEach(i => selectAll ? librarySelection.add(i) : librarySelection.delete(i));
+            renderLibraryTree();
+        }
+
+        function toggleSubjectCollapse(id) {
+            collapsedSubjects.has(id) ? collapsedSubjects.delete(id) : collapsedSubjects.add(id);
+            renderLibraryTree();
+        }
+
+        function deleteLibraryNode(id) {
+            const found = findLibraryNode(id);
+            if (!found) return;
+            const what = { subject: 'the whole subject', topic: 'topic', subtopic: 'subtopic' }[found.kind];
+            if (!confirm(`Delete ${what} "${found.node.name}" and all its questions?`)) return;
+            found.siblings.splice(found.siblings.indexOf(found.node), 1);
+            saveLibrary();
+            renderLibraryTree();
+        }
+
+        let editingNodeId = null;
+
+        function editLibraryNode(id) {
+            const found = findLibraryNode(id);
+            if (!found) return;
+            editingNodeId = id;
+            const hasQuestions = found.kind !== 'subject';
+            document.getElementById('editFolderPath').textContent = found.path.length ? found.path.join(' › ') : 'Subject';
+            document.getElementById('editFolderName').value = found.node.name;
+            document.getElementById('editFolderQuestionsWrap').classList.toggle('hidden', !hasQuestions);
+            document.getElementById('editFolderQuestions').value = hasQuestions ? found.node.questions.join('\n') : '';
+            document.getElementById('editFolderModal').classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => document.getElementById(hasQuestions ? 'editFolderQuestions' : 'editFolderName').focus(), 50);
+        }
+
+        function saveFolderEdit() {
+            const found = findLibraryNode(editingNodeId);
+            if (!found) return closeSubModal('editFolderModal');
+            const name = document.getElementById('editFolderName').value.trim();
+            if (!name) return showToast('The folder needs a name.');
+            const clash = findByName(found.siblings, name);
+            if (clash && clash !== found.node) return showToast(`There's already a folder called "${clash.name}" here.`);
+
+            found.node.name = name;
+            if (found.kind !== 'subject') {
+                found.node.questions = uniqueQuestions(parseQuestions(document.getElementById('editFolderQuestions').value));
+            }
+            saveLibrary();
+            closeSubModal('editFolderModal');
+            renderLibraryTree();
+            showToast('Folder saved');
+        }
+
+        function openLoadSetModal() {
+            librarySelection = new Set();
+            renderLibraryTree();
+            document.getElementById('loadSetModal').classList.remove('hidden');
+        }
+
+        function renderLibraryTree() {
+            const lib = getLibrary();
+            const tree = document.getElementById('libraryTree');
+
+            if (lib.subjects.length === 0) {
+                tree.innerHTML = `<div class="text-center text-sm text-slate-500 p-6">Your library is empty.<br>Type some questions, then press <b>Save</b> to file them under a subject and topic.</div>`;
+            } else {
+                const box = (node, kind) => {
+                    const st = checkState(node);
+                    const disabled = selectableIds(node).length === 0;
+                    return `<input type="checkbox" ${st === 'all' ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-indeterminate="${st === 'some'}" onchange="toggleNode('${kind}', '${node.id}')" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 shrink-0">`;
+                };
+                const trash = (id) => `
+                    <button onclick="event.preventDefault(); editLibraryNode('${id}')" class="text-slate-300 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity p-1" title="Edit"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                    <button onclick="event.preventDefault(); deleteLibraryNode('${id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+                const count = (n) => `<span class="text-xs text-slate-400 tabular-nums">${n}</span>`;
+
+                tree.innerHTML = lib.subjects.map(s => {
+                    const collapsed = collapsedSubjects.has(s.id);
+                    const topics = collapsed ? '' : s.topics.map(t => `
+                        <label class="group flex items-center gap-2.5 py-1.5 pl-8 pr-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                            ${box(t, 'topic')}
+                            <span class="flex-1 text-sm font-medium text-slate-700 truncate">${esc(t.name)}</span>
+                            ${count(countQuestions(t))}${trash(t.id)}
+                        </label>
+                        ${t.subtopics.map(st => `
+                            <label class="group flex items-center gap-2.5 py-1 pl-14 pr-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                                ${box(st, 'subtopic')}
+                                <span class="flex-1 text-sm text-slate-600 truncate">${esc(st.name)}</span>
+                                ${count(st.questions.length)}${trash(st.id)}
+                            </label>`).join('')}
+                    `).join('');
+                    return `
+                        <div class="border border-slate-200 rounded-xl p-2">
+                            <div class="group flex items-center gap-2.5 py-1.5 px-2">
+                                <button onclick="toggleSubjectCollapse('${s.id}')" class="text-slate-400 hover:text-slate-700"><i data-lucide="${collapsed ? 'chevron-right' : 'chevron-down'}" class="w-4 h-4"></i></button>
+                                ${box(s, 'subject')}
+                                <span class="flex-1 font-semibold text-slate-800 truncate">${esc(s.name)}</span>
+                                ${count(countQuestions(s))}${trash(s.id)}
+                            </div>
+                            ${topics}
+                        </div>`;
+                }).join('');
+                tree.querySelectorAll('input[data-indeterminate="true"]').forEach(cb => cb.indeterminate = true);
+            }
+
+            const n = uniqueQuestions(collectSelectedQuestions()).length;
+            document.getElementById('loadSelectedCount').textContent = n ? `${n} question${n === 1 ? '' : 's'} selected` : 'Nothing selected';
+            lucide.createIcons();
+        }
+
+        function collectSelectedQuestions() {
+            const out = [];
+            getLibrary().subjects.forEach(s => s.topics.forEach(t => {
+                if (librarySelection.has(t.id)) out.push(...t.questions);
+                t.subtopics.forEach(st => { if (librarySelection.has(st.id)) out.push(...st.questions); });
+            }));
+            return out;
+        }
+
+        // Short labels for what was loaded, e.g. "Spanish › 1.1" rather than every subtopic
+        function selectionLabels() {
+            const labels = [];
+            getLibrary().subjects.forEach(s => {
+                if (checkState(s) === 'all') return labels.push(s.name);
+                s.topics.forEach(t => {
+                    const tState = checkState(t);
+                    if (tState === 'all') return labels.push(`${s.name} › ${t.name}`);
+                    if (librarySelection.has(t.id)) labels.push(`${s.name} › ${t.name}`);
+                    t.subtopics.forEach(st => { if (librarySelection.has(st.id)) labels.push(`${s.name} › ${t.name} › ${st.name}`); });
+                });
+            });
+            return labels;
+        }
+
+        function loadSelectedSets(mode) {
+            const picked = collectSelectedQuestions();
+            if (picked.length === 0) return showToast('Tick at least one folder.');
+            const ta = document.getElementById('coldCallQuestions');
+            const ac = getActiveClass();
+            const cc = ac ? getColdCall(ac) : { sources: [] };
+            const labels = selectionLabels();
+            if (mode === 'replace') {
+                ta.value = uniqueQuestions(picked).join('\n');
+                cc.sources = labels;
+            } else {
+                ta.value = uniqueQuestions([...parseQuestions(ta.value), ...picked]).join('\n');
+                cc.sources = [...new Set([...cc.sources, ...labels])];
+            }
+            syncColdCallFromModal();
+            renderColdCallSources();
+            updateColdCallCount();
+            closeSubModal('loadSetModal');
+        }
+
+        function closeSubModal(id) {
+            const modal = document.getElementById(id);
+            if (modal.contains(document.activeElement)) document.activeElement.blur();
+            modal.classList.add('hidden');
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.add('hidden'), 2500);
+        }
+
+        // --- KEYBOARD ---
+        window.addEventListener('keydown', (e) => {
+            const anyModalOpen = Array.from(document.querySelectorAll('.modal-overlay')).some(m => !m.classList.contains('hidden'));
+            if (e.key === 'Escape') {
+                // Close the top-most layer only
+                const top = ['editFolderModal', 'answerModal', 'saveSetModal', 'loadSetModal']
+                    .find(id => !document.getElementById(id).classList.contains('hidden'));
+                if (top) return closeSubModal(top);
+                if (anyModalOpen) return closeModals();
+            }
+
+            if (anyModalOpen || e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.target.closest('input, textarea, select')) return;
+
+            // V = student / teacher view (any mode)
+            if (e.code === 'KeyV') {
+                e.preventDefault();
+                if (!e.repeat) toggleStudentView();
+                return;
+            }
+
+            // H = menu (any mode)
+            if (e.code === 'KeyH') {
+                e.preventDefault();
+                if (!e.repeat) toggleSidebar();
+                return;
+            }
+
+            // Board shortcuts: Space = call, R = answer, B = come back
+            if (state.mode !== 'coldcall') return;
+            const action = { Space: triggerColdCall, KeyR: revealAnswer, KeyB: comeBack }[e.code];
+            if (!action) return;
+            e.preventDefault();
+            // Stop Space also "clicking" whichever toolbar button still has focus
+            if (document.activeElement && document.activeElement.tagName === 'BUTTON') document.activeElement.blur();
+            if (!e.repeat) action();
+        });
+
         function selectClass(id) {
+            rememberSeating(getActiveClass(), getActiveRoom()); // the room being left counts as current
             state.activeClassId = id;
             const ac = getActiveClass();
             state.activeRoomId = ac.rooms.length > 0 ? ac.rooms[0].id : null;
+            if (state.mode === 'coldcall') resetColdCallHUD();
             renderAll();
             saveState();
         }
 
         function selectRoom(id) {
+            rememberSeating(getActiveClass(), getActiveRoom()); // the room being left counts as current
             state.activeRoomId = id;
             renderAll();
             saveState();
@@ -1421,6 +2378,92 @@
                 renderAll();
                 saveState();
             }
+        }
+
+        // --- SEATING MEMORY (per class) ---
+        // ac.lastSeating = { fromRoomName, at: timestamp, order: [name | null] }
+        // order = the student desks in reading order (front row first, then left to right);
+        // null = an empty desk, so gaps stay where they were. Updated whenever seating changes
+        // or a room is left; deleting a room never touches it. New rooms are seated from it.
+        const ROW_TOLERANCE = 40; // about half a desk height
+
+        // Student desks in reading order: rows by y (top = front, where the teacher desk is), then by x
+        function spatialStudentDesks(desks) {
+            const rows = [];
+            desks.filter(d => !d.isTeacher)
+                .sort((a, b) => a.y - b.y || a.x - b.x)
+                .forEach(d => {
+                    const row = rows[rows.length - 1];
+                    if (row && d.y - row[0].y <= ROW_TOLERANCE) row.push(d);
+                    else rows.push([d]);
+                });
+            return rows.flatMap(row => row.sort((a, b) => a.x - b.x));
+        }
+
+        function seatingOrder(room) {
+            const order = room ? spatialStudentDesks(room.desks).map(d => d.student || null) : [];
+            while (order.length && order[order.length - 1] === null) order.pop();
+            return order;
+        }
+
+        function rememberSeating(ac, room) {
+            if (!ac || !room || !ac.rooms.includes(room)) return;
+            ac.lastSeating = { fromRoomName: room.name, at: Date.now(), order: seatingOrder(room) };
+        }
+
+        // After any seating change in the room on screen
+        function seatingChanged() {
+            rememberSeating(getActiveClass(), getActiveRoom());
+        }
+
+        // Seat `order` into `desks` in reading order. Names not in `roster` (if given) leave their desk empty.
+        // Gaps are kept when there's room for them; otherwise they close up so nobody loses a seat.
+        // Anyone beyond the desk count stays unassigned.
+        function seatInOrder(desks, order, roster) {
+            const allowed = roster ? new Set(roster) : null;
+            const seen = new Set();
+            let names = order.map(n => {
+                if (!n || seen.has(n) || (allowed && !allowed.has(n))) return null;
+                seen.add(n);
+                return n;
+            });
+            const seats = spatialStudentDesks(desks);
+            if (names.length > seats.length) names = names.filter(Boolean);
+            seats.forEach((d, i) => d.student = names[i] || null);
+        }
+
+        // Where a new classroom's seating comes from: the class's latest arrangement,
+        // or (older data with none saved yet) the active room
+        function newRoomSeatingSource(ac) {
+            if (ac.lastSeating && Array.isArray(ac.lastSeating.order)) return ac.lastSeating;
+            const room = getActiveRoom();
+            return room ? { fromRoomName: room.name, at: null, order: seatingOrder(room) } : null;
+        }
+
+        function formatSeatingTime(ts) {
+            const d = new Date(ts);
+            const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const days = Math.round((today - day) / 86400000);
+            if (days === 0) return `today ${time}`;
+            if (days === 1) return `yesterday ${time}`;
+            return `${d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })} ${time}`;
+        }
+
+        function renderRoomSeatingSource(ac) {
+            const src = newRoomSeatingSource(ac);
+            const roster = new Set(ac.students);
+            const count = src ? src.order.filter(n => n && roster.has(n)).length : 0;
+            let text;
+            if (count === 0) {
+                text = 'No seated students to copy: everyone will start in Unassigned.';
+            } else if (src.at) {
+                text = `Students will be seated as in your latest arrangement (${src.fromRoomName} · ${formatSeatingTime(src.at)})`;
+            } else {
+                text = `Students will be seated as in the active room (${src.fromRoomName})`;
+            }
+            document.getElementById('roomSeatingSource').textContent = text;
         }
 
         function addRoom() {
@@ -1463,6 +2506,8 @@
                 }
             }
 
+            renderRoomSeatingSource(ac);
+
             const modal = document.getElementById('addRoomModal');
             if (modal) {
                 modal.classList.remove('hidden');
@@ -1497,11 +2542,6 @@
                 }
             }
 
-            // Gather currently seated students from active room
-            const seatedStudents = currentRoom && currentRoom.desks
-                ? currentRoom.desks.filter(d => !d.isTeacher && d.student).map(d => d.student)
-                : [];
-
             let sourceDesks = [];
             if (layoutSource === 'current') {
                 sourceDesks = currentRoom ? currentRoom.desks : generateStandardLayout();
@@ -1511,21 +2551,18 @@
                 sourceDesks = generateStandardLayout();
             }
 
-            let studentIdx = 0;
-            const newDesks = sourceDesks.map(d => {
-                let assignedStudent = null;
-                if (!d.isTeacher && studentIdx < seatedStudents.length) {
-                    assignedStudent = seatedStudents[studentIdx];
-                    studentIdx++;
-                }
-                return {
-                    id: uuid(),
-                    x: d.x,
-                    y: d.y,
-                    isTeacher: d.isTeacher,
-                    student: assignedStudent
-                };
-            });
+            const newDesks = sourceDesks.map(d => ({
+                id: uuid(),
+                x: d.x,
+                y: d.y,
+                isTeacher: d.isTeacher,
+                student: null
+            }));
+
+            // Seat everyone as in the class's latest arrangement (not whichever room happens to be active),
+            // front to back and left to right. New roster names stay in Unassigned.
+            const source = newRoomSeatingSource(ac);
+            if (source) seatInOrder(newDesks, source.order, ac.students);
 
             const newRoom = {
                 id: uuid(),
@@ -1534,6 +2571,7 @@
             };
 
             ac.rooms.push(newRoom);
+            rememberSeating(ac, newRoom);
             state.activeRoomId = newRoom.id;
             closeModals();
             renderAll();
@@ -1545,6 +2583,9 @@
             if(!ac || ac.rooms.length <= 1) return;
             
             if(confirm('Delete this classroom?')) {
+                // The room on screen is the current arrangement: remember it before it goes, so a room
+                // made next gets it. Deleting a room that isn't on screen leaves ac.lastSeating alone.
+                if (state.activeRoomId === id) rememberSeating(ac, getActiveRoom());
                 ac.rooms = ac.rooms.filter(r => r.id !== id);
                 if(state.activeRoomId === id) {
                     state.activeRoomId = ac.rooms[0].id;
@@ -1571,6 +2612,7 @@
                 isTeacher: false,
                 student: null
             });
+            seatingChanged();
             renderCanvas();
             saveState();
         }
@@ -1586,6 +2628,7 @@
             }
 
             room.desks = room.desks.filter(d => d.id !== deskId);
+            seatingChanged();
             renderAll();
             saveState();
         }
@@ -1658,6 +2701,7 @@
                 const el = document.querySelector(`.desk[data-id="${draggingDesk.id}"]`);
                 if(el) el.style.zIndex = '';
                 draggingDesk = null;
+                seatingChanged(); // moving a desk moves whoever sits there
                 saveState();
             }
             if (isPanning) {
@@ -1719,6 +2763,7 @@
                 }
                 
                 targetDesk.student = data.student;
+                seatingChanged();
                 renderAll();
                 saveState();
 
@@ -1737,6 +2782,7 @@
                     const sourceDesk = room.desks.find(d => d.id === data.sourceId);
                     if (sourceDesk) {
                         sourceDesk.student = null;
+                        seatingChanged();
                         renderAll();
                         saveState();
                     }
@@ -1750,23 +2796,489 @@
             if (!ac) return;
             
             if (!ac.highlightedStudents) ac.highlightedStudents = [];
-            
+            if (!ac.currentRoll) ac.currentRoll = {}; // student -> id of the Absent note made in this roll
+
             if (ac.highlightedStudents.includes(student)) {
+                // Unmarked before the lesson is recorded = arrived late: drop today's Absent note too
                 ac.highlightedStudents = ac.highlightedStudents.filter(s => s !== student);
+                const noteId = ac.currentRoll[student];
+                if (noteId) {
+                    ac.notes[student] = getNotes(ac, student).filter(n => n.id !== noteId);
+                    delete ac.currentRoll[student];
+                }
             } else {
                 ac.highlightedStudents.push(student);
+                ac.currentRoll[student] = addNote(ac, student, 'Absent', 'absent').id;
             }
             renderAll();
             saveState();
         }
 
-        function clearHighlights() {
+        // --- LESSONS & UNITS (per class) ---
+        // ac.lessons     = [{ id, date: 'YYYY-MM-DD', time: 'HH:MM', absent: [names], unit: name|null, unitId }]
+        // ac.currentUnit = { id, name, started }       (name '' = No unit)
+        // ac.pastUnits   = [{ id, name, started, finished }]
+        // Counts are always worked out from ac.lessons (by unitId), never stored, so they can't drift.
+        const RECENT_LESSON_MINUTES = 20;
+
+        function getLessonData(ac) {
+            if (!ac.lessons) ac.lessons = [];
+            if (!ac.pastUnits) ac.pastUnits = [];
+            if (!ac.currentUnit) ac.currentUnit = { id: uuid(), name: '', started: todayISO() };
+            return ac;
+        }
+
+        function nowHHMM() {
+            const d = new Date();
+            return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function lessonTime(l) {
+            const [y, m, d] = l.date.split('-').map(Number);
+            const [hh, mm] = (l.time || '00:00').split(':').map(Number);
+            return new Date(y, m - 1, d, hh, mm).getTime();
+        }
+
+        // Oldest first (stable, so two lessons in the same minute keep their order)
+        function sortedLessons(ac) {
+            return getLessonData(ac).lessons.slice().sort((a, b) => lessonTime(a) - lessonTime(b));
+        }
+
+        function unitLessons(ac, unitId) {
+            return sortedLessons(ac).filter(l => l.unitId === unitId);
+        }
+
+        function unitLabel(name) {
+            return name || 'No unit';
+        }
+
+        function plural(n, word) {
+            return `${n} ${word}${n === 1 ? '' : 's'}`;
+        }
+
+        // Saves the lesson (with who was away), then clears the red desks for the next one.
+        // The dated Absent notes stay; late arrivals can't be undone after this.
+        function recordLesson() {
             const ac = getActiveClass();
-            if (ac) {
-                ac.highlightedStudents = [];
-                renderAll();
-                saveState();
+            if (!ac) return;
+            getLessonData(ac);
+
+            // Guard against a double click, but still allow double periods
+            const last = sortedLessons(ac).pop();
+            if (last) {
+                const mins = Math.floor((Date.now() - lessonTime(last)) / 60000);
+                if (mins >= 0 && mins < RECENT_LESSON_MINUTES) {
+                    const ago = mins === 0 ? 'less than a minute ago' : `${plural(mins, 'minute')} ago`;
+                    if (!confirm(`You recorded a lesson ${ago}. Record another?`)) return;
+                }
             }
+
+            const unit = ac.currentUnit;
+            const absent = [...(ac.highlightedStudents || [])];
+            ac.lessons.push({ id: uuid(), date: todayISO(), time: nowHHMM(), absent, unit: unit.name || null, unitId: unit.id });
+
+            ac.highlightedStudents = [];
+            ac.currentRoll = {};
+            renderAll();
+            saveState();
+
+            const parts = [`Lesson ${ac.lessons.length} recorded`, absent.length ? `${absent.length} absent` : 'everyone present'];
+            if (unit.name) parts.push(`Unit: ${unit.name} (lesson ${unitLessons(ac, unit.id).length})`);
+            showToast(parts.join(' · '));
+        }
+
+        function renderLessonPill() {
+            const pill = document.getElementById('lessonPill');
+            const ac = getActiveClass();
+            pill.classList.toggle('hidden', !ac);
+            if (!ac) return;
+            getLessonData(ac);
+            const total = ac.lessons.length;
+            const inUnit = unitLessons(ac, ac.currentUnit.id).length;
+            pill.innerHTML = `
+                <i data-lucide="clipboard-list" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>${total ? `Lesson <b class="text-slate-700 tabular-nums">${total}</b>` : 'No lessons yet'}</span>
+                <span class="text-slate-300">·</span>
+                <span class="flex min-w-0"><span class="truncate max-w-[11rem] ${ac.currentUnit.name ? '' : 'italic text-slate-400'}">${esc(unitLabel(ac.currentUnit.name))}</span>:&nbsp;<b class="text-slate-700 tabular-nums">${inUnit}</b></span>`;
+            lucide.createIcons();
+        }
+
+        // Unit names used in any class, plus the question library's topics (e.g. "3.4 El tiempo")
+        function unitNameSuggestions() {
+            const names = new Set();
+            state.classes.forEach(c => {
+                if (c.currentUnit && c.currentUnit.name) names.add(c.currentUnit.name);
+                (c.pastUnits || []).forEach(u => u.name && names.add(u.name));
+            });
+            getLibrary().subjects.forEach(s => s.topics.forEach(t => names.add(t.name)));
+            return [...names].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        }
+
+        let expandedLessons = new Set(); // lesson ids showing their absent names
+
+        function openLessonsModal() {
+            const ac = getActiveClass();
+            if (!ac) return;
+            expandedLessons = new Set();
+            showFinishUnit(false);
+            renderLessonsModal();
+            document.getElementById('lessonsModal').classList.remove('hidden');
+        }
+
+        function formatLessonDate(iso) {
+            const [y, m, d] = iso.split('-').map(Number);
+            return new Date(y, m - 1, d).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+
+        // First to last lesson of a unit; falls back to when it was started/finished if it has none
+        function unitDateRange(u, lessons) {
+            const from = lessons.length ? lessons[0].date : u.started;
+            const to = lessons.length ? lessons[lessons.length - 1].date : u.finished;
+            if (!from) return '';
+            return to && to !== from ? `${formatNoteDate(from)} – ${formatNoteDate(to)}` : formatNoteDate(from);
+        }
+
+        function renderLessonsModal() {
+            const ac = getActiveClass();
+            if (!ac) return;
+            getLessonData(ac);
+            const all = sortedLessons(ac);
+            const cur = ac.currentUnit;
+            const curLessons = all.filter(l => l.unitId === cur.id);
+
+            document.getElementById('lessonsModalClass').textContent = `${ac.name} · ${plural(all.length, 'lesson')} recorded`;
+            const nameInput = document.getElementById('unitNameInput');
+            if (document.activeElement !== nameInput) nameInput.value = cur.name;
+            document.getElementById('unitLessonCount').textContent = curLessons.length;
+            document.getElementById('unitLessonLabel').textContent = curLessons.length === 1 ? 'lesson' : 'lessons';
+            document.getElementById('unitSince').textContent = curLessons.length ? `Since ${formatLessonDate(curLessons[0].date)}` : 'No lessons in this unit yet';
+            document.getElementById('finishUnitBtn').disabled = curLessons.length === 0;
+            document.getElementById('finishUnitName').textContent = unitLabel(cur.name);
+            document.getElementById('unitNameSuggestions').innerHTML = unitNameSuggestions().map(n => `<option value="${esc(n)}"></option>`).join('');
+
+            // Units: current first, then finished ones newest first, then the total
+            const unitRow = (u, isCurrent) => {
+                const lessons = all.filter(l => l.unitId === u.id);
+                return `
+                    <div class="group flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-slate-50">
+                        <span class="flex-1 min-w-0 truncate text-sm ${u.name ? 'font-medium text-slate-700' : 'italic text-slate-400'}">${esc(unitLabel(u.name))}${isCurrent ? ' <span class="not-italic text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded ml-1">current</span>' : ''}</span>
+                        <span class="text-xs text-slate-400 tabular-nums whitespace-nowrap">${unitDateRange(u, lessons)}</span>
+                        ${isCurrent ? '<span class="w-5"></span>' : `<button onclick="renamePastUnit('${u.id}')" class="text-slate-300 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity p-0.5" title="Rename"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>`}
+                        <span class="w-8 text-right text-sm font-semibold text-slate-700 tabular-nums">${lessons.length}</span>
+                    </div>`;
+            };
+            document.getElementById('unitHistory').innerHTML =
+                unitRow(cur, true) +
+                ac.pastUnits.slice().reverse().map(u => unitRow(u, false)).join('') +
+                `<div class="flex items-center justify-between px-2 pt-2 mt-1 border-t border-slate-100 text-sm">
+                    <span class="font-semibold text-slate-500">Total</span>
+                    <span class="w-8 text-right font-bold text-slate-800 tabular-nums">${all.length}</span>
+                </div>`;
+
+            // Lessons, newest first, numbered in the order they happened
+            const list = document.getElementById('lessonList');
+            if (all.length === 0) {
+                list.innerHTML = `<div class="text-center text-sm text-slate-400 p-4">No lessons recorded yet.<br>Press <b>Record lesson</b> (Assign Seats) at the end of each lesson.</div>`;
+            } else {
+                const unitNumber = {}; // lesson id -> its number within its unit
+                const seen = {};
+                all.forEach(l => unitNumber[l.id] = seen[l.unitId] = (seen[l.unitId] || 0) + 1);
+                list.innerHTML = all.map((l, i) => ({ l, n: i + 1 })).reverse().map(({ l, n }) => {
+                    const absent = l.absent || [];
+                    const open = expandedLessons.has(l.id);
+                    const absentBtn = absent.length
+                        ? `<button onclick="toggleLessonAbsent('${l.id}')" title="${esc(absent.join(', '))}" class="text-xs font-semibold px-1.5 py-0.5 rounded whitespace-nowrap ${open ? 'bg-red-100 text-red-800' : 'bg-red-50 text-red-700 hover:bg-red-100'}">${absent.length} absent</button>`
+                        : `<span class="text-xs text-slate-400 whitespace-nowrap">all present</span>`;
+                    return `
+                        <div class="group px-2 py-1.5 rounded-lg hover:bg-slate-50">
+                            <div class="flex items-center gap-3">
+                                <span class="w-7 text-xs font-bold text-slate-400 tabular-nums">#${n}</span>
+                                <span class="text-sm text-slate-700 whitespace-nowrap">${formatLessonDate(l.date)} <span class="text-slate-400 tabular-nums">${esc(l.time || '')}</span></span>
+                                <span class="flex-1 min-w-0 truncate text-xs ${l.unit ? 'text-slate-500' : 'italic text-slate-400'}">${esc(unitLabel(l.unit))} · ${unitNumber[l.id]}</span>
+                                ${absentBtn}
+                                <button onclick="deleteLesson('${l.id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5" title="Delete lesson"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                            ${open ? `<div class="pl-10 pr-6 pt-1 text-xs text-red-800">${absent.map(esc).join(', ')}</div>` : ''}
+                        </div>`;
+                }).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleLessonAbsent(id) {
+            expandedLessons.has(id) ? expandedLessons.delete(id) : expandedLessons.add(id);
+            renderLessonsModal();
+        }
+
+        function lessonsChanged() {
+            saveState();
+            renderLessonPill();
+            renderLessonsModal();
+        }
+
+        // Renaming a unit relabels its lessons too
+        function setUnitName(ac, unit, name) {
+            unit.name = name;
+            ac.lessons.forEach(l => { if (l.unitId === unit.id) l.unit = name || null; });
+        }
+
+        function renameCurrentUnit(value) {
+            const ac = getActiveClass();
+            if (!ac) return;
+            getLessonData(ac);
+            const name = value.trim();
+            if (name === ac.currentUnit.name) return;
+            setUnitName(ac, ac.currentUnit, name);
+            lessonsChanged();
+        }
+
+        function renamePastUnit(id) {
+            const ac = getActiveClass();
+            const unit = ac && getLessonData(ac).pastUnits.find(u => u.id === id);
+            if (!unit) return;
+            const name = prompt('Rename this unit:', unit.name);
+            if (name === null) return;
+            setUnitName(ac, unit, name.trim());
+            lessonsChanged();
+        }
+
+        function showFinishUnit(show) {
+            document.getElementById('finishUnitRow').classList.toggle('hidden', show);
+            document.getElementById('finishUnitForm').classList.toggle('hidden', !show);
+            const input = document.getElementById('nextUnitInput');
+            input.value = '';
+            if (show) setTimeout(() => input.focus(), 50);
+        }
+
+        // Puts the current unit away in the history and starts a new one at 0
+        function finishUnit() {
+            const ac = getActiveClass();
+            if (!ac) return;
+            getLessonData(ac);
+            // Commit a name typed but not yet saved (no blur happened before this click)
+            renameCurrentUnit(document.getElementById('unitNameInput').value);
+            const cur = ac.currentUnit;
+            const count = unitLessons(ac, cur.id).length;
+            if (count === 0) {
+                showFinishUnit(false);
+                return showToast('No lessons in this unit yet: just rename it.');
+            }
+            const nextName = document.getElementById('nextUnitInput').value.trim();
+            ac.pastUnits.push({ id: cur.id, name: cur.name, started: cur.started, finished: todayISO() });
+            ac.currentUnit = { id: uuid(), name: nextName, started: todayISO() };
+            showFinishUnit(false);
+            lessonsChanged();
+            showToast(`${unitLabel(cur.name)} finished: ${plural(count, 'lesson')}`);
+        }
+
+        // Fixes a mistake. Notes (e.g. Absent) are left as they are.
+        function deleteLesson(id) {
+            const ac = getActiveClass();
+            if (!ac) return;
+            const all = sortedLessons(ac);
+            const i = all.findIndex(l => l.id === id);
+            if (i === -1) return;
+            const l = all[i];
+            if (!confirm(`Delete lesson ${i + 1} (${formatLessonDate(l.date)}, ${l.time})?\n\nStudent notes are not changed.`)) return;
+            ac.lessons = ac.lessons.filter(x => x.id !== id);
+            lessonsChanged();
+        }
+
+        // --- STUDENT NOTES ---
+        // ac.notes = { studentName: [{ id, text, date: 'YYYY-MM-DD', color, done }] }
+        // Text inside [brackets] is private: hidden while Student view is on (the default).
+        const NOTE_COLORS = {
+            general:   { hex: '#64748b', label: 'General' },
+            absent:    { hex: '#ef4444', label: 'Absent / catch-up' },
+            homework:  { hex: '#f97316', label: 'Homework / work' },
+            check:     { hex: '#eab308', label: 'Check understanding' },
+            wellbeing: { hex: '#a855f7', label: 'Wellbeing' },
+            home:      { hex: '#3b82f6', label: 'Contact home' },
+            praise:    { hex: '#22c55e', label: 'Praise' }
+        };
+
+        let studentView = true;       // never persisted: the app always opens safe for projecting
+        let notesStudent = null;
+        let noteColor = 'general';
+        let editingNoteId = null;
+
+        function todayISO() {
+            const d = new Date(); // local date, not UTC (Melbourne mornings are still "yesterday" in UTC)
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatNoteDate(iso) {
+            const [y, m, d] = iso.split('-').map(Number);
+            return new Date(y, m - 1, d).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+        }
+
+        // Remove [private] parts; an unclosed "[" hides the rest of the line
+        function stripPrivate(text) {
+            return text.replace(/\[[^\]]*(\]|$)/g, '').replace(/\s{2,}/g, ' ').trim();
+        }
+
+        function getNotes(ac, student) {
+            if (!ac.notes) ac.notes = {};
+            return ac.notes[student] || [];
+        }
+
+        function addNote(ac, student, text, color) {
+            if (!ac.notes) ac.notes = {};
+            if (!ac.notes[student]) ac.notes[student] = [];
+            const note = { id: uuid(), text, date: todayISO(), color, done: false };
+            ac.notes[student].push(note);
+            return note;
+        }
+
+        // Notes the current view is allowed to show
+        function visibleNotes(ac, student) {
+            return getNotes(ac, student).filter(n => !studentView || stripPrivate(n.text) !== '');
+        }
+
+        // Small coloured dots (one per colour of open notes) + a hover button to open notes
+        function noteBadge(ac, student) {
+            if (!ac) return '';
+            const colors = [...new Set(visibleNotes(ac, student).filter(n => !n.done).map(n => n.color))];
+            const dots = colors.map(c => `<span class="w-2.5 h-2.5 rounded-full ring-2 ring-white" style="background-color: ${(NOTE_COLORS[c] || NOTE_COLORS.general).hex}"></span>`).join('');
+            return `
+                <div class="absolute top-1.5 right-1.5 flex items-center gap-0.5 cursor-pointer z-10" data-student="${esc(student)}" onclick="event.stopPropagation(); openNotes(this.dataset.student)">
+                    ${dots}
+                    <button class="note-btn ml-0.5 p-0.5 rounded bg-white/90 text-slate-400 hover:text-indigo-600 shadow-sm" title="Notes"><i data-lucide="notebook-pen" class="w-3.5 h-3.5"></i></button>
+                </div>`;
+        }
+
+        function openNotes(student) {
+            notesStudent = student;
+            noteColor = 'general';
+            editingNoteId = null;
+            document.getElementById('noteInput').value = '';
+            renderNotes();
+            document.getElementById('notesModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('noteInput').focus(), 50);
+        }
+
+        function renderNoteText(text) {
+            if (studentView) return esc(stripPrivate(text));
+            // Teacher view: show private parts, clearly marked
+            return esc(text).replace(/\[[^\]]*(\]|$)/g, m =>
+                `<span class="text-amber-800 bg-amber-50 border border-amber-200 rounded px-1">🔒 ${m}</span>`);
+        }
+
+        function renderNotes() {
+            const ac = getActiveClass();
+            if (!ac || notesStudent === null) return;
+            document.getElementById('notesStudentName').textContent = notesStudent;
+            const label = document.getElementById('notesViewLabel');
+            label.textContent = studentView ? 'Student view: private [notes] hidden · show' : 'Teacher view: private notes visible · hide';
+            label.className = `text-xs font-medium mt-0.5 hover:underline ${studentView ? 'text-slate-400' : 'text-amber-600'}`;
+
+            const notes = visibleNotes(ac, notesStudent);
+            const open = notes.filter(n => !n.done);
+            const done = notes.filter(n => n.done);
+
+            const row = (n) => {
+                const color = (NOTE_COLORS[n.color] || NOTE_COLORS.general);
+                const text = editingNoteId === n.id
+                    ? `<input id="noteEditInput" type="text" value="${esc(n.text)}" onkeydown="noteEditKey(event, '${n.id}')" class="w-full border border-indigo-300 rounded px-2 py-0.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">`
+                    : `<span class="text-xs text-slate-400 mr-1.5 tabular-nums">${formatNoteDate(n.date)}</span><span class="text-sm ${n.done ? 'line-through text-slate-400' : 'text-slate-800'}">${renderNoteText(n.text)}</span>`;
+                return `
+                    <div class="group flex items-start gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-50">
+                        <input type="checkbox" ${n.done ? 'checked' : ''} onchange="toggleNoteDone('${n.id}')" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 shrink-0" title="Mark as done">
+                        <span class="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0" style="background-color: ${color.hex}" title="${color.label}"></span>
+                        <div class="flex-1 min-w-0 break-words">${text}</div>
+                        ${studentView ? '' : `<button onclick="editNote('${n.id}')" class="text-slate-300 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity p-0.5" title="Edit"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>`}
+                        <button onclick="deleteNote('${n.id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`;
+            };
+
+            const list = document.getElementById('notesList');
+            list.innerHTML = notes.length === 0
+                ? `<div class="text-center text-sm text-slate-400 p-6">No notes yet.</div>`
+                : open.map(row).join('') + (done.length ? `<div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 pt-3 pb-1">Done</div>` + done.map(row).join('') : '');
+
+            document.getElementById('noteColorPicker').innerHTML = Object.entries(NOTE_COLORS).map(([key, c]) => `
+                <button onclick="noteColor='${key}'; renderNotes()" class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border transition-colors ${noteColor === key ? 'bg-white border-slate-400 text-slate-800 shadow-sm' : 'border-transparent text-slate-500 hover:bg-white'}">
+                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${c.hex}"></span>${c.label}
+                </button>`).join('');
+
+            lucide.createIcons();
+            if (editingNoteId) {
+                const input = document.getElementById('noteEditInput');
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+            }
+        }
+
+        function findNote(id) {
+            return getNotes(getActiveClass(), notesStudent).find(n => n.id === id);
+        }
+
+        function notesChanged() {
+            saveState();
+            renderNotes();
+            renderCanvas();
+        }
+
+        function addNoteFromInput() {
+            const input = document.getElementById('noteInput');
+            const text = input.value.trim();
+            if (!text) return;
+            addNote(getActiveClass(), notesStudent, text, noteColor);
+            input.value = '';
+            notesChanged();
+            input.focus();
+        }
+
+        function toggleNoteDone(id) {
+            const note = findNote(id);
+            if (!note) return;
+            note.done = !note.done;
+            notesChanged();
+        }
+
+        function deleteNote(id) {
+            const ac = getActiveClass();
+            const note = findNote(id);
+            if (!note || !confirm(`Delete this note?\n\n${studentView ? stripPrivate(note.text) : note.text}`)) return;
+            ac.notes[notesStudent] = getNotes(ac, notesStudent).filter(n => n.id !== id);
+            notesChanged();
+        }
+
+        function editNote(id) {
+            editingNoteId = id;
+            renderNotes();
+        }
+
+        function noteEditKey(e, id) {
+            if (e.key === 'Escape') {
+                e.stopPropagation(); // cancel the edit, don't close the modal
+                editingNoteId = null;
+                return renderNotes();
+            }
+            if (e.key !== 'Enter') return;
+            const text = e.target.value.trim();
+            const note = findNote(id);
+            if (note && text) note.text = text;
+            editingNoteId = null;
+            notesChanged();
+        }
+
+        function toggleStudentView() {
+            studentView = !studentView;
+            editingNoteId = null;
+            renderViewToggle();
+            renderCanvas();
+            if (!document.getElementById('notesModal').classList.contains('hidden')) renderNotes();
+        }
+
+        function renderViewToggle() {
+            const btn = document.getElementById('viewToggle');
+            btn.innerHTML = studentView
+                ? '<i data-lucide="eye" class="w-4 h-4"></i> Student view'
+                : '<i data-lucide="eye-off" class="w-4 h-4"></i> Teacher view';
+            btn.className = `px-3 py-1.5 text-sm font-medium rounded-lg flex items-center gap-2 whitespace-nowrap shadow-sm transition-colors border ${studentView ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-amber-100 border-amber-300 text-amber-900 hover:bg-amber-200'}`;
+            btn.dataset.tip = studentView ? 'Private [notes] hidden · press V to show' : 'Private notes VISIBLE · press V to hide';
+            lucide.createIcons();
         }
 
         function randomizeSeating() {
@@ -1794,6 +3306,7 @@
                 availableDesks[i].student = pool[i];
             }
 
+            seatingChanged();
             renderAll();
             saveState();
         }
@@ -1808,9 +3321,11 @@
             }
         }
 
-        function toggleSidebar() {
+        function toggleSidebar(show) {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('hidden');
+            const hide = show === undefined ? !sidebar.classList.contains('hidden') : !show;
+            keepViewCentered(() => sidebar.classList.toggle('hidden', hide));
+            document.getElementById('topHeader').classList.toggle('pl-16', hide);
         }
 
         // --- MODALS & FORMS ---
@@ -1872,6 +3387,7 @@
                     }
                 ]
             };
+            rememberSeating(getActiveClass(), getActiveRoom()); // the room being left counts as current
             state.classes.push(newClass);
             state.activeClassId = newClass.id;
             state.activeRoomId = newClass.rooms[0].id;
@@ -1901,13 +3417,16 @@
 
             // Remove students from desks if they were deleted from the roster
             const studentSet = new Set(cleanStudents);
+            let unseated = false;
             ac.rooms.forEach(room => {
                 room.desks.forEach(desk => {
                     if (desk.student && !studentSet.has(desk.student)) {
                         desk.student = null; // Unassign removed student
+                        unseated = true;
                     }
                 });
             });
+            if (unseated) seatingChanged();
 
             // Clean up highlights
             if (ac.highlightedStudents) {
@@ -1920,9 +3439,11 @@
         }
 
         function closeModals() {
-            document.getElementById('classModal').classList.add('hidden');
-            document.getElementById('rosterModal').classList.add('hidden');
-            document.getElementById('addRoomModal').classList.add('hidden');
+            if (!document.getElementById('coldCallModal').classList.contains('hidden')) {
+                syncColdCallFromModal();
+            }
+            ['classModal', 'rosterModal', 'addRoomModal', 'coldCallModal', 'saveSetModal', 'loadSetModal', 'answerModal', 'editFolderModal', 'notesModal', 'lessonsModal']
+                .forEach(closeSubModal);
         }
 
 
@@ -1934,6 +3455,10 @@
             Student, ClassID, , , Name
             Room, ClassID, RoomID, , Name
             Desk, ClassID, RoomID, DeskID, X, Y, IsTeacher, StudentName
+            Question, , , , Subject, Topic, Subtopic, QuestionText   (cold call library)
+            Note, ClassID, NoteID, , Student, Date, Color[|done], Text
+            Unit, ClassID, UnitID, , Name, Started, Finished (empty = current unit)
+            Lesson, ClassID, LessonID, UnitID, Date, Time, UnitName, AbsentNames (joined with |)
         */
 
         function escapeCSV(str) {
@@ -1959,6 +3484,18 @@
                     });
                 }
 
+                Object.entries(c.notes || {}).forEach(([student, notes]) => notes.forEach(n => {
+                    rows.push(["Note", c.id, n.id, "", student, n.date, n.color + (n.done ? '|done' : ''), n.text].map(escapeCSV).join(","));
+                }));
+
+                getLessonData(c);
+                [...c.pastUnits, c.currentUnit].forEach(u => {
+                    rows.push(["Unit", c.id, u.id, "", u.name, u.started || "", u.finished || "", ""].map(escapeCSV).join(","));
+                });
+                c.lessons.forEach(l => {
+                    rows.push(["Lesson", c.id, l.id, l.unitId || "", l.date, l.time || "", l.unit || "", (l.absent || []).join('|')].map(escapeCSV).join(","));
+                });
+
                 c.rooms.forEach(r => {
                     rows.push(["Room", c.id, r.id, "", r.name, "", "", ""].map(escapeCSV).join(","));
                     
@@ -1967,6 +3504,13 @@
                     });
                 });
             });
+
+            getLibrary().subjects.forEach(s => s.topics.forEach(t => {
+                t.questions.forEach(q => rows.push(["Question", "", "", "", s.name, t.name, "", q].map(escapeCSV).join(",")));
+                t.subtopics.forEach(st => st.questions.forEach(q => {
+                    rows.push(["Question", "", "", "", s.name, t.name, st.name, q].map(escapeCSV).join(","));
+                }));
+            }));
 
             const csvString = rows.join("\n");
             const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
@@ -2008,15 +3552,24 @@
                     if (lines.length < 2) return alert("Invalid CSV file.");
 
                     let newClassesMap = new Map();
+                    const importedLibrary = { subjects: [] };
+                    let importedQuestionCount = 0;
 
                     for (let i = 1; i < lines.length; i++) {
                         const cols = parseCSVLine(lines[i]);
                         if(cols.length < 5) continue;
-                        
+
                         const type = cols[0];
                         const cId = cols[1];
 
-                        if (type === 'Class') {
+                        if (type === 'Question') {
+                            if (!cols[4] || !cols[5] || !cols[7]) continue;
+                            const subject = findOrCreate(importedLibrary.subjects, cols[4], { topics: [] });
+                            const topic = findOrCreate(subject.topics, cols[5], { questions: [], subtopics: [] });
+                            const target = cols[6] ? findOrCreate(topic.subtopics, cols[6], { questions: [] }) : topic;
+                            target.questions.push(cols[7]);
+                            importedQuestionCount++;
+                        } else if (type === 'Class') {
                             newClassesMap.set(cId, {
                                 id: cId,
                                 name: cols[4],
@@ -2034,6 +3587,31 @@
                             if (newClassesMap.has(cId)) {
                                 if (!newClassesMap.get(cId).highlightedStudents) newClassesMap.get(cId).highlightedStudents = [];
                                 newClassesMap.get(cId).highlightedStudents.push(cols[4]);
+                            }
+                        } else if (type === 'Note') {
+                            if (newClassesMap.has(cId) && cols[7]) {
+                                const cls = newClassesMap.get(cId);
+                                if (!cls.notes) cls.notes = {};
+                                if (!cls.notes[cols[4]]) cls.notes[cols[4]] = [];
+                                const [color, done] = (cols[6] || 'general').split('|');
+                                cls.notes[cols[4]].push({ id: cols[2] || uuid(), text: cols[7], date: cols[5], color, done: done === 'done' });
+                            }
+                        } else if (type === 'Unit') {
+                            if (newClassesMap.has(cId)) {
+                                const cls = newClassesMap.get(cId);
+                                const unit = { id: cols[2] || uuid(), name: cols[4] || '', started: cols[5] || '' };
+                                if (cols[6]) {
+                                    if (!cls.pastUnits) cls.pastUnits = [];
+                                    cls.pastUnits.push({ ...unit, finished: cols[6] });
+                                } else {
+                                    cls.currentUnit = unit;
+                                }
+                            }
+                        } else if (type === 'Lesson') {
+                            if (newClassesMap.has(cId) && cols[4]) {
+                                const cls = newClassesMap.get(cId);
+                                if (!cls.lessons) cls.lessons = [];
+                                cls.lessons.push({ id: cols[2] || uuid(), date: cols[4], time: cols[5] || '', absent: cols[7] ? cols[7].split('|') : [], unit: cols[6] || null, unitId: cols[3] || null });
                             }
                         } else if (type === 'Room') {
                             const rId = cols[2];
@@ -2063,6 +3641,12 @@
                         }
                     }
 
+                    // Older backups have no Question rows: leave the library alone in that case
+                    if (importedQuestionCount > 0) {
+                        window._library = importedLibrary;
+                        saveLibrary();
+                    }
+
                     const loadedClasses = Array.from(newClassesMap.values());
                     if (loadedClasses.length > 0) {
                         state.classes = loadedClasses;
@@ -2072,7 +3656,7 @@
                         saveState();
                         alert("Data loaded successfully!");
                     } else {
-                        alert("No valid data found in CSV.");
+                        alert(importedQuestionCount > 0 ? "Question library loaded!" : "No valid data found in CSV.");
                     }
 
                 } catch (err) {
@@ -2091,6 +3675,9 @@
             if (e.key === 'teacherClasses' || e.key === 'teacherCurrentClass' || e.key === 'seatingPlannerState') {
                 loadState();
                 renderAll();
+            }
+            if (e.key === 'coldCallLibrary') {
+                window._library = null; // re-read on next use
             }
         });
 

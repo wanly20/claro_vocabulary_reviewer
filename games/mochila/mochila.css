@@ -1,0 +1,146 @@
+/* En mi mochila — backpack packing game (Chapter 1.6) */
+
+#mochila-game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.mochila-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.mochila-hud .mochila-lives {
+  letter-spacing: 2px;
+}
+
+.mochila-request {
+  width: 100%;
+  text-align: center;
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.mochila-request-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.mochila-request-text {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.mochila-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.mochila-tile {
+  aspect-ratio: 1 / 1;
+  border: 3px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--card-bg);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 1.7rem;
+  line-height: 1.1;
+  transition: transform 0.12s, border-color 0.12s, background 0.12s;
+  user-select: none;
+}
+
+.mochila-tile:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-teal);
+}
+
+.mochila-tile .mochila-swatch {
+  width: 26px;
+  height: 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.mochila-tile.correct {
+  border-color: var(--brand-green);
+  background: var(--brand-green-light);
+  animation: mochila-pop 0.3s ease;
+}
+
+.mochila-tile.wrong {
+  border-color: var(--danger-color);
+  animation: mochila-shake 0.35s ease;
+}
+
+.mochila-tile.disabled {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+@keyframes mochila-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes mochila-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.mochila-bag {
+  font-size: 2.4rem;
+}
+
+.mochila-timer-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-color);
+  overflow: hidden;
+}
+
+.mochila-timer-fill {
+  height: 100%;
+  background: var(--brand-teal);
+  width: 100%;
+  transition: width 0.25s linear;
+}
+
+.mochila-end {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 8px;
+}
+
+.mochila-end-emoji { font-size: 3rem; }
+.mochila-end-title { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
+.mochila-end-sub { color: var(--text-secondary); font-weight: 500; }

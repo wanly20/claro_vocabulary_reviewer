@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="games/space/space.css">
   <link rel="stylesheet" href="games/globo/globo.css">
   <link rel="stylesheet" href="games/maze/maze.css">
-  
+  <link rel="stylesheet" href="games/mochila/mochila.css">
+
   <style>
     /* ==========================================================================
        IMPORTANT: NO INLINE CSS ALLOWED IN HTML MARKUP
@@ -165,6 +166,8 @@
       --brand-orange: #ff9600;
       --brand-purple: #9b59b6;
       --brand-purple-dark: #8e44ad;
+      --brand-teal: #14b8a6;
+      --brand-teal-dark: #0d9488;
       --brand-gold: #f1c40f;
       --brand-gold-light: #fef9e7;
       --bg-color: #f8fafc;
@@ -199,6 +202,14 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html {
+      /* Stop mobile browsers auto-boosting font size in narrow columns —
+         without this, text (and anything sized in rem/em) can render much
+         larger than the CSS actually specifies on phones. */
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     body {
@@ -343,6 +354,51 @@
       }
       .path-connector {
         top: 60px;
+      }
+    }
+
+    /* Phone-width: compact header (stop it overflowing/wrapping) and
+       smaller question UI (options were rendering oversized on narrow screens) */
+    @media (max-width: 480px) {
+      header {
+        padding: 8px 12px;
+      }
+      .header-group {
+        gap: 6px;
+      }
+      .btn-back {
+        padding: 6px 8px;
+      }
+      .btn-back-text {
+        display: none;
+      }
+      .header-logo {
+        font-size: 1rem;
+        gap: 4px;
+      }
+      .theme-toggle-btn {
+        width: 32px;
+        height: 32px;
+      }
+      .stats-bar {
+        gap: 4px;
+      }
+      .stat-badge {
+        padding: 4px 7px;
+        font-size: 0.75rem;
+        gap: 3px;
+      }
+      .prompt-text {
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+      }
+      .options-grid {
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .option-btn {
+        padding: 10px 14px;
+        font-size: 0.9rem;
       }
     }
 
@@ -1051,6 +1107,17 @@
       background: rgba(155, 89, 182, 0.15);
       color: #8e44ad;
     }
+    .chapter-header-divider.chapter-4,
+    .chapter-header-divider.chapter-5,
+    .chapter-header-divider.chapter-6 {
+      border-left-color: var(--brand-teal);
+    }
+    .chapter-header-divider.chapter-4 .chapter-badge,
+    .chapter-header-divider.chapter-5 .chapter-badge,
+    .chapter-header-divider.chapter-6 .chapter-badge {
+      background: rgba(20, 184, 166, 0.15);
+      color: var(--brand-teal-dark);
+    }
     .chapter-header-divider .chapter-title {
       font-family: var(--font-heading);
       font-size: 1.3rem;
@@ -1218,6 +1285,11 @@
     .unit-banner.chapter-3 {
       background: linear-gradient(135deg, var(--brand-purple), var(--brand-purple-dark));
     }
+    .unit-banner.chapter-4,
+    .unit-banner.chapter-5,
+    .unit-banner.chapter-6 {
+      background: linear-gradient(135deg, var(--brand-teal), var(--brand-teal-dark));
+    }
 
     /* Frogger Canvas styles are loaded dynamically from games/frogger/frogger.css */
   </style>
@@ -1227,7 +1299,7 @@
   <header>
     <div class="header-group">
       <button class="btn btn-grey btn-back" onclick="location.href='index.html'">
-        ← Back
+        ← <span class="btn-back-text">Back</span>
       </button>
       <div class="header-logo" onclick="location.href='index.html'">
         🦉 Buhísimo
@@ -1288,7 +1360,7 @@
       <div class="path-connector"></div>
       
       <!-- Chapter 1.1 Header -->
-      <div class="chapter-header-divider">
+      <div class="chapter-header-divider chapter-1" data-chapter="1" data-banner-title="Capítulo 1.1" data-banner-desc="El Español Global y Saludos">
         <div class="chapter-badge">Chapter 1.1</div>
         <h2 class="chapter-title">El Español Global</h2>
         <p class="chapter-subtitle">Learn basic greetings, Spanish-speaking countries, and islands.</p>
@@ -1367,7 +1439,7 @@
       </div>
 
       <!-- Chapter 1.2 Header -->
-      <div class="chapter-header-divider chapter-2">
+      <div class="chapter-header-divider chapter-2" data-chapter="2" data-banner-title="Capítulo 1.2" data-banner-desc="¿Qué tal? y Sentimientos">
         <div class="chapter-badge">Chapter 1.2</div>
         <h2 class="chapter-title">¿Qué tal?</h2>
         <p class="chapter-subtitle">Introduce yourself, express feelings, and master names & spelling.</p>
@@ -1462,7 +1534,7 @@
       </div>
 
       <!-- Chapter 1.3 Header -->
-      <div class="chapter-header-divider chapter-3">
+      <div class="chapter-header-divider chapter-3" data-chapter="3" data-banner-title="Capítulo 1.3" data-banner-desc="Mi carnet de identidad">
         <div class="chapter-badge">Chapter 1.3</div>
         <h2 class="chapter-title">Mi carnet de identidad</h2>
         <p class="chapter-subtitle">Master numbers 1 to 31, ask ages, and details on an ID card.</p>
@@ -1557,7 +1629,7 @@
       </div>
 
       <!-- Chapter 1.4 Header -->
-      <div class="chapter-header-divider chapter-4">
+      <div class="chapter-header-divider chapter-4" data-chapter="4" data-banner-title="Capítulo 1.4" data-banner-desc="¡...y que cumplas muchos más!">
         <div class="chapter-badge">Chapter 1.4</div>
         <h2 class="chapter-title">¡...y que cumplas muchos más!</h2>
         <p class="chapter-subtitle">Ask birthdays, talk about months & days, and spell calendar dates.</p>
@@ -1652,7 +1724,7 @@
       </div>
 
       <!-- Chapter 1.5 Header -->
-      <div class="chapter-header-divider">
+      <div class="chapter-header-divider chapter-5" data-chapter="5" data-banner-title="Capítulo 1.5" data-banner-desc="Mis Preferencias">
         <div class="chapter-badge">Chapter 1.5</div>
         <h2 class="chapter-title">Mis Preferencias</h2>
         <p class="chapter-subtitle">Learn colours, expressing likes/dislikes, and sentence connectors.</p>
@@ -1745,6 +1817,77 @@
         </button>
         <div class="bubble-label">Examen del Capítulo 1.5</div>
       </div>
+
+      <!-- Chapter 1.6 Header -->
+      <div class="chapter-header-divider chapter-6" data-chapter="6" data-banner-title="Capítulo 1.6" data-banner-desc="¡Tod@s a clase!">
+        <div class="chapter-badge">Chapter 1.6</div>
+        <h2 class="chapter-title">¡Tod@s a clase!</h2>
+        <p class="chapter-subtitle">Name your school supplies, use "hay", and pack the backpack.</p>
+      </div>
+
+      <!-- Bubble R9: Repaso Spaced Repetition (Colours & Opinions) -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="r9-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn bubble-revision locked" id="r9-btn" onclick="startStudySession('r9')">
+            <span class="bubble-emoji">🔄</span>
+          </button>
+          <div class="bubble-crown-badge" id="r9-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Repaso: Colores y Opiniones</div>
+      </div>
+
+      <!-- Bubble 27: Material Escolar -->
+      <div class="bubble-wrapper">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b27-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b27-btn" onclick="startStudySession(27)">
+            <span class="bubble-emoji">✏️</span>
+          </button>
+          <div class="bubble-crown-badge" id="b27-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">Material Escolar</div>
+      </div>
+
+      <!-- Bubble 28: En mi mochila Game (1.6) -->
+      <div class="bubble-wrapper bubble-right">
+        <button class="bubble-btn locked bubble-game" id="b28-btn" onclick="MochilaGame.start(6)">
+          <span class="bubble-emoji">🎒</span>
+        </button>
+        <div class="bubble-label">En mi mochila</div>
+      </div>
+
+      <!-- Bubble 29: La mochila mágica (recombination) -->
+      <div class="bubble-wrapper bubble-left">
+        <div class="bubble-btn-container">
+          <svg class="progress-ring" width="104" height="100">
+            <circle class="progress-ring-circle-bg" stroke="var(--border-color)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"/>
+            <circle class="progress-ring-circle" id="b29-progress-circle" stroke="var(--brand-teal)" stroke-width="6" fill="transparent" r="44" cx="52" cy="50"
+                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
+          </svg>
+          <button class="bubble-btn locked" id="b29-btn" onclick="startStudySession(29)">
+            <span class="bubble-emoji">🪄</span>
+          </button>
+          <div class="bubble-crown-badge" id="b29-crown-badge">0</div>
+        </div>
+        <div class="bubble-label">La mochila mágica</div>
+      </div>
+
+      <!-- Bubble 30: Examen del Capítulo 1.6 -->
+      <div class="bubble-wrapper">
+        <button class="bubble-btn locked" id="b30-btn" onclick="startCheckpointTest(6)">
+          <span class="bubble-emoji">🏆</span>
+        </button>
+        <div class="bubble-label">Examen del Capítulo 1.6</div>
+      </div>
     </main>
     <!-- Floating Focus Button -->
     <button id="focus-bubble-btn" class="focus-bubble-fab" onclick="scrollToActiveBubble(true)" title="Scroll to active lesson">🎯</button>
@@ -1824,6 +1967,7 @@
   <script src="games/space/space.js"></script>
   <script src="games/globo/globo.js"></script>
   <script src="games/maze/maze.js"></script>
+  <script src="games/mochila/mochila.js"></script>
   <script>
     // ── DATABASE & CURRICULUM DEFINITIONS ──────────────────────────────
     
@@ -1996,7 +2140,27 @@
       "pero": { english: "but", theme: "Mis Preferencias" },
       "también": { english: "also", theme: "Mis Preferencias" },
       "además": { english: "furthermore", theme: "Mis Preferencias" },
-      "sin embargo": { english: "however", theme: "Mis Preferencias" }
+      "sin embargo": { english: "however", theme: "Mis Preferencias" },
+
+      // Bubble 27 Words (Theme: Material Escolar) — Chapter 1.6
+      "el bolígrafo": { english: "pen", theme: "Material Escolar" },
+      "el lápiz": { english: "pencil", theme: "Material Escolar" },
+      "el cuaderno": { english: "exercise book", theme: "Material Escolar" },
+      "el libro": { english: "book", theme: "Material Escolar" },
+      "la goma": { english: "eraser", theme: "Material Escolar" },
+      "la regla": { english: "ruler", theme: "Material Escolar" },
+      "el estuche": { english: "pencil case", theme: "Material Escolar" },
+      "el sacapuntas": { english: "pencil sharpener", theme: "Material Escolar" },
+      "la hoja de papel": { english: "sheet of paper", theme: "Material Escolar" },
+      "las tijeras": { english: "scissors", theme: "Material Escolar" },
+      "el libro de texto": { english: "textbook", theme: "Material Escolar" },
+      "hay…": { english: "there is / there are", theme: "Material Escolar" },
+      // Approved helper words (see buhisimo_rules.md §6.1) — introduced in b27 L3
+      "la mochila": { english: "backpack", theme: "Material Escolar" },
+      "un": { english: "a / an (m.)", theme: "Material Escolar" },
+      "una": { english: "a / an (f.)", theme: "Material Escolar" },
+      "mi": { english: "my", theme: "Material Escolar" },
+      "en": { english: "in", theme: "Material Escolar" }
     };
 
     // Bubble 1 Crowns vocabulary scope mapping
@@ -2070,21 +2234,34 @@
       ["y", "o", "pero", "también", "además", "sin embargo"] // Level 2 (Connectors)
     ];
 
+    // Bubble 27 Crowns vocabulary scope mapping — Chapter 1.6 (3 crowns / 3 levels)
+    const BUBBLE_27_LEVELS = [
+      ["el bolígrafo", "el lápiz", "el cuaderno", "el libro", "la goma", "la regla"], // Level 1 (core objects)
+      ["el estuche", "el sacapuntas", "la hoja de papel", "las tijeras", "el libro de texto"], // Level 2 (more objects)
+      ["hay…", "la mochila", "un", "una", "mi", "en"] // Level 3 (structural words)
+    ];
+
     // Theme references matching database
     const THEME_LABELS = {
       "Saludos y Sentimientos": "💬 Saludos",
       "Países": "🌍 Países",
       "Identidad Personal": "👤 Identidad",
       "Los Números": "🔢 Los Números",
-      "Calendario": "📅 Calendario"
+      "Calendario": "📅 Calendario",
+      "Mis Preferencias": "🎨 Preferencias",
+      "Material Escolar": "🎒 Material Escolar"
     };
 
-    // Total words per theme in Chapter 1.1 (active unit)
-    const THEME_TOTAL_COUNTS_1_1 = {
+    // Total words per theme (denominator for the strengths modal; falls back to
+    // the live VOCAB_DATABASE count for any theme not listed here)
+    const THEME_TOTAL_COUNTS = {
       "Saludos y Sentimientos": 17,
       "Países": 36, // Updated count including islands
       "Identidad Personal": 24,
-      "Los Números": 31
+      "Los Números": 31,
+      "Calendario": 27,
+      "Mis Preferencias": 33,
+      "Material Escolar": 17
     };
 
     // ── GLOBAL APPLICATION STATE ──────────────────────────────────────
@@ -2192,11 +2369,13 @@
         b14_crown: 0, b16_completed: false, r5_crown: 0, b17_crown: 0,
         r6_crown: 0, b19_crown: 0, b21_completed: false,
         r7_crown: 0, b22_crown: 0, r8_crown: 0, b24_crown: 0, b26_completed: false,
+        r9_crown: 0, b27_crown: 0, b29_crown: 0, b30_completed: false,
         game_unlocked: false, game2_unlocked: false,
         game_unlocked_1_2: false, game2_unlocked_1_2: false,
         game_unlocked_1_3: false, game2_unlocked_1_3: false,
         game_unlocked_1_4: false, game2_unlocked_1_4: false,
-        game_unlocked_1_5: false, game2_unlocked_1_5: false
+        game_unlocked_1_5: false, game2_unlocked_1_5: false,
+        game_unlocked_1_6: false
       };
       Object.keys(defaultStateKeys).forEach(key => {
         if (state[key] === undefined) {
@@ -2726,10 +2905,75 @@
       }
       b26.disabled = false;
 
+      // --- R9 Drawing (Repaso: Colours & Opinions) ---
+      const r9 = document.getElementById('r9-btn');
+      const circleR9 = document.getElementById('r9-progress-circle');
+      document.getElementById('r9-crown-badge').textContent = state.r9_crown;
+      r9.className = 'bubble-btn bubble-revision';
+      if (state.b26_completed || state.r9_crown > 0 || state.b27_crown > 0) {
+        if (state.r9_crown === 1) r9.classList.add('bubble-gold');
+        else r9.classList.add('bubble-active');
+      } else {
+        r9.classList.add('locked');
+      }
+      r9.disabled = false;
+      circleR9.style.strokeDashoffset = circumference * (1 - (state.r9_crown / 1));
+      circleR9.style.stroke = (state.r9_crown === 1) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 27 (Material Escolar study node — 3 crowns)
+      const b27 = document.getElementById('b27-btn');
+      const circle27 = document.getElementById('b27-progress-circle');
+      document.getElementById('b27-crown-badge').textContent = state.b27_crown;
+      b27.className = 'bubble-btn';
+      if (state.r9_crown >= 1 || state.b26_completed || state.b27_crown > 0) {
+        if (state.b27_crown === 3) b27.classList.add('bubble-gold');
+        else b27.classList.add('bubble-active');
+      } else {
+        b27.classList.add('locked');
+      }
+      b27.disabled = false;
+      circle27.style.strokeDashoffset = circumference * (1 - (state.b27_crown / 3));
+      circle27.style.stroke = (state.b27_crown === 3) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 28 (En mi mochila game node)
+      const b28 = document.getElementById('b28-btn');
+      if (state.b27_crown === 3 && state.game_unlocked_1_6) {
+        b28.className = 'bubble-btn bubble-game';
+      } else {
+        b28.className = 'bubble-btn locked bubble-game';
+      }
+      b28.disabled = false;
+
+      // Render Bubble 29 (La mochila mágica recombination node — 2 crowns)
+      const b29 = document.getElementById('b29-btn');
+      const circle29 = document.getElementById('b29-progress-circle');
+      document.getElementById('b29-crown-badge').textContent = state.b29_crown;
+      b29.className = 'bubble-btn';
+      if (state.b27_crown >= 3 || state.b29_crown > 0) {
+        if (state.b29_crown === 2) b29.classList.add('bubble-gold');
+        else b29.classList.add('bubble-active');
+      } else {
+        b29.classList.add('locked');
+      }
+      b29.disabled = false;
+      circle29.style.strokeDashoffset = circumference * (1 - (state.b29_crown / 2));
+      circle29.style.stroke = (state.b29_crown === 2) ? 'var(--brand-gold)' : 'var(--brand-teal)';
+
+      // Render Bubble 30 (Checkpoint Exam 1.6 Node)
+      const b30 = document.getElementById('b30-btn');
+      b30.className = 'bubble-btn';
+      if (state.b29_crown === 2) {
+        if (state.b30_completed) b30.classList.add('bubble-gold');
+        else b30.classList.add('bubble-active');
+      } else {
+        b30.classList.add('locked');
+      }
+      b30.disabled = false;
+
       // Style FAB button matching current active chapter
       const fab = document.getElementById('focus-bubble-btn');
       if (fab) {
-        if (state.b26_completed || state.b21_completed || state.b16_completed) {
+        if (state.b30_completed || state.b26_completed || state.b21_completed || state.b16_completed) {
           fab.style.background = 'var(--brand-teal)';
         } else if (state.b11_completed) {
           fab.style.background = 'var(--brand-purple)';
@@ -2776,6 +3020,10 @@
           r8_crown: 0,
           b24_crown: 0,
           b26_completed: false,
+          r9_crown: 0,
+          b27_crown: 0,
+          b29_crown: 0,
+          b30_completed: false,
           game_unlocked: false,
           game2_unlocked: false,
           game_unlocked_1_2: false,
@@ -2786,6 +3034,7 @@
           game2_unlocked_1_4: false,
           game_unlocked_1_5: false,
           game2_unlocked_1_5: false,
+          game_unlocked_1_6: false,
           word_strengths: {},
           theme_strengths: {}
         };
@@ -2871,7 +3120,7 @@
         const label = document.createElement('span');
         label.style.fontWeight = '700';
         const wordsInTheme = Object.keys(VOCAB_DATABASE).filter(w => VOCAB_DATABASE[w].theme === t.name);
-        const totalCount = THEME_TOTAL_COUNTS_1_1[t.name] || wordsInTheme.length;
+        const totalCount = THEME_TOTAL_COUNTS[t.name] || wordsInTheme.length;
         const learnedCount = wordsInTheme.filter(w => state.word_strengths[w] && state.word_strengths[w].strength > 0).length;
         label.textContent = `${THEME_LABELS[t.name] || t.name} (${learnedCount}/${totalCount})`;
 
@@ -3037,9 +3286,58 @@
         alert("🔒 Opiniones y Conectores is locked! You must first complete Revision Bubble R8.");
         return;
       }
+      if (bubbleNum === 'r9' && !(state.b26_completed || state.r9_crown > 0 || state.b27_crown > 0)) {
+        alert("🔒 Repaso: Colores y Opiniones is locked! Clear the Chapter 1.5 Checkpoint Exam first.");
+        return;
+      }
+      if (bubbleNum === 27 && !(state.r9_crown >= 1 || state.b26_completed || state.b27_crown > 0)) {
+        alert("🔒 Material Escolar is locked! You must first complete Revision Bubble R9.");
+        return;
+      }
+      if (bubbleNum === 29 && !(state.b27_crown >= 3 || state.b29_crown > 0)) {
+        alert("🔒 La mochila mágica is locked! Complete Bubble 27 (Material Escolar) to 3 crowns first.");
+        return;
+      }
 
       decayStrengths();
-      
+
+      // Bubble 29 — "La mochila mágica": no new words, grammar-generated
+      // recombination sentences (see buhisimo_rules.md §8.2).
+      if (bubbleNum === 29) {
+        const crownLvl = state.b29_crown || 0;
+        const gold29 = crownLvl === 2;
+        session = {
+          bubbleNum: 29,
+          isGold: gold29,
+          level: 0,
+          activePool: [],
+          newWords: [],
+          introducedCount: 0,
+          queue: [],
+          currentCard: null,
+          correctCount: 0,
+          totalTarget: 10,
+          mistakesQueue: []
+        };
+        for (let i = 0; i < 10; i++) {
+          const q = generateMixQuestion(i, gold29);
+          if (q) session.queue.push(q);
+        }
+        if (session.queue.length === 0) {
+          alert("⚠️ Could not load questions for this lesson. Please try again.");
+          document.getElementById('lesson-overlay').style.display = 'none';
+          session = null;
+          return;
+        }
+        document.getElementById('question-area').style.display = 'flex';
+        document.getElementById('completion-screen').style.display = 'none';
+        document.getElementById('lesson-lives-box').style.display = 'none';
+        document.getElementById('lesson-overlay').style.display = 'flex';
+        updateProgressFill();
+        loadNextQuestion();
+        return;
+      }
+
       let isRevision = typeof bubbleNum === 'string' && bubbleNum.startsWith('r');
       let crownLevel = 0;
       let levelsPool = [];
@@ -3062,6 +3360,8 @@
           levelsPool = [[...BUBBLE_17_LEVELS[0], ...BUBBLE_17_LEVELS[1], ...BUBBLE_19_LEVELS[0], ...BUBBLE_19_LEVELS[1]]];
         } else if (bubbleNum === 'r8') {
           levelsPool = [[...BUBBLE_22_LEVELS[0], ...BUBBLE_22_LEVELS[1], ...BUBBLE_14_LEVELS[0], ...BUBBLE_14_LEVELS[1], ...BUBBLE_14_LEVELS[2]]];
+        } else if (bubbleNum === 'r9') {
+          levelsPool = [[...BUBBLE_22_LEVELS[0], ...BUBBLE_22_LEVELS[1], ...BUBBLE_24_LEVELS[0], ...BUBBLE_24_LEVELS[1]]];
         }
       } else {
         if (bubbleNum === 1) {
@@ -3097,6 +3397,9 @@
         } else if (bubbleNum === 24) {
           crownLevel = state.b24_crown;
           levelsPool = BUBBLE_24_LEVELS;
+        } else if (bubbleNum === 27) {
+          crownLevel = state.b27_crown;
+          levelsPool = BUBBLE_27_LEVELS;
         }
       }
       crownLevel = crownLevel || 0;
@@ -3165,6 +3468,167 @@
       
       updateProgressFill();
       loadNextQuestion();
+    }
+
+    // ── MIX ENGINE (Bubble 29 "La mochila mágica") ──────────────────────
+    // Grammar-driven recombination of Chapter 1.6 objects with earlier colours,
+    // numbers and opinion verbs. Inflected forms are hand-written and hand-checked
+    // (buhisimo_rules.md §8.2) — there is no runtime rule engine, so every
+    // generated sentence is guaranteed grammatical.
+
+    const MIX_NOUNS = [
+      { key: "el bolígrafo",      g: "m", art: "el",  sing: "bolígrafo",      plur: "bolígrafos",      en_s: "pen",              en_p: "pens",              oneWord: true  },
+      { key: "el lápiz",          g: "m", art: "el",  sing: "lápiz",          plur: "lápices",         en_s: "pencil",           en_p: "pencils",           oneWord: true  },
+      { key: "el cuaderno",       g: "m", art: "el",  sing: "cuaderno",       plur: "cuadernos",       en_s: "exercise book",    en_p: "exercise books",    oneWord: true  },
+      { key: "el libro",          g: "m", art: "el",  sing: "libro",          plur: "libros",          en_s: "book",             en_p: "books",             oneWord: true  },
+      { key: "el estuche",        g: "m", art: "el",  sing: "estuche",        plur: "estuches",        en_s: "pencil case",      en_p: "pencil cases",      oneWord: true  },
+      { key: "el sacapuntas",     g: "m", art: "el",  sing: "sacapuntas",     plur: "sacapuntas",      en_s: "pencil sharpener", en_p: "pencil sharpeners", oneWord: true  },
+      { key: "la goma",           g: "f", art: "la",  sing: "goma",           plur: "gomas",           en_s: "eraser",           en_p: "erasers",           oneWord: true  },
+      { key: "la regla",          g: "f", art: "la",  sing: "regla",          plur: "reglas",          en_s: "ruler",            en_p: "rulers",            oneWord: true  },
+      { key: "el libro de texto", g: "m", art: "el",  sing: "libro de texto", plur: "libros de texto", en_s: "textbook",         en_p: "textbooks",         oneWord: false },
+      { key: "la hoja de papel",  g: "f", art: "la",  sing: "hoja de papel",  plur: "hojas de papel",  en_s: "sheet of paper",   en_p: "sheets of paper",   oneWord: false },
+      { key: "las tijeras",       g: "f", art: "las", sing: null,             plur: "tijeras",         en_s: null,               en_p: "scissors",          oneWord: true, pluralOnly: true }
+    ];
+
+    const MIX_COLOURS = [
+      { base: "rojo",     en: "red",    ms: "rojo",     fs: "roja",     mp: "rojos",     fp: "rojas"     },
+      { base: "azul",     en: "blue",   ms: "azul",     fs: "azul",     mp: "azules",    fp: "azules"    },
+      { base: "verde",    en: "green",  ms: "verde",    fs: "verde",    mp: "verdes",    fp: "verdes"    },
+      { base: "amarillo", en: "yellow", ms: "amarillo", fs: "amarilla", mp: "amarillos", fp: "amarillas" },
+      { base: "negro",    en: "black",  ms: "negro",    fs: "negra",    mp: "negros",    fp: "negras"    },
+      { base: "blanco",   en: "white",  ms: "blanco",   fs: "blanca",   mp: "blancos",   fp: "blancas"   },
+      { base: "gris",     en: "grey",   ms: "gris",     fs: "gris",     mp: "grises",    fp: "grises"    },
+      { base: "morado",   en: "purple", ms: "morado",   fs: "morada",   mp: "morados",   fp: "moradas"   },
+      { base: "naranja",  en: "orange", ms: "naranja",  fs: "naranja",  mp: "naranjas",  fp: "naranjas"  },
+      { base: "rosa",     en: "pink",   ms: "rosa",     fs: "rosa",     mp: "rosas",     fp: "rosas"     }
+    ];
+
+    const MIX_NUMS = { 2: ["dos", "two"], 3: ["tres", "three"], 4: ["cuatro", "four"], 5: ["cinco", "five"] };
+
+    const MIX_VERBS = [
+      { es: "Me gusta", en: "I like" },
+      { es: "Prefiero", en: "I prefer" },
+      { es: "Me encanta", en: "I love" },
+      { es: "Odio", en: "I hate" },
+      { es: "Detesto", en: "I detest" }
+    ];
+
+    function mixColour(colour, gender, plural) {
+      return colour[(gender === "f" ? "f" : "m") + (plural ? "p" : "s")];
+    }
+    function mixRand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function enArt(word) { return /^[aeiou]/i.test(word) ? "an" : "a"; }
+
+    // Each builder returns { es, en } — both grammatical, no free text.
+    const MIX_TEMPLATES = [
+      // T1c — count + colour (countable, non plural-only nouns)
+      function () {
+        const noun = mixRand(MIX_NOUNS.filter(n => !n.pluralOnly));
+        const num = mixRand([2, 3, 4, 5]);
+        const colour = mixRand(MIX_COLOURS);
+        return {
+          es: `En mi mochila hay ${MIX_NUMS[num][0]} ${noun.plur} ${mixColour(colour, noun.g, true)}`,
+          en: `In my backpack there are ${MIX_NUMS[num][1]} ${colour.en} ${noun.en_p}`
+        };
+      },
+      // T1n — count, no colour
+      function () {
+        const noun = mixRand(MIX_NOUNS.filter(n => !n.pluralOnly));
+        const num = mixRand([2, 3, 4, 5]);
+        return {
+          es: `En mi mochila hay ${MIX_NUMS[num][0]} ${noun.plur}`,
+          en: `In my backpack there are ${MIX_NUMS[num][1]} ${noun.en_p}`
+        };
+      },
+      // T2 — singular + colour
+      function () {
+        const noun = mixRand(MIX_NOUNS.filter(n => !n.pluralOnly));
+        const colour = mixRand(MIX_COLOURS);
+        const art = noun.g === "f" ? "una" : "un";
+        return {
+          es: `Hay ${art} ${noun.sing} ${mixColour(colour, noun.g, false)} en mi mochila`,
+          en: `There is ${enArt(colour.en)} ${colour.en} ${noun.en_s} in my backpack`
+        };
+      },
+      // T3 — opinion verb + colour
+      function () {
+        const noun = mixRand(MIX_NOUNS.filter(n => !n.pluralOnly));
+        const colour = mixRand(MIX_COLOURS);
+        const verb = mixRand(MIX_VERBS);
+        return {
+          es: `${verb.es} ${noun.art} ${noun.sing} ${mixColour(colour, noun.g, false)}`,
+          en: `${verb.en} the ${colour.en} ${noun.en_s}`
+        };
+      },
+      // T4 — negative (works for plural-only nouns too)
+      function () {
+        const noun = mixRand(MIX_NOUNS);
+        return {
+          es: `No hay ${noun.plur} en mi mochila`,
+          en: `There are no ${noun.en_p} in my backpack`
+        };
+      }
+    ];
+
+    // Build one wrong-but-plausible Spanish sentence for MC distractors: same
+    // template family, one slot changed. Kept internally consistent so it still
+    // reads as real Spanish, just not the requested meaning.
+    function mixDistractorEn(correctEn) {
+      for (let attempt = 0; attempt < 12; attempt++) {
+        const alt = MIX_TEMPLATES[Math.floor(Math.random() * MIX_TEMPLATES.length)]();
+        if (alt.en !== correctEn) return alt.en;
+      }
+      return correctEn + " (again)";
+    }
+
+    function generateMixQuestion(i, gold) {
+      const tpl = MIX_TEMPLATES[i % MIX_TEMPLATES.length];
+      const s = tpl();
+      // On the gold run, lean on typing; otherwise rotate typing / bank / mc.
+      const style = gold ? (i % 2 === 0 ? "typing" : "mc")
+                         : ["typing", "bank", "mc"][i % 3];
+
+      if (style === "typing") {
+        return { type: "typing", prompt: s.en, correct: s.es };
+      }
+      if (style === "mc") {
+        const opts = [s.en];
+        while (opts.length < 4) {
+          const d = mixDistractorEn(s.en);
+          if (!opts.includes(d)) opts.push(d);
+        }
+        return { type: "mc", prompt: s.es, correct: s.en, options: shuffle(opts) };
+      }
+      // bank
+      const tokens = s.es.split(' ');
+      const distractors = [];
+      const pushUnique = (t) => { if (t && !tokens.includes(t) && !distractors.includes(t)) distractors.push(t); };
+      pushUnique(mixColour(mixRand(MIX_COLOURS), "m", true));
+      pushUnique(mixColour(mixRand(MIX_COLOURS), "f", false));
+      pushUnique(mixRand(MIX_NOUNS.filter(n => n.oneWord && !n.pluralOnly)).plur);
+      pushUnique(MIX_NUMS[mixRand([2, 3, 4, 5])][0]);
+      pushUnique("una"); pushUnique("un");
+      return {
+        type: "bank",
+        prompt: s.en,
+        correct: s.es,
+        wordsPool: shuffle([...tokens, ...distractors.slice(0, 4)])
+      };
+    }
+
+    // Dev helper — enumerate the entire output surface for review. Run
+    // validateMixEngine() in the browser console.
+    function validateMixEngine() {
+      const out = [];
+      MIX_TEMPLATES.forEach((tpl, ti) => {
+        for (let k = 0; k < 40; k++) {
+          const s = tpl();
+          const bad = !s.es || !s.en || s.es.includes('undefined') || /\s{2,}/.test(s.es);
+          out.push(`${bad ? '❌' : '  '} T${ti} | ${s.es}  ⟶  ${s.en}`);
+        }
+      });
+      console.log([...new Set(out)].sort().join('\n'));
+      return out.filter(l => l.startsWith('❌')).length === 0 ? 'OK' : 'ERRORS FOUND';
     }
 
     function generateRandomQuestion(pool, targetWord = null) {
@@ -3821,6 +4285,9 @@
         if (typeof OwlsMazeGame !== 'undefined' && OwlsMazeGame.isActive()) {
           OwlsMazeGame.quit();
         }
+        if (typeof MochilaGame !== 'undefined' && MochilaGame.isActive()) {
+          MochilaGame.quit();
+        }
         document.body.classList.remove('checkpoint-mode');
         document.getElementById('lesson-lives-box').style.display = 'none';
         document.getElementById('lesson-overlay').style.display = 'none';
@@ -4098,6 +4565,48 @@
         title = "Chapter Exam Cleared!";
         subtitle = "Incredible! You have mastered Chapter 1.1: El Español Global!";
         emoji = "🏆";
+      } else if (bNum === 27) {
+        if (state.b27_crown < 3) {
+          state.b27_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `Material Escolar is now Level ${state.b27_crown}/3`;
+          if (state.b27_crown === 3) {
+            state.crowns++;
+            state.game_unlocked_1_6 = true;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 27! 'En mi mochila' game unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great review of School Supplies!";
+          emoji = "💪";
+          state.game_unlocked_1_6 = true;
+        }
+      } else if (bNum === 29) {
+        if (state.b29_crown < 2) {
+          state.b29_crown++;
+          rewardXP += 10;
+          title = "Level Up!";
+          subtitle = `La mochila mágica is now Level ${state.b29_crown}/2`;
+          if (state.b29_crown === 2) {
+            state.crowns++;
+            title = "Crown Unlocked!";
+            subtitle = "You completed Bubble 29! Final Checkpoint unlocked!";
+            emoji = "🏆";
+          }
+        } else {
+          title = "Practice Complete!";
+          subtitle = "Great recombination practice — objects, colours & numbers!";
+          emoji = "💪";
+        }
+      } else if (bNum === 30) {
+        state.b30_completed = true;
+        rewardXP += 20; // +40 XP total for Checkpoint Exam!
+        title = "Chapter Exam Cleared!";
+        subtitle = "Incredible! You have mastered Chapter 1.6: ¡Tod@s a clase!";
+        emoji = "🏆";
       }
 
       state.xp += rewardXP;
@@ -4122,6 +4631,9 @@
       }
       if (state.b9_crown === 2) {
         state.game2_unlocked_1_2 = true;
+      }
+      if (state.b27_crown === 3) {
+        state.game_unlocked_1_6 = true;
       }
 
       saveProgress();
@@ -4177,6 +4689,11 @@
           alert("🔒 Examen del Capítulo 1.5 is locked! You must first complete Bubble 24 (Opiniones y Conectores) to 2 crowns.");
           return;
         }
+      } else if (chapterNum === 6) {
+        if (state.b29_crown < 2) {
+          alert("🔒 Examen del Capítulo 1.6 is locked! You must first complete Bubble 29 (La mochila mágica) to 2 crowns.");
+          return;
+        }
       }
 
       decayStrengths();
@@ -4194,10 +4711,14 @@
       ] : (chapterNum === 4 ? [
         ...BUBBLE_17_LEVELS[0], ...BUBBLE_17_LEVELS[1],
         ...BUBBLE_19_LEVELS[0], ...BUBBLE_19_LEVELS[1]
-      ] : [
+      ] : (chapterNum === 5 ? [
         ...BUBBLE_22_LEVELS[0], ...BUBBLE_22_LEVELS[1],
         ...BUBBLE_24_LEVELS[0], ...BUBBLE_24_LEVELS[1]
-      ])));
+      ] : [
+        "el bolígrafo", "el lápiz", "el cuaderno", "el libro", "la goma", "la regla",
+        "el estuche", "el sacapuntas", "la hoja de papel", "las tijeras", "el libro de texto",
+        "hay…", "la mochila"
+      ]))));
 
       const checkpointWords = shuffle(fullPool).slice(0, 15);
       const queue = [];
@@ -4207,7 +4728,7 @@
       });
 
       session = {
-        bubbleNum: chapterNum === 1 ? 6 : (chapterNum === 2 ? 11 : (chapterNum === 3 ? 16 : (chapterNum === 4 ? 21 : 26))),
+        bubbleNum: chapterNum === 1 ? 6 : (chapterNum === 2 ? 11 : (chapterNum === 3 ? 16 : (chapterNum === 4 ? 21 : (chapterNum === 5 ? 26 : 30)))),
         isCheckpoint: true,
         isBossChallenge: false,
         lives: 4,
@@ -4276,6 +4797,7 @@
       const isCh2 = session.bubbleNum === 11;
       const isCh3 = session.bubbleNum === 16;
       const isCh4 = session.bubbleNum === 21;
+      const isCh5 = session.bubbleNum === 26;
       const bossCard = isCh1 ? {
         type: "bank",
         isBoss: true,
@@ -4300,13 +4822,19 @@
         prompt: "When is your birthday? My birthday is the first of June.",
         correct: "¿Cuándo es tu cumpleaños? Mi cumpleaños es el primero de junio",
         wordsPool: shuffle(["¿Cuándo", "es", "tu", "cumpleaños?", "Mi", "cumpleaños", "es", "el", "primero", "de", "junio", "nombre", "lunes", "edad", "veintiuno"])
-      } : {
+      } : (isCh5 ? {
         type: "bank",
         isBoss: true,
         prompt: "I love blue, but I don't like yellow at all.",
         correct: "Me encanta el azul, pero no me gusta nada el amarillo",
         wordsPool: shuffle(["Me", "encanta", "el", "azul,", "pero", "no", "me", "gusta", "nada", "el", "amarillo", "rojo", "verde", "también", "prefiero"])
-      })));
+      } : {
+        type: "bank",
+        isBoss: true,
+        prompt: "In my backpack there are three red pens and a green ruler.",
+        correct: "En mi mochila hay tres bolígrafos rojos y una regla verde",
+        wordsPool: shuffle(["En", "mi", "mochila", "hay", "tres", "bolígrafos", "rojos", "y", "una", "regla", "verde", "libros", "dos", "azul", "rojas"])
+      }))));
 
       session.queue = [bossCard];
       session.mistakesQueue = []; 
@@ -4442,7 +4970,12 @@
       let activeId = 'b1-btn';
 
       // Determine highest active (unlocked, non-completed) bubble
-      if (state.b24_crown === 2 && !state.b26_completed) activeId = 'b26-btn';
+      if (state.b29_crown === 2 && !state.b30_completed) activeId = 'b30-btn';
+      else if (state.b27_crown === 3 && state.b29_crown < 2) activeId = 'b29-btn';
+      else if (state.b27_crown === 3 && state.game_unlocked_1_6) activeId = 'b28-btn';
+      else if (state.r9_crown === 1 && state.b27_crown < 3) activeId = 'b27-btn';
+      else if (state.b26_completed && state.r9_crown < 1) activeId = 'r9-btn';
+      else if (state.b24_crown === 2 && !state.b26_completed) activeId = 'b26-btn';
       else if (state.b24_crown === 2 && state.game2_unlocked_1_5) activeId = 'b25-btn';
       else if (state.r8_crown === 1 && state.b24_crown < 2) activeId = 'b24-btn';
       else if (state.b22_crown === 2 && state.r8_crown < 1) activeId = 'r8-btn';
@@ -4483,55 +5016,47 @@
       }
     }
 
-    // Scroll-based chapter detection for dynamic unit banner
+    // Scroll-based chapter detection for the dynamic unit banner.
+    // Data-driven: reads data-chapter / data-banner-title / data-banner-desc from
+    // each .chapter-header-divider, so new chapters need no change here.
     window.addEventListener('scroll', () => {
-      const dividers = document.querySelectorAll('.chapter-header-divider');
-      if (dividers.length < 2) return;
+      const dividers = Array.from(document.querySelectorAll('.chapter-header-divider'));
+      if (dividers.length === 0) return;
 
-      const div2 = dividers[1];
-      const div3 = dividers.length >= 3 ? dividers[2] : null;
-      const div4 = dividers.length >= 4 ? dividers[3] : null;
-      const div5 = dividers.length >= 5 ? dividers[4] : null;
-      const rect2 = div2.getBoundingClientRect();
-      const rect3 = div3 ? div3.getBoundingClientRect() : null;
-      const rect4 = div4 ? div4.getBoundingClientRect() : null;
-      const rect5 = div5 ? div5.getBoundingClientRect() : null;
-      
       const banner = document.querySelector('.unit-banner');
       const title = document.querySelector('.unit-banner-title');
       const desc = document.querySelector('.unit-banner-desc');
-      if (banner && title && desc) {
-        if (rect5 && rect5.top <= 185) {
-          if (!banner.classList.contains('chapter-5')) {
-            banner.className = 'unit-banner chapter-5';
-            title.textContent = 'Capítulo 1.5';
-            desc.textContent = 'Mis Preferencias';
-          }
-        } else if (rect4 && rect4.top <= 185) {
-          if (!banner.classList.contains('chapter-4')) {
-            banner.className = 'unit-banner chapter-4';
-            title.textContent = 'Capítulo 1.4';
-            desc.textContent = '¡...y que cumplas muchos más!';
-          }
-        } else if (rect3 && rect3.top <= 185) {
-          if (!banner.classList.contains('chapter-3')) {
-            banner.className = 'unit-banner chapter-3';
-            title.textContent = 'Capítulo 1.3';
-            desc.textContent = 'Mi carnet de identidad';
-          }
-        } else if (rect2.top <= 185) {
-          if (!banner.classList.contains('chapter-2')) {
-            banner.className = 'unit-banner chapter-2';
-            title.textContent = 'Capítulo 1.2';
-            desc.textContent = '¿Qué tal? y Sentimientos';
-          }
-        } else {
-          if (!banner.classList.contains('chapter-1')) {
-            banner.className = 'unit-banner chapter-1';
-            title.textContent = 'Capítulo 1.1';
-            desc.textContent = 'El Español Global y Saludos';
-          }
-        }
+      if (!banner || !title || !desc) return;
+
+      // The last divider whose top has scrolled above the trigger line wins;
+      // if none has, fall back to the first divider.
+      let current = dividers[0];
+      dividers.forEach(d => {
+        if (d.getBoundingClientRect().top <= 185) current = d;
+      });
+
+      const ch = current.dataset.chapter || '1';
+      if (!banner.classList.contains('chapter-' + ch)) {
+        banner.className = 'unit-banner chapter-' + ch;
+        title.textContent = current.dataset.bannerTitle || '';
+        desc.textContent = current.dataset.bannerDesc || '';
+      }
+    });
+
+    // Keyboard shortcut: press 1-9 to pick that multiple-choice option
+    // (mc / intro / listening / dialogue question types), so answering
+    // doesn't require reaching for the mouse. Enter (below) still confirms.
+    document.addEventListener('keydown', function(e) {
+      if (!/^[1-9]$/.test(e.key)) return;
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+
+      const grid = document.querySelector('#question-area .options-grid');
+      if (!grid || grid.offsetParent === null) return;
+      const btn = grid.querySelectorAll('.option-btn')[Number(e.key) - 1];
+      if (btn && !btn.disabled) {
+        e.preventDefault();
+        btn.click();
       }
     });
 
