@@ -1,6 +1,6 @@
 # Buhísimo: Character & World Bible
 
-*v0.2, 9 Oct 2026. Names, ages, Buhísimo's gender and the Amazon trip timing confirmed by Juan. Art style still being explored.*
+*v0.3, 18 Oct 2026. Names, ages, Buhísimo's gender and the Amazon trip timing confirmed by Juan. App art style fixed on 18 Oct (flat, no outlines, NAG off).*
 
 ---
 
@@ -56,13 +56,14 @@ Start small, add characters as the units need them (Duolingo did the same).
 - **Voice:** adult Colombian man, older and warmer than Papá (a new Qwen voice design; see §5).
 
 **Matilda**, the koala (visitor)
-- **Look:** grey fur, big fluffy ears, black nose. In Cocora she's always wrapped in a *ruana* (Andean wool poncho) because she's always cold.
+- **Look:** grey fur, big fluffy ears, black nose, big dark eyes with soft, subtle lashes. In Cocora she's always wrapped in a *ruana* (Andean wool poncho, turquoise, magenta and mustard stripes) because she's always cold. On her head she wears a wide *balaca wayuu*, a woven Wayuu headband with bright diamond and zigzag patterns that she bought at the market in Salento.
+- **Teaching point (like Max's Selección shirt):** the **Wayuu** are an Indigenous people of **La Guajira**, the desert peninsula in Colombia's far north (and across the border in Venezuela). Wayuu women are famous for their weaving: the *mochila wayuu* bags and *balacas* are crocheted or woven by hand, and the patterns (*kanaas*) carry meanings from nature and family. A good cultural note for students: the balaca is real, everyday Colombian craft that Matilda bought from the people who make it, not a costume (kindness rule 4).
 - **Personality and arc:** starts **tímida** (shy, 2.6) and becomes **sociable** (3.6) by the end of the year. That's the same journey students make with speaking.
 - **Running joke:** always cold in Cocora (*¡Hace frío!*), and likes sleeping (koalas sleep about 18 hours a day).
 - **Voice:** to test. A clear young female voice.
 
 **Max**, the kangaroo (visitor)
-- **Look:** sandy brown, long feet, wears a Colombia football shirt he bought on day one.
+- **Look:** sandy brown, rosy cheeks, long feet, wears the yellow Colombia football shirt (*la camiseta de la Selección*, blue V-neck collar and sleeve trims) he bought on day one.
 - **Personality:** *entusiasta*, *activo*, *deportista* (3.2), *rápido*. Says yes to everything.
 - **Running joke:** he can't sit still and jumps everywhere, sometimes a bit too far.
 - **Voice:** to test. A clear young male voice.
@@ -133,8 +134,10 @@ Start small, add characters as the units need them (Duolingo did the same).
 
 ## 6. Art style guide
 
-**App: flat and simple.**
-- Rounded shapes, thick dark outline (the same width on every character), 3–4 flat colours per character, no gradients or texture.
+**App: flat and simple (decided 18 Oct; the reference is the prototype's `max.webp`, from `prototype_art/max_s1.png`, and Matilda's `matilda_stand_s4`).**
+- Chunky rounded geometric shapes, **no outlines**, minimal flat shading with one soft shadow tone, 3–4 flat colours per character, no gradients or texture.
+- **How it's made:** Z-Image Turbo, 8 steps, **NAG off** (`--nag-scale 1.0`, no negative prompt). NAG 3 made the round-5 art softer and more detailed, which is off-style. The style text is fixed (see `design/characters/remake_flat/prompts.json`); the palette line lists **colours only** (turquoise, magenta, mustard yellow, emerald green, terracotta, white) and never mentions houses, which made the model draw houses behind the characters. If houses still appear, add background negatives with NAG 1.5–2 at most and check the style stays flat.
+- New poses reuse the character's exact text and change only the pose and expression words.
 - Big expressive eyes. Readable at 64 px on a phone.
 - **Each character needs:** a front pose plus 6 expressions (happy, celebrating, surprised, confused, cold/shivering, sleepy). The app uses them for feedback, e.g. Buhísimo celebrating a correct answer.
 
@@ -148,11 +151,12 @@ Start small, add characters as the units need them (Duolingo did the same).
 
 ## 7. Decisions log
 
+- 18 Oct: **art style fixed: flat, no outlines, NAG off** (the max_s1 look). Matilda redesigned: *balaca wayuu* headband from the Salento market, soft lashes, striped ruana (`matilda_stand_s4`). Max keeps max_s1. Their expression poses (wave, celebrate, surprised, thinking; Max also jump) and the 1.1 nouns (*el mapa, el mundo, la capital, el monumento*) were remade in this style and replaced the round-5 (NAG 3) art in the prototype. Review page: `design/characters/remake_flat/index.html`.
 - 9 Oct: **design phase before the engine** (design system + one-lesson phone prototype). Prototype art: **chunky app style with Salento colours**. Samuel does **not** wear a sombrero vueltiao (AI kept drawing a Mexican sombrero). Font: playful and bubbly is fine, but the Spanish text must be absolutely legible.
 - 9 Oct: names kept (Matilda, Max, Valentina, Samuel, Chigüi, Pereza, Restrepo). Parents are **Raúl** and **María**. Buhísimo is **male**. Matilda and Max are **12–13**. The Amazon trip happens in **2.3**. All names are recorded in `names.csv` with their sections.
 - 8 Oct: posture rules (see §3). Name stays Buhísimo. Home base Salento/Cocora.
 
 ## 8. Still open
 
-- Art style (exploring: `design/characters/*.html`).
+- Art style for the rest of the cast (the app style is fixed; Valentina, Samuel, the parents and the Amazon animals still need designs in it). Worksheet line art still to test.
 - Voices for Matilda, Max, Buhísimo and the animals (to test).
