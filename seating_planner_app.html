@@ -177,6 +177,42 @@
             background-color: #fef2f2 !important;
             background-image: repeating-linear-gradient(45deg, #fee2e2, #fee2e2 10px, #fef2f2 10px, #fef2f2 20px) !important;
         }
+        /* Absences overlay (A): drawn on top of the desk, never inside its layout, so nothing moves.
+           Cyan dashed ring = away last lesson; dark "×N" tag = times away this unit. */
+        .abs-ring {
+            position: absolute;
+            inset: 0;
+            border: 4px dashed #0891b2;
+            border-radius: 6px;
+            background: rgba(8, 145, 178, 0.10);
+            pointer-events: none;
+            z-index: 5;
+        }
+        .abs-count {
+            position: absolute;
+            top: 3px;
+            left: 4px;
+            min-width: 26px;
+            padding: 0 5px;
+            border-radius: 6px;
+            background: #1e293b;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 20px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            pointer-events: none;
+            z-index: 6;
+        }
+        .abs-swatch-ring {
+            display: inline-block;
+            width: 14px;
+            height: 10px;
+            border: 2px dashed #0891b2;
+            border-radius: 3px;
+            background: rgba(8, 145, 178, 0.10);
+        }
     </style>
 </head>
 <body class="h-screen w-full flex bg-slate-50 text-slate-800">
@@ -209,6 +245,17 @@
                     <div id="classList" class="space-y-1">
                         <!-- Classes injected here -->
                     </div>
+                </div>
+
+                <!-- Absences overlay on the board (press A) -->
+                <div id="absencesSection" class="hidden">
+                    <button id="absToggle" onclick="this.blur(); toggleAbsences()" data-tip="Show who was away · press A" data-tip-pos="below" class="w-full flex items-center gap-2 p-2 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                        <i data-lucide="user-x" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                        <span class="flex-1 text-left font-medium">Who was away</span>
+                        <kbd class="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5">A</kbd>
+                        <span id="absSwitch" class="relative w-8 h-5 rounded-full bg-slate-300 transition-colors shrink-0"><span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"></span></span>
+                    </button>
+                    <div id="absHint" class="px-2 pt-1 text-xs text-slate-500 leading-snug space-y-1"></div>
                 </div>
 
                 <hr class="border-slate-100">
@@ -321,7 +368,7 @@
                 <!-- Space is always reserved so revealing an answer doesn't push the plan down -->
                 <div id="hudAnswer" class="text-xl font-bold text-emerald-300 leading-tight min-h-[1.75rem] mt-1 invisible"></div>
             </div>
-            <div id="hudSelectedStudents" class="flex flex-wrap gap-3 mt-4 items-center justify-center w-full min-h-[2.75rem]">
+            <div id="hudSelectedStudents" class="flex flex-wrap gap-3 mt-4 items-center justify-center w-full min-h-[2.875rem]">
                 <!-- Injected Student Roles & Names, side by side -->
             </div>
         </div>
@@ -1162,6 +1209,7 @@
             renderCanvas();
             renderUnassigned();
             renderLessonPill();
+            renderAbsencesMenu();
             updateAppColor();
             lucide.createIcons();
         }
@@ -1278,6 +1326,7 @@
             if (!room) return;
 
             const ac = getActiveClass();
+            const absInfo = showAbsences && ac ? absenceInfo(ac) : null;
 
             room.desks.forEach(desk => {
                 const el = document.createElement('div');
@@ -1367,7 +1416,7 @@
                             ${hasStudent ? `<span class="text-xs font-medium text-slate-700 w-full text-center truncate px-2" title="${desk.student}">${desk.student}</span>` : `<span class="text-xs text-slate-400">Desk</span>`}
                         `;
                     }
-                    el.innerHTML = innerHTML;
+                    el.innerHTML = innerHTML + (hasStudent ? absenceOverlay(absInfo, desk.student) : '');
                 }
                 
                 canvas.appendChild(el);
@@ -2333,6 +2382,13 @@
                 return;
             }
 
+            // A = who was away (any mode)
+            if (e.code === 'KeyA') {
+                e.preventDefault();
+                if (!e.repeat) toggleAbsences();
+                return;
+            }
+
             // H = menu (any mode)
             if (e.code === 'KeyH') {
                 e.preventDefault();
@@ -2899,8 +2955,85 @@
                 <i data-lucide="clipboard-list" class="w-3.5 h-3.5 shrink-0"></i>
                 <span>${total ? `Lesson <b class="text-slate-700 tabular-nums">${total}</b>` : 'No lessons yet'}</span>
                 <span class="text-slate-300">·</span>
-                <span class="flex min-w-0"><span class="truncate max-w-[11rem] ${ac.currentUnit.name ? '' : 'italic text-slate-400'}">${esc(unitLabel(ac.currentUnit.name))}</span>:&nbsp;<b class="text-slate-700 tabular-nums">${inUnit}</b></span>`;
+                <span class="flex min-w-0"><span class="truncate max-w-[11rem] ${ac.currentUnit.name ? '' : 'italic text-slate-400'}">${esc(unitLabel(ac.currentUnit.name))}</span>:&nbsp;<b class="text-slate-700 tabular-nums">${inUnit}</b></span>
+                ${absenceLegend(ac)}`;
             lucide.createIcons();
+        }
+
+        // --- WHO WAS AWAY (overlay on the board, press A) ---
+        // Worked out from the recorded lessons (ac.lessons[].absent), never stored.
+        // "Last lesson" = the most recently RECORDED lesson. During a lesson the current one isn't
+        // recorded yet (Record lesson is pressed at the end), so this is the previous lesson; today's
+        // roll shows as the red AWAY desks as before.
+        // "This unit" = recorded lessons whose unitId is the current unit's (named units only).
+        // Only the on/off choice is saved, per browser.
+        let showAbsences = false;
+        try { showAbsences = localStorage.getItem('seatingShowAbsences') === '1'; } catch (e) { /* storage blocked */ }
+
+        function absenceInfo(ac) {
+            const lessons = sortedLessons(ac);
+            const last = lessons[lessons.length - 1] || null;
+            const unit = ac.currentUnit && ac.currentUnit.name ? ac.currentUnit : null;
+            const unitList = unit ? lessons.filter(l => l.unitId === unit.id) : [];
+            const counts = new Map();
+            unitList.forEach(l => new Set(l.absent || []).forEach(n => counts.set(n, (counts.get(n) || 0) + 1)));
+            return { last, lastAway: new Set(last ? last.absent || [] : []), unit, unitLessonCount: unitList.length, counts };
+        }
+
+        // Overlays only (absolutely positioned, pointer-events: none), so desks never move or resize
+        function absenceOverlay(info, student) {
+            if (!info) return '';
+            const n = info.counts.get(student) || 0;
+            return (info.lastAway.has(student) ? '<div class="abs-ring"></div>' : '') +
+                (n ? `<div class="abs-count">×${n}</div>` : '');
+        }
+
+        function absenceLegend(ac) {
+            if (!showAbsences) return '';
+            const info = absenceInfo(ac);
+            if (!info.last) return '';
+            return `
+                <span class="text-slate-300">·</span>
+                <span class="flex items-center gap-1"><span class="abs-swatch-ring"></span>away ${esc(formatNoteDate(info.last.date))}</span>
+                ${info.unit ? '<span class="flex items-center gap-1"><span class="px-1 rounded bg-slate-800 text-white font-bold leading-4">×N</span>this unit</span>' : ''}`;
+        }
+
+        function toggleAbsences() {
+            showAbsences = !showAbsences;
+            try { localStorage.setItem('seatingShowAbsences', showAbsences ? '1' : '0'); } catch (e) { /* storage blocked */ }
+            renderCanvas();
+            renderLessonPill();
+            renderAbsencesMenu();
+            const ac = getActiveClass();
+            if (!showAbsences || !ac) return showToast(showAbsences ? 'Who was away: on' : 'Who was away: off');
+            const info = absenceInfo(ac);
+            if (!info.last) return showToast('Who was away: on · no lessons recorded yet');
+            const parts = [`Who was away: on`, `last lesson ${formatLessonDate(info.last.date)}: ${info.lastAway.size} away`];
+            if (info.unit) parts.push(`×N = times away in ${info.unit.name}`);
+            showToast(parts.join(' · '));
+        }
+
+        // The switch + a gentle status line in the menu
+        function renderAbsencesMenu() {
+            const ac = getActiveClass();
+            document.getElementById('absencesSection').classList.toggle('hidden', !ac);
+            const sw = document.getElementById('absSwitch');
+            sw.classList.toggle('bg-cyan-600', showAbsences);
+            sw.classList.toggle('bg-slate-300', !showAbsences);
+            sw.firstElementChild.style.transform = showAbsences ? 'translateX(12px)' : '';
+            document.getElementById('absToggle').dataset.tip = showAbsences ? 'Hide who was away · press A' : 'Show who was away · press A';
+            if (!ac) return;
+            const info = absenceInfo(ac);
+            const lines = [];
+            if (!info.last) {
+                lines.push('No lessons recorded yet. Press <b>Record lesson</b> (Assign Seats) at the end of each lesson.');
+            } else {
+                lines.push(`<span class="abs-swatch-ring align-middle mr-1"></span>Away last lesson (${esc(formatNoteDate(info.last.date))}): ${info.lastAway.size || 'nobody'}`);
+                lines.push(info.unit
+                    ? `<span class="px-1 rounded bg-slate-800 text-white font-bold mr-1">×N</span>times away in ${esc(info.unit.name)}`
+                    : 'Name the current unit (Lessons & units) to count absences per unit.');
+            }
+            document.getElementById('absHint').innerHTML = lines.map(l => `<div>${l}</div>`).join('');
         }
 
         // Unit names used in any class, plus the question library's topics (e.g. "3.4 El tiempo")
@@ -3014,6 +3147,8 @@
             saveState();
             renderLessonPill();
             renderLessonsModal();
+            renderAbsencesMenu();
+            if (showAbsences) renderCanvas();
         }
 
         // Renaming a unit relabels its lessons too
