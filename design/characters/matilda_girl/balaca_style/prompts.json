@@ -1,0 +1,18 @@
+{
+ "negative": "",
+ "nag_scale": 1.0,
+ "steps": 8,
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+ ],
+ "prompts": {
+  "stand": "Character design, full body standing: Matilda, a young koala girl (12) from Melbourne, soft grey fur, big round fluffy ears, large black nose, big dark eyes with soft subtle eyelashes, a little shy smile, wearing a wide woven Wayuu fabric headband (balaca) across the top of her head between her ears, with bright multicolour Wayuu diamond and zigzag patterns, wrapped in an Andean wool poncho with simple horizontal turquoise, magenta and mustard yellow stripes, standing upright. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "wave": "Character design, full body standing: Matilda, a young koala girl (12) from Melbourne, soft grey fur, big round fluffy ears, large black nose, big dark eyes with soft subtle eyelashes, a little shy smile, wearing a wide woven Wayuu fabric headband (balaca) across the top of her head between her ears, with bright multicolour Wayuu diamond and zigzag patterns, wrapped in an Andean wool poncho with simple horizontal turquoise, magenta and mustard yellow stripes, standing upright and waving hello with one paw. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text."
+ },
+ "style_source": "prototype_art/max_s1.png (palette line reduced to colours only)"
+}
