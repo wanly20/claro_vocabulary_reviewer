@@ -1,0 +1,23 @@
+{
+ "negative": "",
+ "nag_scale": 1.0,
+ "steps": 8,
+ "resolution": "1024x1024",
+ "seeds_characters": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+ ],
+ "seeds_nouns": [],
+ "extra_seeds": {},
+ "style_source": "remake_flat STYLE/TAIL (prototype_art/max_s1.png + matilda_stand_s4.png); identity from buhisimo_characters.md v0.3",
+ "prompts": {
+  "owl_explaining": "Character design, full body standing upright: Buhisimo, a friendly buho de anteojos (Pulsatrix perspicillata), his head is a big perfect circle like a full moon, dark chocolate brown head, back and wings, cream chest, big round yellow eyes with soft white eyebrow stripes gently arching up above them and a white band under the beak, small orange beak, wearing round thin-rimmed glasses, a warm friendly smile, one wing raised and open to the side as if explaining something, a small woven Wayuu mochila bag with bright multicolour diamond patterns on a strap across his body, orange feet. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "owl_celebrating": "Character design, full body standing upright: Buhisimo, a friendly buho de anteojos (Pulsatrix perspicillata), his head is a big perfect circle like a full moon, dark chocolate brown head, back and wings, cream chest, big round yellow eyes with soft white eyebrow stripes gently arching up above them and a white band under the beak, small orange beak, wearing round thin-rimmed glasses, a big happy open-beaked smile, eyes closed with joy, jumping for joy with both wings raised high in the air, a small woven Wayuu mochila bag with bright multicolour diamond patterns on a strap across his body, orange feet. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "owl_encouraging": "Character design, full body standing upright: Buhisimo, a friendly buho de anteojos (Pulsatrix perspicillata), his head is a big perfect circle like a full moon, dark chocolate brown head, back and wings, cream chest, big round yellow eyes with soft white eyebrow stripes gently arching up above them and a white band under the beak, small orange beak, wearing round thin-rimmed glasses, a warm kind smile, eyes open, giving a thumbs up with one wing, a small woven Wayuu mochila bag with bright multicolour diamond patterns on a strap across his body, orange feet. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "owl_thinking": "Character design, full body standing upright: Buhisimo, a friendly buho de anteojos (Pulsatrix perspicillata), his head is a big perfect circle like a full moon, dark chocolate brown head, back and wings, cream chest, big round yellow eyes with soft white eyebrow stripes gently arching up above them and a white band under the beak, small orange beak, wearing round thin-rimmed glasses, thinking, looking up, puzzled, one wing tip on his chin, a small woven Wayuu mochila bag with bright multicolour diamond patterns on a strap across his body, orange feet. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text."
+ }
+}

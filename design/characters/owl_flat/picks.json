@@ -1,0 +1,19 @@
+{
+ "intro": "Buhísimo's four prototype poses (owl-explaining, owl-celebrating, owl-encouraging, owl-thinking) redrawn in the flat style of the current Max and Matilda: same style text as remake_flat, NAG off (scale 1.0), no negative prompt, 6 seeds per pose. Ear tufts: every prompt that used the English word 'owl' gave tufts (24 of 24 tries in tuft_tests/, even with 'smooth round head, no ear tufts' in the positive prompt). Naming the species as 'buho de anteojos (Pulsatrix perspicillata)' with 'his head is a big perfect circle like a full moon' fixed it: 0 of 24 final images have ear tufts (three have a small single feather on top and are rejected). Seed 3 gives the most consistent set across all four poses (same turquoise strap, bag, brows and glasses), so all four picks are seed 3. Nothing is wired into the prototype yet.",
+ "style_refs": ["max", "matilda"],
+ "assets": [
+  {"asset": "owl-explaining", "stem": "owl_explaining", "seed": 3, "runners": [6, 2],
+   "note": "Seed 3: round head, white brows, glasses, turquoise strap and Wayuu mochila, one wing open; matches the other three picks. The gesture reads a little like a wave.",
+   "rejected": {"1": "brown strap (breaks the set)", "4": "brown strap", "5": "single feather tuft on top of the head"}},
+  {"asset": "owl-celebrating", "stem": "owl_celebrating", "seed": 3, "runners": [1],
+   "runner_note": "seed 1 has a brown strap",
+   "note": "Seed 3: both wings up, eyes closed with joy, open-beak smile, same turquoise strap as the set. Not jumping (feet on the ground), like the old picture's energy but calmer.",
+   "rejected": {"2": "brown strap", "4": "brown strap", "5": "brown strap", "6": "single feather tuft on top of the head"}},
+  {"asset": "owl-encouraging", "stem": "owl_encouraging", "seed": 3, "runners": [6, 2],
+   "note": "Seed 3: warm smile and a clear wing thumbs-up (the old picture was a wave), same strap and bag as the set.",
+   "rejected": {"1": "no thumbs-up, wings down", "4": "feather tuft on top, brown strap", "5": "yellow-green strap"}},
+  {"asset": "owl-thinking", "stem": "owl_thinking", "seed": 3, "runners": [6, 2],
+   "note": "Seed 3: wing on chin, same strap and bag as the set. Eyes look forward rather than up.",
+   "rejected": {"1": "brown strap", "4": "brown strap, grey-green eyes", "5": "teal patch on top of the head"}}
+ ]
+}
