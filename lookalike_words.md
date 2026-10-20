@@ -1,6 +1,6 @@
 # Look-alike words to point out (Buhísimo and worksheets)
 
-**Juan's rule (20 Oct 2026):** when a unit teaches a word that looks or sounds like another word in the course, say so explicitly ("Careful: *cobaya* ≠ *caballo*"). Do it on the learn card, in at least one practice item that puts the two side by side (e.g. pick the picture for each), and in the unit review. If the other word comes from a later unit, point it out when that later word is taught.
+**Juan's rule (20–21 Oct 2026, list approved):** once BOTH words of a pair have been taught, add activities that make students tell them apart. Start when the second word is taught, though not necessarily in the very same lesson; a later practice or review lesson is fine. Point the pair out explicitly ("Careful: *cobaya* ≠ *caballo*"), then practise them side by side: pick the picture or meaning for each, listen and choose, or a sentence where only one fits. Keep the pair in later reviews. Never put a pair together before both words are taught.
 
 Section numbers are from `vocabulary_database.csv`.
 
