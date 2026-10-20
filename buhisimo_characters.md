@@ -66,7 +66,7 @@ Start small, add characters as the units need them (Duolingo did the same).
 - **Look:** sandy brown, rosy cheeks, long feet, wears the yellow Colombia football shirt (*la camiseta de la Selección*, blue V-neck collar and sleeve trims) he bought on day one.
 - **Personality:** *entusiasta*, *activo*, *deportista* (3.2), *rápido*. Says yes to everything.
 - **Running joke:** he can't sit still and jumps everywhere, sometimes a bit too far.
-- **Voice:** to test. A clear young male voice.
+- **Voice:** chosen 21 Oct 2026: "New: Colombian schoolboy, clear", a Qwen3-TTS Voice Design boy (unbroken voice, median pitch 244 Hz), saved as `video_generation/conversations/voices/co_m_kid_max.wav` (prototype voice id `max`). Until then Max used Papá's voice (`co_m_30`). Comparison: `video_generation/voice_samples/matilda_max/`.
 
 **Valentina Restrepo**, daughter, 12
 - **Look:** dark curly hair, *mochila wayuu*, bright colours, *alpargatas*.
@@ -126,7 +126,8 @@ Start small, add characters as the units need them (Duolingo did the same).
 | Mamá Restrepo | new adult Colombian woman (Qwen voice design → saved reference) | to make |
 | Buhísimo | new older Colombian man (warm, wise) | to make |
 | Valentina, Samuel | `co_f_teen`, `co_m_teen` | exist, quality to check |
-| Matilda, Max | young clear voices | to choose |
+| Max | `co_m_kid_max` (Colombian schoolboy, Qwen voice design) | chosen 21 Oct 2026 |
+| Matilda | a young clear voice (candidates in `video_generation/voice_samples/matilda_max/`) | to choose |
 | Chigüi, animals | to choose; some from other countries | later |
 | Word audio (every non-gendered word in both voices) | Mamá's and Papá's voices | after Mamá's voice exists |
 
