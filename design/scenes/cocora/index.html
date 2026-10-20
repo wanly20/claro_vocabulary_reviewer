@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cocora scene</title>
+<style>
+:root{--bg:#fbf7f1;--card:#fff;--ink:#2b2118;--muted:#6f604f;--line:#eadfd2;--pick:#d01f7f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1c1814;--card:#2a241e;--ink:#f4ece2;--muted:#b9a993;--line:#3d342b;--pick:#ff5cae}}
+:root[data-theme="dark"]{--bg:#1c1814;--card:#2a241e;--ink:#f4ece2;--muted:#b9a993;--line:#3d342b;--pick:#ff5cae}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+main{max-width:1000px;margin:auto;padding:24px 16px 48px}
+.lead{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.card.pick{border:2px solid var(--pick)}
+.card h2{font-size:1rem;margin:0 0 8px}
+.badge{background:var(--pick);color:#fff;font-size:.75rem;padding:2px 8px;border-radius:99px;margin-left:6px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sq{width:220px;height:220px;object-fit:cover;border-radius:16px}
+.ci{width:110px;height:110px;object-fit:cover;border-radius:50%}
+.note{font-size:.9rem;color:var(--muted);margin:8px 0 0}
+code{font-size:.85rem}
+</style></head><body><main>
+<h1>Cocora Valley: card image</h1>
+<p class="lead">For the 1.1 "Cocora es famoso." card (replacing the owl there). Z-Image Turbo via <code>scripts/make_image.py</code>, NAG off (scale 1.0, no negative), 8 steps, 1024×1024, in the prototype's flat "no outlines" style (as in salento-street and the remake_flat characters). Each image is shown as the ~220 px square slot and as a circle. Prompt: <code>prompt.txt</code>.</p>
+<p><b>My pick: seed 5.</b> Four very tall, thin wax palms in the centre, two layers of fog over the hills, and nothing important near the edges, so a circle crop keeps every palm. Runner-up: seed 6 (more fog, more palms).</p>
+<div class="grid" id="g"></div>
+</main>
+<script>
+const notes={1:"Three palms, sunny; little fog.",2:"Fog, palms a bit left of centre; a small orange bush.",3:"Palms spread wide; the right palm touches the circle edge.",4:"Clean and simple; hardly any fog.",5:"Fog in two layers, palms centred and tallest. Best in the circle.",6:"Most fog, four palms; the left palm sits near the edge."};
+const g=document.getElementById('g');
+for(let s=1;s<=6;s++){const c=document.createElement('div');c.className='card'+(s===5?' pick':'');
+c.innerHTML=`<h2>Seed ${s}${s===5?'<span class="badge">My pick</span>':''}</h2><div class="row"><img class="sq" src="cocora_s${s}.png" alt="Cocora seed ${s}"><img class="ci" src="cocora_s${s}.png" alt=""></div><p class="note">${notes[s]}</p>`;g.append(c);}
+</script></body></html>
