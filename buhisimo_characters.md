@@ -60,7 +60,7 @@ Start small, add characters as the units need them (Duolingo did the same).
 - **Teaching point (like Max's Selección shirt):** the **Wayuu** are an Indigenous people of **La Guajira**, the desert peninsula in Colombia's far north (and across the border in Venezuela). Wayuu women are famous for their weaving: the *mochila wayuu* bags and *balacas* are crocheted or woven by hand, and the patterns (*kanaas*) carry meanings from nature and family. A good cultural note for students: the balaca is real, everyday Colombian craft that Matilda bought from the people who make it, not a costume (kindness rule 4).
 - **Personality and arc:** starts **tímida** (shy, 2.6) and becomes **sociable** (3.6) by the end of the year. That's the same journey students make with speaking.
 - **Running joke:** always cold in Cocora (*¡Hace frío!*), and likes sleeping (koalas sleep about 18 hours a day).
-- **Voice:** to test. A clear young female voice.
+- **Voice:** chosen 24 Oct 2026: "New: Colombian schoolgirl, clear", a Qwen3-TTS Voice Design girl (a 12-year-old reading aloud in class, median pitch about 282 Hz in the comparison), saved as `video_generation/conversations/voices/co_f_kid_matilda.wav` (prototype voice id `matilda`, clips in `prototype/audio/matilda/`). Until then Matilda used María's voices; the María clips stay, because María may voice others. Comparison: `video_generation/voice_samples/matilda_max/`.
 
 **Max**, the kangaroo (visitor)
 - **Look:** sandy brown, rosy cheeks, long feet, wears the yellow Colombia football shirt (*la camiseta de la Selección*, blue V-neck collar and sleeve trims) he bought on day one.
@@ -127,7 +127,8 @@ Start small, add characters as the units need them (Duolingo did the same).
 | Buhísimo | new older Colombian man (warm, wise) | to make |
 | Valentina, Samuel | `co_f_teen`, `co_m_teen` | exist, quality to check |
 | Max | `co_m_kid_max` (Colombian schoolboy, Qwen voice design) | chosen 21 Oct 2026 |
-| Matilda | a young clear voice (candidates in `video_generation/voice_samples/matilda_max/`) | to choose |
+| Matilda | `co_f_kid_matilda` (Colombian schoolgirl, clear; Qwen voice design) | chosen 24 Oct 2026 |
+| Radio Búho callers (1.2) | one synthetic voice each: Argentina `ar_m_35`, Cuba `cu_f_old`, Spain `es_m_20`, Peru `pe_f_teen`, Chile `cl_m_45`, the Colombia speller `neu_f_35` (new Voice Designs: cu, pe, cl, neu_f) | made 24 Oct 2026 (never `es_m_40` or `ar_f_25`: they may come from Piper voices of real speakers) |
 | Chigüi, animals | to choose; some from other countries | later |
 | Word audio (every non-gendered word in both voices) | Mamá's and Papá's voices | after Mamá's voice exists |
 
@@ -152,6 +153,7 @@ Start small, add characters as the units need them (Duolingo did the same).
 
 ## 7. Decisions log
 
+- 24 Oct: **Matilda's voice chosen** ("New: Colombian schoolgirl, clear", `co_f_kid_matilda`); every line she says in the prototype is re-recorded in it (`audio/matilda/`, role `matilda`, falls back to María). **Max** says «¿Max es de Chile?» in his own voice (Juan's approved takes). **Radio Búho callers** get one synthetic voice each (§5). **MOSS approved for poses and scenes**: 1.2 tests (Matilda sleepy, Max tired, Buhísimo at the Radio Búho microphone, Salento plaza morning and afternoon) in `design/scenes/u12/`, not in the app yet.
 - 18 Oct: **art style fixed: flat, no outlines, NAG off** (the max_s1 look). Matilda redesigned: *balaca wayuu* headband from the Salento market, soft lashes, striped ruana (`matilda_stand_s4`). Max keeps max_s1. Their expression poses (wave, celebrate, surprised, thinking; Max also jump) and the 1.1 nouns (*el mapa, el mundo, la capital, el monumento*) were remade in this style and replaced the round-5 (NAG 3) art in the prototype. Review page: `design/characters/remake_flat/index.html`.
 - 9 Oct: **design phase before the engine** (design system + one-lesson phone prototype). Prototype art: **chunky app style with Salento colours**. Samuel does **not** wear a sombrero vueltiao (AI kept drawing a Mexican sombrero). Font: playful and bubbly is fine, but the Spanish text must be absolutely legible.
 - 9 Oct: names kept (Matilda, Max, Valentina, Samuel, Chigüi, Pereza, Restrepo). Parents are **Raúl** and **María**. Buhísimo is **male**. Matilda and Max are **12–13**. The Amazon trip happens in **2.3**. All names are recorded in `names.csv` with their sections.
