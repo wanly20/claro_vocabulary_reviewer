@@ -3,7 +3,7 @@
 sync_vocab.py — keep every copy of vocabulary_database.csv in step with the master.
 
 MASTER: spanish_app/vocabulary_database.csv   (Spanish, English, Section, Source, capitals)
-COPIES: spanish_worksheets/vocabulary_database.csv   (Spanish, English, Section, capitals)
+COPIES: ../../worksheets/vocabulary_database.csv   (Spanish, English, Section, capitals)
         video_generation/vocabulary_database.csv      (Spanish, English, Section, capitals)
         buhisimo/data/vocabulary_database.csv         (same columns as the master)
 MIRRORS (one-way, master → copy): helper_words.csv and names.csv → buhisimo/data/
@@ -33,7 +33,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 MASTER = HERE / 'vocabulary_database.csv'
 COPIES = {
-    'spanish_worksheets': HERE.parent / 'spanish_worksheets' / 'vocabulary_database.csv',
+    'spanish_worksheets': HERE.parent.parent / 'worksheets' / 'vocabulary_database.csv',
     'video_generation': Path.home() / 'Documents' / 'video_generation' / 'vocabulary_database.csv',
     'buhisimo': HERE.parent / 'buhisimo' / 'data' / 'vocabulary_database.csv',
 }
