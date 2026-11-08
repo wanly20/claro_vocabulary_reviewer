@@ -1,0 +1,219 @@
+{
+ "intro": "Matilda's poses, Max's poses and the four Unit 1.1 nouns redrawn in the flat style of the prototype's max.webp (max_s1): same style text, NAG off, no negative prompt, palette as colours only. Matilda's poses reuse her exact matilda_stand_s4 text with only the pose and expression words changed; Max's reuse max_s1's text plus his shirt details (blue V-neck and sleeve trims, rosy cheeks). 6 seeds per pose, 5 per noun. Each section shows the old prototype file, the chosen seed (teal border) and the runner-up seeds. Tap an image for the full-size PNG. These files are now in the prototype under the same names.",
+ "assets": [
+  {
+   "asset": "matilda",
+   "stem": "matilda_stand",
+   "seed": 4,
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/matilda.webp",
+   "note": "Juan's pick from matilda_girl/balaca_style (not regenerated). Replaces the old prototype Matilda."
+  },
+  {
+   "asset": "matilda-wave",
+   "stem": "matilda_wave",
+   "seed": 4,
+   "runners": [
+    1,
+    2,
+    3
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/matilda-wave.webp",
+   "note": "Seed 4 matches matilda_stand_s4 best: the same stripe order (turquoise, magenta, mustard, turquoise) and the same white-and-colour balaca. Seed 1 is a close second.",
+   "rejected": {
+    "5": "no eyelashes",
+    "6": "green stripes and an orange collar on the ruana"
+   }
+  },
+  {
+   "asset": "matilda-celebrate",
+   "stem": "matilda_celebrate",
+   "seed": 4,
+   "runners": [
+    1,
+    3,
+    6
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/matilda-celebrate.webp",
+   "note": "Jumping for joy, both arms up, eyes closed with joy. Seed 4 has the cleanest balaca and the right three ruana colours. All six seeds are usable; in this jumping pose the ruana flares into a wider cape.",
+   "rejected": {
+    "2": "usable; smaller balaca pattern",
+    "5": "usable; smaller head"
+   }
+  },
+  {
+   "asset": "matilda-surprised",
+   "stem": "matilda_surprised",
+   "seed": 4,
+   "runners": [
+    1,
+    3
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/matilda-surprised.webp",
+   "note": "Paws on her cheeks, round mouth. Seed 4's balaca is closest to the reference. In the surprised set the wide white eyes replace the lashes on every seed, which reads fine at app size.",
+   "rejected": {
+    "2": "dark purple edge on the ruana",
+    "5": "smaller head, extra side panels on the ruana",
+    "6": "orange collar on the ruana"
+   }
+  },
+  {
+   "asset": "matilda-thinking",
+   "stem": "matilda_thinking",
+   "seed": 1,
+   "runners": [
+    2,
+    3,
+    4
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/matilda-thinking.webp",
+   "note": "Paw on chin, looking up. Seed 1 has her lashes, the clearest look-up and a big balaca; its ruana has a mustard hood edge (one of her colours). Seeds 2 and 3 are close seconds; seed 4 is the closest outfit but loses the lashes.",
+   "rejected": {
+    "5": "fine, but busier extra stripes",
+    "6": "extra magenta flap and busier stripes on the ruana"
+   }
+  },
+  {
+   "asset": "max-wave",
+   "stem": "max_wave",
+   "seed": 1,
+   "runners": [
+    2,
+    5
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/max-wave.webp",
+   "note": "Very close to max_s1: yellow shirt, blue V-neck and sleeve trims, rosy cheeks, no shorts.",
+   "rejected": {
+    "3": "green shorts (outfit changed)",
+    "4": "green shorts",
+    "6": "green shorts"
+   }
+  },
+  {
+   "asset": "max-jump",
+   "stem": "max_jump",
+   "seed": 1,
+   "runners": [
+    4
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/max-jump.webp",
+   "note": "Mid-air, arms up, big grin, like max_s1's bounce.",
+   "rejected": {
+    "2": "green shorts",
+    "3": "green shorts",
+    "5": "drawn on a turquoise rounded card",
+    "6": "green panel on the shirt side"
+   }
+  },
+  {
+   "asset": "max-celebrate",
+   "stem": "max_celebrate",
+   "seed": 3,
+   "runners": [
+    1,
+    6
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/max-celebrate.webp",
+   "note": "Both fists up, eyes closed with joy (was a thumbs-up). Seed 3 has a plain shirt like max_s1; seeds 1 and 6 add a green or red badge.",
+   "rejected": {
+    "2": "usable; extra hair tuft, green badge",
+    "4": "usable; yellow-green badge",
+    "5": "turquoise card behind him, green panel on the shirt"
+   }
+  },
+  {
+   "asset": "max-surprised",
+   "stem": "max_surprised",
+   "seed": 1,
+   "runners": [
+    5,
+    4
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/max-surprised.webp",
+   "note": "Paws up, mouth open in an O.",
+   "rejected": {
+    "2": "green shorts",
+    "3": "green hem on the shirt",
+    "6": "green shorts"
+   }
+  },
+  {
+   "asset": "max-thinking",
+   "stem": "max_thinking",
+   "seed": 2,
+   "runners": [
+    8,
+    1
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/max-thinking.webp",
+   "note": "Scratching his head, puzzled. Only seed 2 kept the max_s1 outfit: 8 of 9 seeds (3 extra seeds tried) added green shorts, a Columbia logo or a background card. The runners-up shown here have green shorts, for comparison only.",
+   "rejected": {
+    "3": "green shorts",
+    "4": "green shorts and a logo",
+    "5": "'Columbia' text and a background card",
+    "6": "green shorts",
+    "7": "green shorts",
+    "9": "turquoise background card"
+   }
+  },
+  {
+   "asset": "noun-mapa",
+   "stem": "noun_mapa",
+   "seed": 4,
+   "runners": [
+    5,
+    1
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/noun-mapa.webp",
+   "note": "A folded paper map with a dotted route and a red pin, as before.",
+   "rejected": {
+    "2": "pin too big, map blurred",
+    "3": "map tilted flat, reads less like paper"
+   }
+  },
+  {
+   "asset": "noun-mundo",
+   "stem": "noun_mundo",
+   "seed": 2,
+   "runners": [
+    5,
+    3
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/noun-mundo.webp",
+   "note": "A classic globe on a stand with the Americas in front (Colombia visible).",
+   "rejected": {
+    "1": "Africa in bright pink takes over",
+    "4": "Africa in front, Americas small"
+   }
+  },
+  {
+   "asset": "noun-capital",
+   "stem": "noun_capital",
+   "seed": 2,
+   "runners": [
+    5,
+    1
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/noun-capital.webp",
+   "note": "City skyline with a gold star above it (the old picture's idea). Seed 2 has a domed capitol-like building.",
+   "rejected": {
+    "3": "fewer buildings, reads less as a city",
+    "4": "fine, plainer"
+   }
+  },
+  {
+   "asset": "noun-monumento",
+   "stem": "noun_monumento",
+   "seed": 4,
+   "runners": [
+    5,
+    3
+   ],
+   "old": "/tmp/claude-1000/-home-wanly-Documents-teaching-app/b9b0b658-241b-47c1-a577-9ccdb61e02d6/scratchpad/old_assets/noun-monumento.webp",
+   "note": "A stone obelisk on a stepped base, like the old picture (the lesson calls it 'a tall stone tower'). Seeds 5 and 3 are columns, which read more like a pillar.",
+   "rejected": {
+    "1": "gradient on the column (off-style)",
+    "2": "column cut off at the top edge"
+   }
+  }
+ ]
+}

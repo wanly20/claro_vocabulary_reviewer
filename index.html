@@ -10,6 +10,11 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     [hidden] { display: none !important; }
+    html {
+      /* Stop mobile browsers auto-boosting font size in narrow columns. */
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
 
     :root {
       --bg-color: #f8fafc;
@@ -2756,6 +2761,35 @@
   }
 
   // ── Global Listeners ────────────────────────────────────────────────
+
+  // Keyboard shortcut: press 1-9 to pick that multiple-choice option, so
+  // answering doesn't require reaching for the mouse.
+  document.addEventListener('keydown', e => {
+    if (!/^[1-9]$/.test(e.key)) return;
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+
+    const idx = Number(e.key) - 1;
+    const containers = [
+      '#options',              // main vocab quiz (multiple choice)
+      '#dict-trans-options',   // dictation + choose meaning
+      '#verb-mc-container',    // verb conjugation challenge
+      '#animal-mc-options',    // animal colour challenge
+      '#retrato-mc-options',   // retrato robot (describe mode)
+      '#retrato-lineup-wrap'   // retrato robot (lineup mode)
+    ];
+    for (const sel of containers) {
+      const el = document.querySelector(sel);
+      if (!el || el.offsetParent === null) continue;
+      const btn = el.querySelectorAll('.option-btn, .activity-btn')[idx];
+      if (btn && !btn.disabled) {
+        e.preventDefault();
+        btn.click();
+      }
+      return;
+    }
+  });
+
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       const onAnimal = !document.getElementById('animal-screen').hidden;

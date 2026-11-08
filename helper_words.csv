@@ -1,0 +1,82 @@
+Spanish,English,Section,Type,Lemma,Person,Notes
+él,he,1.1 El español global,pronoun,,,Approved (buhisimo_rules.md §6.1); v1 bubble 1 level 3
+ella,she,1.1 El español global,pronoun,,,Approved (buhisimo_rules.md §6.1); v1 bubble 1 level 3
+es,is / he is / she is,1.1 El español global,verb form,ser,él/ella,Approved (§6.1). Also seen inside ¿De dónde es? (1.1)
+tú,you,1.1 El español global,pronoun,,,Approved (§6.1); v1 bubble 3 level 2. Also inside ¿Y tú? (1.2)
+eres,you are,1.1 El español global,verb form,ser,tú,Approved (§6.1). Also seen inside ¿De dónde eres? (1.1)
+soy,I am,1.1 El español global,verb form,ser,yo,"Approved 2026-10-07; for ""soy de…"""
+de,from / of,1.1 El español global,preposition,,,Approved 2026-10-07. Also inside ¿De dónde eres? (1.1)
+la lengua,language,1.1 El español global,noun,,,"Approved 2026-10-07; used in v1 bubble 3, not in the Claro list"
+sí,yes,1.1 El español global,adverb,,,Approved by Juan 2026-10-18 (Buhísimo v2 plan P1). Accent matters: si = if (3.4)
+no,no / not,1.1 El español global,adverb,,,Approved by Juan 2026-10-18 (Buhísimo v2 plan P1). Also inside no me gusta (nada) (1.5)
+el español,Spanish (the language),1.1 El español global,noun,,,Approved by Juan 2026-10-18 (Buhísimo v2 plan P2). Makes la lengua usable; unit title word
+gracias,thank you,1.2 ¿Qué tal?,expression,,,Approved 2026-10-07
+muy,very,1.2 ¿Qué tal?,adverb,,,Approved 2026-10-07
+está,is (state / location),1.2 ¿Qué tal?,verb form,estar,él/ella,"Used by the slides agent; inside ""está en contacto con"" (3.5). ¿Cómo estás? is 1.2"
+¿Cómo se escribe?,How do you spell it?,1.2 ¿Qué tal?,chunk,,,Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Fixed chunk: escribe is not counted as a form of escribir (1.2 row)
+la a,the letter A,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la be,the letter B,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la ce,the letter C,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la de,the letter D,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la e,the letter E,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la efe,the letter F,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la ge,the letter G,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la hache,the letter H,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la i,the letter I,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la jota,the letter J,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la ka,the letter K,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la ele,the letter L,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la eme,the letter M,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la ene,the letter N,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la eñe,the letter Ñ,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la o,the letter O,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la pe,the letter P,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la cu,the letter Q,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la erre,the letter R,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la ese,the letter S,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la te,the letter T,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la u,the letter U,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la uve,the letter V,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name; Juan chose uve (not ve corta). Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la doble ve,the letter W,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name; Juan chose doble ve (Colombian usage) on 2026-10-20. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la equis,the letter X,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la ye,the letter Y,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name; Juan chose ye (not i griega). Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+la zeta,the letter Z,1.2 ¿Qué tal?,letter,,,"Approved by Juan 2026-10-18 (Buhísimo v2 plan P10). Letter name. Used bare only when spelling (¿Cómo se escribe…?, el alfabeto)"
+me llamo,my name is,1.3 Mi carnet de identidad,verb form,llamarse,yo,Approved 2026-10-07
+te llamas,your name is,1.3 Mi carnet de identidad,verb form,llamarse,tú,Approved 2026-10-07; inside ¿Cómo te llamas? if in CSV
+se llama,his / her name is,1.3 Mi carnet de identidad,verb form,llamarse,él/ella,Approved 2026-10-07
+tengo,I have,1.3 Mi carnet de identidad,verb form,tener,yo,"Approved 2026-10-07; for ""tengo doce años"". Also inside tengo mascota (2.3)"
+tienes,you have,1.3 Mi carnet de identidad,verb form,tener,tú,Approved 2026-10-07
+tiene,he / she has,1.3 Mi carnet de identidad,verb form,tener,él/ella,Approved 2026-10-07
+mi,my,1.3 Mi carnet de identidad,possessive,,,Approved (§6.1); v1 b27 level 3. Moved from 1.6 to 1.3 by Juan 2026-10-18 (Buhísimo v2 plan P5) for Mi nombre es… / Mi apellido es…. Also inside mi color favorito es… (1.5)
+¿Cómo te llamas?,What's your name?,1.3 Mi carnet de identidad,chunk,,,Approved by Juan 2026-10-18 (Buhísimo v2 plan P3). Chunk; no Lemma so it is not counted as an extra form of llamarse
+¿Cómo se llama?,What's his / her name?,1.3 Mi carnet de identidad,chunk,,,Approved by Juan 2026-10-18 (Buhísimo v2 plan P3). Chunk; no Lemma so it is not counted as an extra form of llamarse
+años,years (old),1.3 Mi carnet de identidad,noun (plural form),,,Approved by Juan 2026-10-18 (Buhísimo v2 plan P4). Plural of el año (1.4); always after a number: tengo doce años
+tu,your,1.4 ¡…y que cumplas muchos más!,possessive,,,Approved 2026-10-07. Also inside ¿Cuándo es tu cumpleaños? (1.4)
+el,the (m.),1.4 ¡…y que cumplas muchos más!,article,,,Approved 2026-10-07; standalone use. Moved from 1.6 to 1.4 by Juan 2026-10-18 (Buhísimo v2 plan P6) for dates (el veinte de julio) and colour opinions in 1.5 (me encanta el azul)
+mucho/a,a lot / many,1.5 Mis preferencias,adjective,,,"Used by the slides agent; inside ""me gusta (mucho)"" (1.5). Forms muchos/muchas allowed automatically; ""muchas visitas"" first used in 3.5"
+un,a / an (m.),1.6 ¡Tod@s a clase!,article,,,Approved (§6.1); v1 b27 level 3
+una,a / an (f.),1.6 ¡Tod@s a clase!,article,,,Approved (§6.1); v1 b27 level 3
+en,in,1.6 ¡Tod@s a clase!,preposition,,,Approved (§6.1); v1 b27 level 3
+la mochila,backpack,1.6 ¡Tod@s a clase!,noun,,,Approved (§6.1); v1 b27 level 3. Not in the Claro 1.6 list
+la,the (f.),1.6 ¡Tod@s a clase!,article,,,Approved 2026-10-07; standalone use
+los,the (m. pl.),1.6 ¡Tod@s a clase!,article,,,Approved 2026-10-07; standalone use
+las,the (f. pl.),1.6 ¡Tod@s a clase!,article,,,Approved 2026-10-07; standalone use
+su,his / her / their,1.6 ¡Tod@s a clase!,possessive,,,Used by the slides agent
+sus,his / her / their (pl.),1.6 ¡Tod@s a clase!,possessive,,,Used by the slides agent
+mis,my (pl.),1.6 ¡Tod@s a clase!,possessive,,,Approved by Juan 2026-10-21 (Buhísimo v2 plan P12): taught with sus in 1.6 L9 with an agreement rule card (mis lápices azules)
+tus,your (pl.),1.6 ¡Tod@s a clase!,possessive,,,Approved by Juan 2026-10-21 (Buhísimo v2 plan P12): taught with sus in 1.6 L9 with an agreement rule card (tus reglas rojas)
+el chigüiro,capybara,2.3 Los animales y las mascotas,noun,,,"Added 2026-10-07 for the character cast. Colombian/Venezuelan word (elsewhere: capibara, carpincho)"
+al norte de,to the north of,3.7 México (fin de año),chunk,,,"Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session; taught as a fixed chunk (""al"" not taught alone). el norte is also a 4.1 row"
+al sur de,to the south of,3.7 México (fin de año),chunk,,,Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session; fixed chunk. el sur is also a 4.1 row
+al este de,to the east of,3.7 México (fin de año),chunk,,,Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session; fixed chunk. el este is also a 4.1 row
+al oeste de,to the west of,3.7 México (fin de año),chunk,,,Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session; fixed chunk. el oeste is also a 4.1 row
+la ciudad,city,3.7 México (fin de año),noun,,,"Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session; introduced early, so the 4.1 row is recycled"
+la bandera,flag,3.7 México (fin de año),noun,,,Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session
+el peso,peso (Mexican currency),3.7 México (fin de año),noun,,,Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session
+el águila,eagle,3.7 México (fin de año),noun,,,"Not a Claro section: end-of-year México lessons (after 3.6). Approved by Juan via the slides session; feminine noun that takes ""el"" in the singular; only ""el águila"" is used"
+más,more,3.6 Su foto tiene muchos 'me gusta',adverb,,,"Approved by Juan via the slides session (3.6 deck); comparative ""más … que"" = more … than; ""más de"" + number = more than"
+menos,less,3.6 Su foto tiene muchos 'me gusta',adverb,,,"Approved by Juan via the slides session (3.6 deck); comparative ""menos … que"" = less … than"
+que,than,3.6 Su foto tiene muchos 'me gusta',conjunction (comparative),,,Approved by Juan via the slides session (3.6 deck); NEW MEANING: que = who / that is a 3.5 row in the master
+millones de,millions of,3.6 Su foto tiene muchos 'me gusta',chunk,,,Approved by Juan via the slides session (3.6 deck)
+usa las redes sociales,he / she uses social media,3.6 Su foto tiene muchos 'me gusta',chunk,usar,él/ella,Approved by Juan via the slides session (3.6 deck); usar is a 3.6 master row
+influencia a sus seguidores,he / she influences his / her followers,3.6 Su foto tiene muchos 'me gusta',chunk,influenciar,él/ella,Approved by Juan via the slides session (3.6 deck); influenciar is a 3.6 master row

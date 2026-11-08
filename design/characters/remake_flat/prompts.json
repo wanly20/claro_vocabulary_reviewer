@@ -1,0 +1,44 @@
+{
+ "negative": "",
+ "nag_scale": 1.0,
+ "steps": 8,
+ "resolution": "1024x1024",
+ "seeds_characters": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
+ ],
+ "seeds_nouns": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "extra_seeds": {
+  "max_thinking": [
+   7,
+   8,
+   9
+  ]
+ },
+ "style_source": "prototype_art/max_s1.png + matilda_girl/balaca_style/matilda_stand_s4.png (palette as colours only)",
+ "prompts": {
+  "matilda_wave": "Character design, full body standing: Matilda, a young koala girl (12) from Melbourne, soft grey fur, big round fluffy ears, large black nose, big dark eyes with soft subtle eyelashes, a big friendly smile, wearing a wide woven Wayuu fabric headband (balaca) across the top of her head between her ears, with bright multicolour Wayuu diamond and zigzag patterns, wrapped in an Andean wool poncho with simple horizontal turquoise, magenta and mustard yellow stripes, standing upright and waving hello with one paw raised. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "matilda_celebrate": "Character design, full body standing: Matilda, a young koala girl (12) from Melbourne, soft grey fur, big round fluffy ears, large black nose, big dark eyes with soft subtle eyelashes, a big happy open-mouthed smile, eyes closed with joy, wearing a wide woven Wayuu fabric headband (balaca) across the top of her head between her ears, with bright multicolour Wayuu diamond and zigzag patterns, wrapped in an Andean wool poncho with simple horizontal turquoise, magenta and mustard yellow stripes, jumping for joy with both arms raised high in the air. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "matilda_surprised": "Character design, full body standing: Matilda, a young koala girl (12) from Melbourne, soft grey fur, big round fluffy ears, large black nose, big dark eyes with soft subtle eyelashes, surprised, eyes wide open, small round open mouth, wearing a wide woven Wayuu fabric headband (balaca) across the top of her head between her ears, with bright multicolour Wayuu diamond and zigzag patterns, wrapped in an Andean wool poncho with simple horizontal turquoise, magenta and mustard yellow stripes, standing upright with both paws on her cheeks. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "matilda_thinking": "Character design, full body standing: Matilda, a young koala girl (12) from Melbourne, soft grey fur, big round fluffy ears, large black nose, big dark eyes with soft subtle eyelashes, thinking, looking up, puzzled, wearing a wide woven Wayuu fabric headband (balaca) across the top of her head between her ears, with bright multicolour Wayuu diamond and zigzag patterns, wrapped in an Andean wool poncho with simple horizontal turquoise, magenta and mustard yellow stripes, standing upright with one paw on her chin. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "max_wave": "Character design: Max, a young kangaroo boy (13) from Melbourne, sandy brown fur, rosy cheeks, big feet, grinning, standing and waving hello with one paw raised, wearing a bright yellow Colombia football shirt with a dark blue V-neck collar and blue sleeve trims. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "max_jump": "Character design: Max, a young kangaroo boy (13) from Melbourne, sandy brown fur, rosy cheeks, big feet, energetic and grinning, jumping high in the air with joy, both arms up, wearing a bright yellow Colombia football shirt with a dark blue V-neck collar and blue sleeve trims. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "max_celebrate": "Character design: Max, a young kangaroo boy (13) from Melbourne, sandy brown fur, rosy cheeks, big feet, cheering with a huge open-mouthed smile, eyes closed with joy, celebrating with both fists raised in the air, wearing a bright yellow Colombia football shirt with a dark blue V-neck collar and blue sleeve trims. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "max_surprised": "Character design: Max, a young kangaroo boy (13) from Melbourne, sandy brown fur, rosy cheeks, big feet, surprised, eyes wide open, mouth open in a round O, standing with both paws raised, wearing a bright yellow Colombia football shirt with a dark blue V-neck collar and blue sleeve trims. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "max_thinking": "Character design: Max, a young kangaroo boy (13) from Melbourne, sandy brown fur, rosy cheeks, big feet, thinking, looking up, puzzled, standing and scratching his head with one paw, wearing a bright yellow Colombia football shirt with a dark blue V-neck collar and blue sleeve trims. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "noun_mapa": "Simple spot illustration of an unfolded paper map with folds, a dotted route line and a red location pin. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. One object only, centred, plain pure white background, no scenery, no text, no letters, no people.",
+  "noun_mundo": "Simple spot illustration of a round globe of the Earth on a small stand, showing the Americas. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. One object only, centred, plain pure white background, no scenery, no text, no letters, no people.",
+  "noun_capital": "Simple spot illustration of a city skyline with tall buildings and a big gold star above it, meaning a capital city. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. One object only, centred, plain pure white background, no scenery, no text, no letters, no people.",
+  "noun_monumento": "Simple spot illustration of a tall stone monument column on a big stepped pedestal. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. One object only, centred, plain pure white background, no scenery, no text, no letters, no people."
+ }
+}

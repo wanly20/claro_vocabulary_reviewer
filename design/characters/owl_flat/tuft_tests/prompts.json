@@ -1,0 +1,18 @@
+{
+ "negative": "",
+ "nag_scale": 1.0,
+ "steps": 8,
+ "resolution": "1024x1024",
+ "seeds_characters": [
+  1,
+  2,
+  3
+ ],
+ "seeds_nouns": [],
+ "extra_seeds": {},
+ "style_source": "remake_flat STYLE/TAIL (prototype_art/max_s1.png + matilda_stand_s4.png); identity from buhisimo_characters.md v0.3",
+ "prompts": {
+  "tJ": "Character design, full body standing upright: Buhisimo, a friendly buho de anteojos (Pulsatrix perspicillata), his head is a big perfect circle like a full moon, dark chocolate brown head, back and wings, cream chest, big round yellow eyes with bold white curved eyebrow stripes above them and a white band under the beak, small orange beak, wearing round thin-rimmed glasses, a warm friendly smile, one wing raised and open to the side as if explaining something, a small woven Wayuu mochila bag with bright multicolour diamond patterns on a strap across his body, orange feet. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text.",
+  "tK": "Character design, full body standing upright: Buhisimo, a friendly buho de anteojos (Pulsatrix perspicillata) owl, his head is a big perfect circle like a full moon, dark chocolate brown head, back and wings, cream chest, a round owl face with bold white spectacle markings around big round yellow eyes, small orange beak, wearing round thin-rimmed glasses, a warm friendly smile, one wing raised and open to the side as if explaining something, a small woven Wayuu mochila bag with bright multicolour diamond patterns on a strap across his body, orange feet. Modern mobile-app illustration style: chunky rounded geometric shapes, no outlines, minimal flat shading with one soft shadow tone, polished and friendly. Colour palette: turquoise, magenta, mustard yellow, emerald green, terracotta and white. Full body, centred, plain pure white background, no scenery, no text."
+ }
+}
