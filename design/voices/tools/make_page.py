@@ -3,7 +3,7 @@ import json, re, statistics as st
 from pathlib import Path
 from candidates import CANDIDATES, TEST_LINES, REF_TEXT, S
 
-V = Path.home() / "Documents/spanish/spanish_app/design/voices"
+V = Path.home() / "Jobs/School/spanish/apps/claro_reviewer/design/voices"
 W = json.load(open(f"{S}/whisper_clone.json"))
 WD = json.load(open(f"{S}/whisper_design.json"))
 PICK = dict(maria_bogota_warm=202, maria_paisa_warm=101, maria_bogota_bright=101,
