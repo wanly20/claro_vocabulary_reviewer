@@ -85,7 +85,7 @@ for key in order:
         c = dict(role="Raúl", label="co_m_30 (existing)",
                  desc="Existing reference conversations/voices/co_m_30.wav (Colombian adult man).")
         takes = [dict(seed="ref", file="takes/raul_co_m_30__ref.mp3", chosen=True,
-                      f0=round(WD[str(Path.home() / 'Documents/video_generation/conversations/voices/co_m_30.wav')]['f0']),
+                      f0=round(WD[str(Path.home() / 'Projects/video_generation/conversations/voices/co_m_30.wav')]['f0']),
                       dur=11.7)]
         modes = [("xvec", "Clone (x-vector), production mode"), ("iclpad", "Clone (ICL mode), not usable")]
     else:

@@ -2,11 +2,11 @@
 runs every prompt in prompts.json x its seeds). NAG off, no negative prompt. Skips files
 that exist. Needs the GPU free and the WanGP web UI closed:
 
-    cd ~/Documents/video_generation && Wan2GP/.venv/bin/python <this file> [names...]
+    cd ~/Projects/video_generation && Wan2GP/.venv/bin/python <this file> [names...]
 """
 import json, shutil, sys, time
 from pathlib import Path
-ROOT = Path.home() / "Documents/video_generation"
+ROOT = Path.home() / "Projects/video_generation"
 OUT = Path(__file__).resolve().parent
 cfg = json.load(open(OUT / "prompts.json"))
 only = set(sys.argv[1:])

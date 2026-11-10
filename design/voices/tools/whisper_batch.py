@@ -10,7 +10,7 @@ import torch, whisper
 
 out_json = Path(sys.argv[1])
 files = sys.argv[2:]
-model_dir = str(Path.home() / "Documents/video_generation/models/whisper")
+model_dir = str(Path.home() / "Projects/video_generation/models/whisper")
 model = whisper.load_model("large-v3", download_root=model_dir, device="cpu").half()
 for m in model.modules():
     if isinstance(m, torch.nn.LayerNorm):

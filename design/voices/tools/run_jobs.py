@@ -10,7 +10,7 @@ Run from the video_generation repo root with Wan2GP/.venv/bin/python.
 import json, shutil, sys, time
 from pathlib import Path
 
-ROOT = Path.home() / "Documents/video_generation"
+ROOT = Path.home() / "Projects/video_generation"
 WAN = ROOT / "Wan2GP"
 sys.path.insert(0, str(WAN))
 
