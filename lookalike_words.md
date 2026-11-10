@@ -20,6 +20,7 @@ Section numbers are from `vocabulary_database.csv`.
 | **divorciado/a / divertido/a** | divorced / fun | 2.2 → 2.6 |
 | **el tipo / el tiempo** | type / weather | 3.1 → 3.4 |
 | **el nombre / noviembre** | name / November | 1.3 → 1.4 |
+| **tu / tú** | your / you | 1.4 (*tú* from 1.2 *¿Y tú?*, *tu* in 1.4 L9): the accent changes the word. Approved by Juan 11 Nov 2026 (1.4 build plan, Decision 8) |
 
 ## Worth a quick note (patterns, not traps)
 - **simpático/a / antipático/a** (2.6): opposites with *anti-*. Teach them as a pair.
@@ -27,3 +28,4 @@ Section numbers are from `vocabulary_database.csv`.
 - **el noreste / el noroeste, el sureste / el suroeste, el este / el oeste** (4.1): one letter makes it east or west.
 - **veinti- numbers** (1.3): *veintiséis / veintisiete*, *veinticuatro / veinticinco*. Listen to the ending.
 - **Perú / pero** (1.1 → 1.5): the accent and capital letter matter.
+- **martes / marzo** (1.4): a day and a month that both start *mar-*. A short note and a "day or month?" sort in 1.4 L4, not the full look-alike treatment (Juan, 11 Nov 2026, Decision 10).
